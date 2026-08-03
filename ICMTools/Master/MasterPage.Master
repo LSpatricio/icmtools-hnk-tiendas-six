@@ -1,0 +1,946 @@
+﻿<%@ Master Language="VB" AutoEventWireup="false" CodeBehind="MasterPage.master.vb" Inherits="ICMTools.MasterPage" %>
+
+<!DOCTYPE html>
+<html lang="es-mx" xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="icon" type="image/png" href="../images/logo_icmtools_small.png" />
+    <title></title>
+
+
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/onfly.js"></script>
+    <!-- DataTables CSS
+    <link href="../vendor/DataTables/datatables.css" rel="stylesheet" />
+    DataTables JS
+    <script src="../vendor/DataTables/datatables.js"></script>-->
+
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.16/b-1.5.1/b-html5-1.5.1/b-print-1.5.1/datatables.min.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.16/b-1.5.1/b-html5-1.5.1/b-print-1.5.1/datatables.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="../vendor/bootstrap-4.1.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../vendor/bootstrap-4-multi-dropdown-navbar-master/css/bootstrap-4-navbar.css" rel="stylesheet" />
+    <!-- Custom Fonts -->
+    <link href="../vendor/font-awsome-free-5.0.10/css/fontawesome-all.min.css" rel="stylesheet" type="text/css" />
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- Custom CSS -->
+    <link href="../dist/css/custom.css" rel="stylesheet" />
+
+    <!-- STYLE NEW SIDEBAR -->
+    <link href="../dist/css/MasterPage.css" rel="stylesheet" />
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"/>
+    <%--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>--%>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css"/>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+    <!-- (Optional) Latest compiled and minified JavaScript translation files -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/i18n/defaults-*.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+    <script src="https://cdn.jsdelivrtalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+
+
+    <style>
+        @media (min-width: 768px) {
+            .modal-xl {
+                width: 90%;
+                max-width: 1200px;
+            }
+        }
+
+        /* Custom CSS for the spinner animation for Bootstrap 4.1.1 */
+        .custom-spinner {
+            display: inline-block;
+            width: 2.5rem; /* Spinner size */
+            height: 2.5rem; /* Spinner size */
+            vertical-align: middle;
+            border: .25em solid currentColor; /* Border color based on text color */
+            border-right-color: transparent; /* Makes part of the border transparent for the spinning effect */
+            border-radius: 50%; /* Makes it circular */
+            animation: spin 0.75s linear infinite; /* Apply the spin animation */
+        }
+
+        .custom-spinner-sm {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-width: .2em;
+        }
+
+        /* Keyframes for the spinning animation */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Styles for the full-page loading overlay */
+        .loading-overlay {
+            position: fixed; /* Fixed position to cover the entire viewport */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+            display: flex; /* Use flexbox for centering */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            z-index: 9999; /* Ensure it's on top of everything */
+            color: white; /* Spinner color for the overlay */
+            transition: opacity 0.3s ease-in-out; /* Smooth fade effect */
+            opacity: 0; /* Initially hidden */
+            pointer-events: none; /* Allows clicks to pass through when hidden */
+        }
+
+            .loading-overlay.show {
+                opacity: 1; /* Show the overlay */
+                pointer-events: auto; /* Enable interaction when shown */
+            }
+
+
+        /* Estilo para posicionar la alerta en la parte inferior y a todo lo ancho */
+        .alert-container {
+            position: fixed; /* Fijo en la ventana del navegador */
+            bottom: 0; /* Pegado a la parte inferior */
+            left: 0; /* Pegado al borde izquierdo */
+            right: 0; /* Pegado al borde derecho (hace que ocupe el 100% del ancho) */
+            z-index: 1050; /* Para que esté por encima de la mayoría de los elementos de Bootstrap (ej. navbars, modales) */
+            padding: 0; /* Remover cualquier padding predeterminado del contenedor */
+            margin: 0; /* Remover cualquier margen predeterminado del contenedor */
+        }
+
+            /* Ajustes adicionales para la alerta dentro del contenedor si es necesario */
+            .alert-container .alert {
+                margin-bottom: 0; /* Las alertas de Bootstrap tienen un margin-bottom por defecto, lo quitamos */
+                border-radius: 0; /* Opcional: Quita los bordes redondeados para que se vea más como una barra sólida */
+            }
+    </style>
+
+</head>
+<body>
+
+    <div id="alertPlaceholder" class="alert-container" style="z-index: 9999"></div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="custom-spinner text-white" role="status">
+            <span class="sr-only">Cargando...</span>
+        </div>
+        <p class="ml-3 text-lg font-medium">Cargando contenido...</p>
+    </div>
+
+    <div id="general-topbar">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand topbar-link" href="../Pages/Home.aspx">ICM Tools</a>
+                <div class="topbar-divider"></div>
+                <%--</div>--%>
+
+                <%--<div class="center">--%>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" style="color: white; text-decoration: none;"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i id="Top-BDIcon" class="fas fa-database fa-fw"></i>
+                            <asp:Literal ID="litModeloInicial" runat="server"></asp:Literal>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <asp:Repeater ID="RepeaterModelo" runat="server">
+                                <ItemTemplate>
+                                    <li>
+                                        <a class="dropdown-item" href="#" title='<%# Eval("ModelDescription") %>' aria-valuetext='<%# Eval("Model") %>'><i class="fas fa-database fa-fw"></i><%# Eval("Model") %></a>
+
+                                    </li>
+                                </ItemTemplate>
+                            </asp:Repeater>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="right">
+                <div id="Message" runat="server" class="alert alert-success" role="alert" style="margin-top: 20px;">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                    <h5 class="card-title">
+                        <i id="MessageIcon" runat="server" class="fa fa-bomb"></i>
+                        <span id="MessageTitle" runat="server" class="alert-heading">Mensaje titulo</span>
+                    </h5>
+
+                    <p id="MessagePrimary" runat="server">Mensaje primario.</p>
+                    <hr />
+                    <p id="MessageSecondary" runat="server" class="mb-0">Mensaje secundario.</p>
+                </div>
+
+                <ul class="navbar-nav ml-auto">
+                    <!-- ml-auto lo empuja a la derecha -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle topbar-link" href="#" id="A1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <asp:Label ID="lblUserName" runat="server" Text="Usuario no autenticado"></asp:Label>
+                            <asp:Label ID="lblTopUserEmail" runat="server" Text="" CssClass="mr-2"></asp:Label>
+                            <i id="Top-UserIcon" class="fa fa-user fa-fw"></i>
+
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="A1">
+                            <a class="dropdown-item" href="#">
+                                <i class="fa fa-database fa-fw"></i>
+                                <asp:Label ID="lblModel" runat="server" Text="Modelo ICM:"></asp:Label>
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <i class="fa fa-envelope fa-fw"></i>
+                                <asp:Label ID="lblUserEmail" runat="server" Text="Invitado"></asp:Label>
+                            </a>
+                            <a class="dropdown-item" href="../Pages/Configuracion.aspx">
+                                <i class="fa fa-cogs fa-fw"></i>
+                                <asp:Label ID="LabelConfiguration" runat="server" Text="Configuración"></asp:Label>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="../Pages/logout.aspx">
+                                <span class="btn btn-block btn-outline-danger"><i class="fas fa-sign-out-alt fa-fw"></i>Cerrar sesión</span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="main-wrapper">
+        <%--<form id="form1" runat="server">--%>
+        <!-- Sidebar -->
+
+  
+        <div id="sidebar" runat="server">
+            <div class="sidebar-header">
+                <h4>Módulos</h4>
+                <hr class="separator" />
+            </div>
+       <ul class="components" style="padding-bottom: 70px;">
+ <%-- Repeater para los elementos simples (sin agrupar) --%>
+      <asp:Repeater runat="server" ID="RepeaterModuloSinAgrupas">
+          <ItemTemplate>
+              <li>
+                  <a href='<%# Eval("URL") %>'>
+                      <%# Eval("ScreenName") %>
+                  </a>
+              </li>
+          </ItemTemplate>
+      </asp:Repeater>
+
+      <%-- Repeater para los elementos agrupados (menús desplegables) --%>
+      <asp:Repeater runat="server" ID="RepeaterModuloAgrupado" OnItemDataBound="RepeaterModulo_ItemDataBound">
+          <ItemTemplate>
+              <li>
+                  <a href='<%# "#submenu" & Container.ItemIndex %>' data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                      <%# Eval("AggregatorDescription") %>
+                  </a>
+                  <ul class="collapse list-unstyled" id='<%# "submenu" & Container.ItemIndex %>'>
+                      <asp:Repeater runat="server" ID="RepeaterPantallas">
+                          <ItemTemplate>
+                              <li>
+                                  <a href='<%# Eval("URL") %>' class="pl-4">
+                                      <%# Eval("ScreenName") %>
+                                  </a>
+                              </li>
+                          </ItemTemplate>
+                      </asp:Repeater>
+                  </ul>
+              </li>
+          </ItemTemplate>
+      </asp:Repeater>
+  </ul>
+
+
+        </div>
+
+        <!-- Content -->
+        <div id="content">
+            <div id="topbar">
+                <div class="topbar-left">
+                    <button type="button" id="hamburger">&#9776;</button>
+                    <div id="moduleName" runat="server"></div>
+
+                </div>
+
+                <div class="topbar-right">
+                    <div id="module-buttons">
+                        <asp:ContentPlaceHolder ID="TopbarContent" runat="server" />
+                    </div>
+                    <img src="../images/logo_oxxo.png" alt="Logo" id="topbar-logo" />
+                </div>
+            </div>
+
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+        <%--</form>--%>
+    </div>
+
+    <footer>
+        <p>
+            ICM Tools Custom
+        </p>
+    </footer>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap-4.1.1/dist/js/bootstrap.min.js"></script>
+    <script src="../vendor/bootstrap-4.1.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../vendor/bootstrap-4-multi-dropdown-navbar-master/js/bootstrap-4-navbar.js"></script>
+
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" z style="z-index: auto">
+        <style>
+            .modal-ku {
+                width: 1250px !important;
+                margin: auto;
+            }
+        </style>
+
+        <asp:ContentPlaceHolder ID="Modal" runat="server" />
+
+        <div class="modal-dialog" role="document" iddialog="template">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ALERT -->
+    <div class="modal fade" id="ALERTModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" id="btnModalAlertAceptar" class="btn btn-primary">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Global de Bloqueo (Control de Intentos) -->
+    <div class="modal fade" id="modalGlobalBloqueo" tabindex="-1"
+         role="dialog" aria-labelledby="modalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalLabel">
+                        <i class="fas fa-user-lock mr-2">Acceso Restringido</i>
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <i class="fas fa-exclamation-circle fa-4x text-danger mb-3"></i>
+                    <h4 class="mb-3">¡Límite de intentos excedido!</h4>
+                    <p id="mensajeBloqueoGlobal">
+                        Has alcanzado el límite de intentos permitido para esta operación.<br />
+                        Por seguridad, la funcion ha sido bloqueada temporalmente.
+                    </p>
+                    <hr />
+                    <p class="text-muted small">
+                        Por favor, contacta a soporte técnico para solicitar el desbloqueo o revisar los logs del sistema.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+
+    var myWebServiceURLMasterPage = "<%= Page.ResolveClientUrl("~/WebServices/WebServicesMasterPage.asmx")%>";
+
+
+    $(document).ready(function () {
+        $('#hamburger').click(function () {
+            $('#sidebar, #content').toggleClass('active');
+        });
+
+        // --- Custom ScrollSpy
+        var scrollNav = $('#MyScrollNav');
+
+        // Solo ejecutar este código si el menú de navegación existe en la página actual
+        if (scrollNav.length) {
+            // Configuración
+            var navLinks = scrollNav.find('.nav-link');
+            var sections = $();
+            navLinks.each(function () {
+                var hash = this.hash;
+                // Asegurarse de que el 'hash' (ej. #item-1) es válido y el elemento existe
+                if (hash && $(hash).length) {
+                    sections = sections.add($(hash));
+                }
+            });
+            var offset = 90; // Offset para la barra de navegación superior
+
+            // Función para actualizar el menú en el scroll
+            function updateNav() {
+                var scrollPos = $(window).scrollTop() + offset + 1;
+
+                var currentSection = null;
+                sections.each(function () {
+                    var sectionTop = $(this).offset().top;
+                    if (scrollPos >= sectionTop) {
+                        currentSection = this;
+                    }
+                });
+
+                var id = currentSection ? '#' + currentSection.id : null;
+
+                navLinks.removeClass('active');
+                if (id) {
+                    navLinks.filter('[href="' + id + '"]').addClass('active');
+                } else {
+                    // Si no hay sección activa (estamos arriba de todo), activa la primera
+                    navLinks.first().addClass('active');
+                }
+            }
+
+            // Evento de scroll
+            $(window).on('scroll', updateNav);
+
+            // Evento de clic para un scroll suave y resaltado inmediato
+            navLinks.on('click', function (e) {
+                var target = this.hash;
+                if (target && $(target).length) {
+                    e.preventDefault();
+
+                    // Resaltado inmediato
+                    navLinks.removeClass('active');
+                    $(this).addClass('active');
+
+                    // Animación de scroll
+                    $('html, body').animate({
+                        scrollTop: $(target).offset().top - offset
+                    }, 500);
+                }
+            });
+
+            // Llama a la función una vez al cargar la página para el estado inicial
+            updateNav();
+        }
+    });
+
+    icmTools = {};
+
+    icmTools.dropListModelo = () => {
+        var droplist = {};
+
+        droplist.Init = () => {
+            document.querySelector(".dropdown-menu").addEventListener("click", (e) => {
+                const target = e.target.closest(".dropdown-item");
+                if (!target) return;
+
+                const modeloSeleccionado = target.getAttribute("aria-valuetext");
+                droplist.CambiarModelo(modeloSeleccionado);
+            });
+        };
+        
+        droplist.CambiarModelo = (modeloSeleccionado) => {
+            $.ajax({
+                type: "POST",
+                url: myWebServiceURLMasterPage + "/ChangeUserModel",
+                data: JSON.stringify({ modelo: modeloSeleccionado }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function () {
+                    console.log(modeloSeleccionado); // usar el parámetro recibido
+                    window.location.href = '../Pages/Home.aspx';;
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    icmTools.hideLoading();
+                    let msg = XMLHttpRequest.responseJSON?.Message || "Error desconocido";
+                    icmTools.AlertError('<strong>¡Error!</strong> ' + msg);
+                    console.error("Error en la llamada AJAX a ChangeUserModel:");
+                    console.error("Estado del texto:", textStatus);
+                    console.error("Error lanzado:", errorThrown);
+                    console.error("Respuesta del servidor (cruda):", XMLHttpRequest.responseText);
+                }
+            });
+        };
+
+        return droplist; 
+    };
+
+
+    icmTools.modal = (id) => {
+        var modal = {};
+        modal.Show = (id) => {
+            modal.onShow(id);
+
+            $('#exampleModal').modal('show')
+        }
+        modal.onShow = (id) => {
+            $('#exampleModal').off('show.bs.modal').on('show.bs.modal', function (event) {
+                var modal = $(this)
+                var htmlModal = modal.get(0);
+                var dialogs = htmlModal.getElementsByClassName("modal-dialog");
+
+                const CreateModal = () => {
+                    modalDialog.className.replace("modal-lg", "")
+                    modalDialog.className.replace("modal-sm", "")
+
+                    var context = htmlModal.querySelector("[id='" + id + "']")
+                    //Al no existir el contexto se abre el modal vacio
+                    if (!context) return
+
+                    var body = context.querySelector(("[modal-id='Body']"));
+                    var modalBody = modalDialog.getElementsByClassName("modal-body")[0];
+                    modalBody.innerHTML = ''
+                    if (body && body.childNodes.length > 0) {
+
+                        body.childNodes.forEach(child => {
+                            let clonedChild = child.cloneNode(true);
+                            modalBody.appendChild(clonedChild);
+                        })
+
+                    }
+                    var foot = context.querySelector(("[modal-id='Foot']"));
+                    var modalfoot = modalDialog.getElementsByClassName("modal-footer")[0];
+                    modalfoot.innerHTML = ''
+                    if (foot && foot != null && foot.childNodes.length > 0) {
+                        foot.childNodes.forEach(child => {
+                            let clonedChild = child.cloneNode(true);
+                            modalfoot.appendChild(clonedChild);
+                        })
+
+                    }
+
+                    var header = context.querySelector(("[modal-id='Header']"));
+                    var modalheader = modalDialog.getElementsByClassName("modal-header")[0];
+                    if (header && header.childNodes.length > 0) {
+                        modalheader.innerHTML = ''
+                        header.childNodes.forEach(child => {
+                            let clonedChild = child.cloneNode(true);
+                            modalheader.appendChild(clonedChild);
+                        })
+                    }
+                    if (context.attributes["modal-title"] && !header) {
+                        var modalTitle = context.attributes["modal-title"];
+                        modalheader.firstElementChild.textContent = modalTitle.value;
+                    }
+
+
+                    if (context.attributes["modal-size"]) {
+                        var modalSize = context.attributes["modal-size"]
+                        var size = modalSize.value.toString().toUpperCase();
+                        if (isNaN(size)) {
+                            let checkSizes = ["LG", 'SM', 'MD', 'XL'];
+                            if (checkSizes.includes(size)) {
+                                modalDialog.classList.add("modal-" + size.toLowerCase())
+                            }
+
+                        }
+                    } else modalDialog.classList.add("modal-md")
+
+                    if (context.attributes["modal-onload"]) {
+                        modalDialog.setAttribute("modal-onload", context.attributes["modal-onload"].value)
+                    }
+
+                    context.remove();
+                }
+
+                const SearchDialog = (_idDialog) => {
+
+                    var filterDialog = [];
+                    for (let i = 0; i < dialogs.length; i++) {
+                        var idDialog = dialogs[i].getAttribute("idDialog")
+                        if (idDialog == _idDialog) {
+                            filterDialog.push(dialogs[i]);
+                        }
+                    }
+                    return filterDialog
+                }
+
+
+                const clean = () => {
+                    for (let i = 0; i < dialogs.length; i++) {
+                        var item = dialogs[i];
+                        var idDialog = item.getAttribute("idDialog")
+                        item.setAttribute("style", "display:none")
+                        if (idDialog == id) {
+                            item.removeAttribute("style", "display:none")
+                        }
+                    }
+                }
+                var events = {
+                    onload: () => { }
+                }
+
+                var filter = SearchDialog(id)
+
+                if (filter.length > 0) {
+                    modalDialog = filter[0];
+                } else {
+                    var template = SearchDialog("template")[0].cloneNode(true);
+
+                    //modalDialog = htmlModal.getElementsByClassName("modal-dialog")[0]
+                    modalDialog = template;
+                    modalDialog.setAttribute("idDialog", id);
+                    CreateModal();
+                    htmlModal.appendChild(modalDialog)
+
+
+                }
+
+                clean();
+
+                if (modalDialog.attributes["modal-onload"]) {
+                    var func_onload = window[modalDialog.attributes["modal-onload"].value.trim()]
+                    if (func_onload) func_onload()
+
+                }
+
+            })
+        }
+
+
+        modal.Show(id);
+        /*  $('#exampleModal').modal('show')*/
+    }
+
+    icmTools.showLoading = (text) => {
+        var show = document.getElementById('loadingOverlay')
+        var input = show.getElementsByTagName("P")[0];
+        input.innerText = text ? text : 'Cargando contenido...'
+        show.classList.add('show');
+
+    }
+    icmTools.hideLoading = () => {
+        document.getElementById('loadingOverlay').classList.remove('show');
+    }
+
+    icmTools.Datatable = (id, ...args) => {
+        var local = {};
+        local.id = "#" + id;
+
+        var config = {};
+        config.lengthMenu = [[10, 20, 30, -1], [10, 20, 30, "Todos"]];
+        config.responsive = true;
+        config.dom = 'Bfrtip';
+        config.buttons = [
+            //'copy', 'csv', 'excel', 'pdf', 'print'
+            //'copy', 'excel'
+            [
+                {
+                    extend: 'copy',
+                    text: '<i class="fas fa-copy fa-fw"></i>Copiar',
+                    className: 'btm-sm btn-outline-info',
+                    title: null,
+                    messageTop: null,
+                    exportOptions: {
+                        modifier: {
+                            page: 'all'
+                        }
+                    }
+                }
+            ],
+            [
+                {
+                    extend: 'excel',
+                    text: '<i class="fas fa-file-excel fa-fw"></i>Exportar',
+                    className: 'btm-sm btn-outline-success',
+                    //filename: "Errores en carga de Excepciones",
+                    title: null,
+                    messageTop: null,
+                    exportOptions: {
+                        modifier: {
+                            page: 'all'
+                        }
+                    }
+                }
+            ],
+        ];
+        config.language = {
+            "decimal": "",
+            "emptyTable": "No hay información disponible", //No data available in table",
+            "info": "Mostrando de _START_ a _END_ de _TOTAL_ registros", //"Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Mostrando 0 a 0 de 0 registros", //"Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filto de _MAX_ registros)", //"(filtered from _MAX_ total entries)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "Mostrar _MENU_ registros", //"Show _MENU_ entries",
+            "loadingRecords": "Cargando...", //"Loading...",
+            "processing": "Procesando...", //"Processing...",
+            "search": "Buscar", //"Search:",
+            "zeroRecords": "No se encontraron coincidencias", //"No matching records found",
+            "paginate": {
+                "first": "Primera", //"First",
+                "last": "Ultima", //"Last",
+                "next": "Siguiente", //"Next",
+                "previous": "Anterior", //"Previous"
+            },
+            "aria": {
+                "sortAscending": ": activate to sort column ascending",
+                "sortDescending": ": activate to sort column descending"
+            }
+        }
+        config.columns = [];
+
+        args.forEach(param => {
+
+            if (typeof param == 'object') {
+
+                if (Array.isArray(param)) {
+                    config.data = param;
+                } else {
+                    Object.keys(param).forEach(att => {
+                        config[att] = param[att];
+                    })
+                }
+            }
+
+        })
+        let tableDom = document.getElementById(id);
+        if ($.fn.dataTable.isDataTable(local.id)) {
+            $(local.id).DataTable().clear();
+            $(local.id).DataTable().destroy();
+            $(local.id).empty();
+        }
+
+        return $(local.id).DataTable(config);
+
+    }
+    $showAlert = (type, message, autoHide = true, duration = 2000) => {
+        // Genera el HTML de la alerta con las clases de Bootstrap
+        const alertHtml = `
+                    <div class="alert alert-${type} alert-dismissible fade show z-3" role="alert" style="z-index: 999999;">
+                        ${message}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                `;
+
+        // Selecciona el contenedor de las alertas
+        const $alertPlaceholder = $('#alertPlaceholder');
+        // Inserta el nuevo HTML de la alerta en el contenedor (reemplaza cualquier alerta anterior)
+        $alertPlaceholder.html(alertHtml);
+
+        // Obtiene la instancia jQuery de la alerta recién creada
+        const $newAlert = $alertPlaceholder.find('.alert');
+
+        // Registra el evento 'closed.bs.alert' que se dispara DESPUÉS de que la animación de cierre haya terminado.
+        // Esto es crucial para limpiar el HTML del placeholder cuando la alerta ya no es visible.
+        $newAlert.on('closed.bs.alert', function () {
+            $alertPlaceholder.empty(); // Vacía el contenedor de la alerta
+        });
+
+        // Si se solicita auto-ocultar, configura un temporizador
+        if (autoHide) {
+            setTimeout(function () {
+                // Usa el método 'close' de Bootstrap para iniciar la animación de salida
+                // Esto disparará el evento 'closed.bs.alert' una vez que la animación termine
+                $newAlert.alert('close');
+            }, duration);
+        }
+    }
+
+    $showAlertModal = (type, message, func) => {
+        var modal = document.getElementById("ALERTModal")
+        var body = modal.getElementsByClassName("modal-body")[0]
+        var header = modal.getElementsByClassName("modal-title")[0]
+        var title = type
+        switch (type) {
+            case "danger":
+                title = "Error de sistema"
+                break;
+            case "success":
+                title = "Exito!!"
+                break;
+            case "info":
+                title = "Informacion del sistema"
+                break;
+        }
+
+        header.innerHTML = title;
+
+        body.innerHTML = message;
+        var btn = document.getElementById("btnModalAlertAceptar")
+        btn.onclick = () => {
+            if (func) {
+                func();
+            }
+        }
+
+        $('#ALERTModal').modal('show')
+    }
+    //icmTools.AlertError = (message, type = "A", autoHide = true, duration = 2500) => {
+
+    icmTools.AlertError = (message, ...args) => {
+        let alert = {};
+        alert.message = message;
+        alert.autoHide = true;
+        alert.duration = 2500;
+        alert.function = undefined;
+        alert.type = "danger"
+        alert.typeAlert = "A"
+        args.forEach(arg => {
+            switch (typeof arg) {
+                case "boolean":
+                    alert.autoHide = arg;
+                    break;
+                case "number":
+                    alert.duration = arg;
+                    break;
+                case "function":
+                    alert.function = arg;
+                    break;
+                case "string":
+                    alert.typeAlert = arg;
+                    break;
+            }
+
+
+        })
+
+
+        switch (alert.typeAlert) {
+            case "A":
+                $showAlert(alert.type, alert.message, alert.autoHide, alert.duration)
+                break;
+            case "M":
+                $showAlertModal(alert.type, alert.message, alert.function)
+                break
+        }
+    }
+    icmTools.AlertSucces = (message, ...args) => {
+        let alert = {};
+        alert.message = message;
+        alert.autoHide = true;
+        alert.duration = 2500;
+        alert.function = undefined;
+        alert.type = "success"
+        alert.typeAlert = "A"
+        args.forEach(arg => {
+            switch (typeof arg) {
+                case "boolean":
+                    alert.autoHide = arg;
+                    break;
+                case "number":
+                    alert.duration = arg;
+                    break;
+                case "function":
+                    alert.function = arg;
+                    break;
+                case "string":
+                    alert.typeAlert = arg;
+                    break;
+            }
+
+
+        })
+
+
+        switch (alert.typeAlert) {
+            case "A":
+                $showAlert(alert.type, alert.message, alert.autoHide, alert.duration)
+                //$showAlert("success", message, autoHide, duration)
+                break;
+            case "M":
+                $showAlertModal(alert.type, alert.message, alert.function)
+                break
+        }
+
+
+    }
+    icmTools.AlertInfo = (message, ...args) => {
+        let alert = {};
+        alert.message = message;
+        alert.autoHide = true;
+        alert.duration = 2500;
+        alert.function = undefined;
+        alert.type = "info"
+        alert.typeAlert = "A"
+
+        args.forEach(arg => {
+            switch (typeof arg) {
+                case "boolean":
+                    alert.autoHide = arg;
+                    break;
+                case "number":
+                    alert.duration = arg;
+                    break;
+                case "function":
+                    alert.function = arg;
+                    break;
+                case "string":
+                    alert.typeAlert = arg;
+                    break;
+            }
+
+
+        })
+
+
+        switch (alert.typeAlert) {
+            case "A":
+                $showAlert(alert.type, alert.message, alert.autoHide, alert.duration)
+                //$showAlert("info", message, autoHide, duration)
+                break;
+            case "M":
+                $showAlertModal(alert.type, alert.message, alert.function)
+                break
+        }
+
+
+
+    };
+
+
+    var menu = icmTools.dropListModelo();
+    menu.Init();
+
+</script>
+</html>

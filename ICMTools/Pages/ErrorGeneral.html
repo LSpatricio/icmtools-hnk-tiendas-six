@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Error del Sistema</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        :root {
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --accent: #2563eb;
+            --border: #e5e7eb;
+            --danger-bg: #fee2e2;
+            --danger: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            max-width: 760px;
+            width: 100%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            padding: 24px;
+            background: linear-gradient(180deg, #ffffff, #fafafa);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: var(--danger-bg);
+            color: var(--danger);
+            font-size: 20px;
+            font-weight: bold;
+            border: 1px solid #fecaca;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            margin: 4px 0 0 0;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .content {
+            padding: 24px;
+            line-height: 1.6;
+        }
+
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #fff;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+            .btn.primary {
+                background: var(--accent);
+                color: #fff;
+                border-color: #1d4ed8;
+            }
+
+            .btn:hover {
+                filter: brightness(0.97);
+            }
+
+        .foot {
+            padding: 16px;
+            background: #fafafa;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="header">
+            <div class="badge">500</div>
+            <div>
+                <h1>Ocurrió un error en el sistema</h1>
+                <p class="subtitle">Inténtalo nuevamente en unos minutos.</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <p>
+                Lo sentimos, ha ocurrido un error inesperado durante la ejecución del sistema.
+                Si el problema persiste, por favor contacta al área de soporte.
+            </p>
+
+            <div class="actions">
+                <a href="/Pages/Home.aspx">Volver al inicio</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

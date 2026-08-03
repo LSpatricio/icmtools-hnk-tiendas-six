@@ -1,0 +1,108 @@
+/* Custom page CSS */
+
+body > .container {
+  padding: 20px 15px 0;
+}
+body > .container-fluid.top {
+    background: #ededed;
+    margin-top: 56px;
+}
+.container-fluid.Home{
+    margin-top:0px;
+}
+@media screen and (min-width: 1200px) {
+    body > .container.top {
+        max-width: 1640px;
+    }
+}
+
+footer {
+  /*margin-top: 200px;*/
+  padding: 1rem 0;
+  color: #999;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-top: .05rem solid #e5e5e5;
+}
+footer p:last-child {
+  margin-bottom: 0;
+}
+
+
+/* layout.css Style */
+.upload-drop-zone {
+  height: 47px;
+  border-width: 2px;
+  margin-bottom: 5px;
+}
+
+/* skin.css Style*/
+.upload-drop-zone {
+  color: #ccc;
+  border-style: dashed;
+  border-color: #ccc;
+  text-align: center;
+  padding: 3px;
+}
+.upload-drop-zone.drop:hover {
+  color: #222;
+  border-color: #222;
+}
+
+
+/* Blink Alert */
+@keyframes blink {  
+  0% { color: red; }
+  100% { color: black; }
+}
+@-webkit-keyframes blink {
+  0% { color: red; }
+  100% { color: black; }
+}
+.blink {
+  -webkit-animation: blink 1s linear infinite;
+  -moz-animation: blink 1s linear infinite;
+  animation: blink 1s linear infinite;
+}
+.headline-top{}
+.headline-top h3{
+    margin-top:20px;
+}
+.logo-oxxo {
+    max-width: 120px;
+    margin: 5px;
+}
+.container-fluid.Home .row > .col-7 {
+    background: url('../../images/Procesos-de-apoyo.jpg') no-repeat center center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    color: #fff;
+    text-shadow: 1px 1px 3px #000;
+    font-weight: bolder;
+    padding: 5%;
+    min-height: 450px;
+}
+.container-fluid.Home .row > .col-5{
+    padding:25px;
+}
+.iconModulo {
+    color: #343a40;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+}
+.iconModulo span{
+    display:block;
+}
+.iconModulo .fas{
+    font-size:50px;
+}
+.iconModulo:hover{
+    color:#156653;
+    text-decoration: none;
+}
+.tab-pane{
+    padding:20px;
+}
