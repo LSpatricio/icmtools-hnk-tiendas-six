@@ -1,9 +1,14 @@
 Public Class login
     Inherits System.Web.UI.Page
 
+
+    Private ReadOnly _configuration As IAppConfiguration
     Private mUser As User
     Private mLog As Log
 
+    Public Sub New()
+        _configuration = New AppConfiguration()
+    End Sub
     Private Sub login_Init(sender As Object, e As EventArgs) Handles Me.Init
         '------Evitar Caché del Navegador--------
         Response.Expires = -10000
@@ -32,13 +37,17 @@ Public Class login
     Private Sub SessionStart(ByVal Model As String, ByVal User As String, ByVal Key As String)
         Try
             Dim Maintenance As Boolean
-            Maintenance = ConfigurationManager.AppSettings("Maintenance")
-            Dim userAccess As String = ""
-            Dim modelAccess As String = ""
+            Maintenance = _configuration.Maintenance
 
             If Maintenance = True Then
                 MessageBoxShow("Aviso: Mantenimiento", "El sistema no se encuentra disponible debido a un mantenimiento, para cualquier duda favor de contactar al área de soporte ICM.", "Temporalmente fuera de servicio.", htmlMessageIcon.IconInfo1)
             Else
+
+
+                Dim userAccess As String = ""
+                Dim modelAccess As String = ""
+
+
 
                 Dim DecodeModel As String = DecodificarCredencial(Model)
                 Dim DecodeICMUser As String = DecodificarCredencial(User)
@@ -88,13 +97,13 @@ Public Class login
                             mUser = New User()
                             mUser.Model = DecodeModel
                             mUser.Email = DecodeICMUser.ToLower
-                            mUser.DataBase = ConfigurationManager.AppSettings(DecodeModel)
+                            mUser.DataBase = _configuration.GetDatabase(DecodeModel)
                             Session.Add("User", mUser)
 
                             ''mLog = New Log
                             ''mLog.insertLog("ICMTools", "LOGIN", "Login via portal ICM Web FEMCO_EP")
 
-                            Response.Redirect(ConfigurationManager.AppSettings("HomePage"), False)
+                            Response.Redirect(_configuration.HomePage, False)
                         Else
                             MessageBoxShow("Aviso: Acceso Denegado", "Las credenciales de acceso no son correctas, el usuario " + safeUser + " no tiene acceso a ICMTool del Modelo " + safeModel + ".", "Acceso bloqueado por seguridad.", htmlMessageIcon.IconWarning)
                         End If

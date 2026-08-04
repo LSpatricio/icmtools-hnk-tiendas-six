@@ -2039,6 +2039,7 @@
     <Folder Include="images\Modulos\ImportMetas\" />
     <Folder Include="images\Modulos\ImportVentas\" />
     <Folder Include="images\Modulos\MontoDistribuibleCategoria\" />
+    <Folder Include="UploadedFilesCategoriaVentaMonto\" />
     <Folder Include="UploadedFiles\BonosTransporte\" />
     <Folder Include="UploadedFiles\Categoria\EmpleadosActivos\Final\" />
     <Folder Include="UploadedFiles\Categoria\EmpleadosActivos\Inicial\" />
