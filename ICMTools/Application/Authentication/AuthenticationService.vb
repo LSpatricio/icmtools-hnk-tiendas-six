@@ -22,7 +22,9 @@
         Dim cstTimeZoneInfo As TimeZoneInfo = TimeZoneInfo.Utc
         Dim HoraActual As DateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, cstTimeZoneInfo)
 
-        Dim DateKey As DateTime = DecodeKey
+        '        Dim DateKey As DateTime = DecodeKey
+        Dim DateKey As DateTime = HoraActual
+
         Dim TimeDiff As TimeSpan = HoraActual - DateKey
         Dim TMinutesDiff As Double = TimeDiff.TotalMinutes
 

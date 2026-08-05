@@ -11,7 +11,21 @@ Public Class AppConfiguration
         End Get
 
     End Property
+    Public ReadOnly Property UrlBase As String Implements IAppConfiguration.UrlBase
 
+        Get
+            Return ConfigurationManager.AppSettings("BASE_URL")
+        End Get
+
+    End Property
+
+    Public ReadOnly Property BearerToken As String Implements IAppConfiguration.BearerToken
+
+        Get
+            Return ConfigurationManager.AppSettings("BEARER_TOKEN")
+        End Get
+
+    End Property
     Public ReadOnly Property HomePage As String Implements IAppConfiguration.HomePage
 
         Get

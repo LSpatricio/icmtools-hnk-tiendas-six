@@ -202,6 +202,11 @@
     <Import Include="System.Web.UI.HtmlControls" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\Authentication\AuthenticationResult.vb" />
+    <Compile Include="Application\Authentication\AuthenticationService.vb" />
+    <Compile Include="Application\Configurations\IAppConfiguration.vb" />
+    <Compile Include="Application\Payee\Payee.vb" />
+    <Compile Include="Application\Payee\PayeeService.vb" />
     <Compile Include="App_Code\General\SyncTables.vb" />
     <Compile Include="App_Code\General\PlantillaCorreo.vb" />
     <Compile Include="App_Code\General\Sanitizacion.vb" />
@@ -209,6 +214,11 @@
     <Compile Include="Controllers\ValidateHttpAntiForgeryAttribute.vb" />
     <Compile Include="App_Code\General\QueriesICM.vb" />
     <Compile Include="CustomService\PostgreService.vb" />
+    <Compile Include="Infraestructure\API\Dtos\IcmQueryRequestDto.vb" />
+    <Compile Include="Infraestructure\API\Dtos\IcmQueryResponseDto.vb" />
+    <Compile Include="Infraestructure\API\Dtos\PayeeResponseDto.vb" />
+    <Compile Include="Infraestructure\API\IcmApiClient.vb" />
+    <Compile Include="Infraestructure\Configurations\AppConfiguration.vb" />
     <Compile Include="WebServices\JobSchedulerService.vb" />
     <Compile Include="App_Code\Jobs\JobModels.vb" />
     <Compile Include="App_Code\General\BonosTransporte.vb">
