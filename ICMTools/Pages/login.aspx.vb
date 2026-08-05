@@ -58,7 +58,7 @@ Public Class login
             Else
 
                 Dim resultToken As AuthenticationResult = _authenticationService.ValidateToken(Model, User, Key)
-                resultToken.Status = AuthenticationService.AuthenticationStatus.Valid
+                resultToken.Status = AuthenticationService.AuthenticationStatus.InvalidToken
                 resultToken.Model = "ICMMNFHeinekenQA"
                 resultToken.User = "00000301@heineken.com"
 
@@ -82,7 +82,6 @@ Public Class login
                             mUser = New User()
                             mUser.Model = resultToken.Model
                             mUser.Email = resultToken.User.ToLower
-                            mUser.DataBase = _configuration.ObtenerModelo(resultToken.Model)
                             Session.Add("User", mUser)
 
                             ''mLog = New Log

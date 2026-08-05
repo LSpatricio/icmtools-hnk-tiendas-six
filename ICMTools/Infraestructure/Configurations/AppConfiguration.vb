@@ -34,9 +34,6 @@ Public Class AppConfiguration
 
     End Property
 
-    Public Function ObtenerModelo(model As String) As String Implements IAppConfiguration.ObtenerModelo
 
-        Return ConfigurationManager.AppSettings(model)
-    End Function
 
 End Class

@@ -61,21 +61,21 @@ Public Class MasterPage
 
         'Valida la sesion del usuario, en caso de que ya haya caducado segun el web.config, 
         'redirecciona a la pagina de auttenticación.
-        'If Not Session.Item("User") Is Nothing Then
-        '    mUser = CType(Session.Item("User"), User)
-        'Else
-        '    Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
-        'End If
+        If Not Session.Item("User") Is Nothing Then
+            mUser = CType(Session.Item("User"), User)
+        Else
+            Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
+        End If
 
-        'MessageBoxRefresh()
+        MessageBoxRefresh()
 
-        'If Not Me.IsPostBack Then
-        '    'Establece los valores iniciales.
+        If Not Me.IsPostBack Then
+            'Establece los valores iniciales.
 
-        '    'Dim idModel As String = CargarModelos()
-        '    'CargarPantallas(idModel)
-        '    'SetInitialValues()
-        'End If
+            Dim idModel As String = CargarModelos()
+            CargarPantallas(idModel)
+            SetInitialValues()
+        End If
 
     End Sub
 

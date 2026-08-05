@@ -8,6 +8,5 @@
 
     ReadOnly Property BearerToken As String
 
-    Function ObtenerModelo(model As String) As String
 
 End Interface
