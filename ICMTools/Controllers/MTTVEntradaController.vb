@@ -28,7 +28,7 @@ Public Class MTTVEntradaController
 
     <HttpPost>
     <Route("api/mttventrada/insert")>
-    Public Function InsertData(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Dim filePath As String = Nothing
         Try
             Dim ExcelArray(,) As Object = fc.GetExcelArray(request.FileType, request.Extension)

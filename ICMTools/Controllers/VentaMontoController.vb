@@ -34,7 +34,7 @@ Public Class VentaMontoController
 
     <HttpPost>
     <Route("api/ventamonto/insertdata")>
-    Public Function InsertData(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Thread.Sleep(1000)
             Dim rTable As String = Nothing

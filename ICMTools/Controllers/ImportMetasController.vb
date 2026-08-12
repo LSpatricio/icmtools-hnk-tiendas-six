@@ -37,7 +37,7 @@ Public Class ImportMetasController
 
     <HttpPost>
     <Route("api/importmetas/insertdata")>
-    Public Function InsertData(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Dim rTable As String = Nothing
             Dim filePath As String = Nothing
@@ -68,7 +68,7 @@ Public Class ImportMetasController
 
     <HttpPost>
     <Route("api/importmetas/loadcatalogs")>
-    Public Function LoadCatalogs(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    Public Function LoadCatalogs(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Dim mUser As User = CType(HttpContext.Current.Session.Item("User"), User)
 

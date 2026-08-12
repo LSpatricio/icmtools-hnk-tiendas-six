@@ -58,7 +58,7 @@ Public Class login
             Else
 
                 Dim resultToken As AuthenticationResult = _authenticationService.ValidateToken(Model, User, Key)
-                resultToken.Status = AuthenticationService.AuthenticationStatus.InvalidToken
+                resultToken.Status = AuthenticationService.AuthenticationStatus.Valid
                 resultToken.Model = "ICMMNFHeinekenQA"
                 resultToken.User = "00000301@heineken.com"
 

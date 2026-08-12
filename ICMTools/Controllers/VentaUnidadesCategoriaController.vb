@@ -27,7 +27,7 @@ Public Class VentaUnidadesCategoriaController
 
     <HttpPost>
     <Route("api/ventaunidadescategorias/insertdata")>
-    Public Function InsertData(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Dim filePath = Nothing
             Dim success As Boolean = False
@@ -99,7 +99,7 @@ Public Class VentaUnidadesCategoriaController
 
     <HttpPost>
     <Route("api/ventaunidadescategorias/loadcatalogs")>
-    Public Function LoadCatalogs(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    Public Function LoadCatalogs(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Dim ExcelArray(,) As Object = fc.GetExcelArray(request.FileType, request.Extension, request.AllowDuplicateEntries)
             If ExcelArray Is Nothing Then Return BadRequest("No se encontraron datos para insertar.")

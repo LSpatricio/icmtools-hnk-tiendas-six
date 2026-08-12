@@ -8,21 +8,68 @@ Public Class MontoDistribuibleCategoriaController
     Inherits ApiController
 
     Private mUser As User
-    Private mLog As Log
+    Private ReadOnly _excelReader As ExcelReader
+    Private ReadOnly _excelService As ExcelService
+    Private ReadOnly _eficienciaEfectividadExcelReader As EficienciaEfectividadExcelReader
+    ' Private mLog As Log
 
-    Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
+    ' Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
 
     Public Sub New()
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
-        Me.mLog = New Log
+        _excelReader = New ExcelReader()
+        _excelService = New ExcelService()
+        _eficienciaEfectividadExcelReader = New EficienciaEfectividadExcelReader()
+
+        '     Me.mLog = New Log
     End Sub
 
     ReadOnly fc As New FileController
     ReadOnly sc As New SharedController
 
     <HttpPost>
-    <Route("api/montodistribuiblecategoria/insertdata")>
-    Public Function InsertData(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    <Route("api/eficienciaefectividad/validarinfo")>
+    Public Function ValidarInfo(<FromBody> request As ValidateFileRequestt) As IHttpActionResult
+        Try
+            Thread.Sleep(1000)
+
+            Dim errorsList As String = Nothing
+
+            Dim tipo As Type = GetType(EficienciaEfectividadExcelDto)
+
+            Dim hojasDefinidas As List(Of Type) = _excelService.ObtenerTipos(tipo)
+
+            If hojasDefinidas.Any() Then
+
+
+                Dim valoresVaciosErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
+
+                For Each hoja In hojasDefinidas
+                    Dim mapeoColumnas As Dictionary(Of String, ExcelColumnAttribute) = _excelReader.CrearMepeoAtributos(hoja)
+                    Dim atributo = tipo.GetProperties().ToList().FirstOrDefault(Function(p) p.PropertyType.GetGenericArguments()(0) = hoja).GetCustomAttributes(GetType(ExcelSheetAttribute), False).Cast(Of ExcelSheetAttribute)().First()
+
+                    _eficienciaEfectividadExcelReader.ValiacionesEficienciaEfectividad(hoja, request.Path, atributo.HeaderRow, atributo.SheetName, mapeoColumnas)
+
+
+
+                Next
+
+
+
+            End If
+
+
+
+            'Return Ok(New With {.d = respuesta, .f = filePath, .r = rTable})
+        Catch ex As Exception
+            'mLog.insertLog("MontoDistribuibleCategoriaController", "InsertData", ex.Message)
+            Return InternalServerError(ex)
+        End Try
+    End Function
+
+    <HttpPost>
+    <Route("api/EficienciaEfectividad/insertdata")>
+    Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Thread.Sleep(1000)
             Dim mUser As User = CType(HttpContext.Current.Session.Item("User"), User)
@@ -106,37 +153,7 @@ Public Class MontoDistribuibleCategoriaController
             Dim xlsx As New DataTable()
             Dim RegistrosErrores As Integer = 0
 
-            Using conn As New NpgsqlConnection(NpgSQL)
-                conn.Open()
-                Using cmd As New NpgsqlCommand("SELECT public.femcovs_validacion_archivo_montodistribuiblecategoria(@file_ccnomina, @file_data_json, @catccnomina_json, @catplazas_json, @cattiendas_json, @catdistritos_json, @cfgstoresociety_json)", conn)
-                    cmd.Parameters.AddWithValue("file_ccnomina", NpgsqlDbType.Varchar, current_ccn)
-                    cmd.Parameters.AddWithValue("file_data_json", NpgsqlDbType.Json, jsonTable)
-                    cmd.Parameters.AddWithValue("catccnomina_json", NpgsqlDbType.Json, jsonTableCatCCNomina)
-                    cmd.Parameters.AddWithValue("catplazas_json", NpgsqlDbType.Json, jsonTableCatPlazas)
-                    cmd.Parameters.AddWithValue("cattiendas_json", NpgsqlDbType.Json, jsonTableCatTiendas)
-                    cmd.Parameters.AddWithValue("catdistritos_json", NpgsqlDbType.Json, jsonTableCatDistritos)
-                    cmd.Parameters.AddWithValue("cfgstoresociety_json", NpgsqlDbType.Json, jsonTableCfgstoreSociety)
 
-                    success = cmd.ExecuteScalar()
-                End Using
-
-
-                Dim queryInsertados As String = $"SELECT COUNT(*) FROM public.montodistribuible_precarga WHERE idstatus = 0;"
-                Using cmdQ As New NpgsqlCommand(queryInsertados, conn)
-                    Using adapter As New NpgsqlDataAdapter(cmdQ)
-                        RegistrosErrores = cmdQ.ExecuteScalar()
-                    End Using
-                End Using
-
-
-                Dim query As String = $"SELECT tipo_dato AS ""Tipo de Dato"", valor AS ""Valor"", detalle AS ""Detalle"" FROM public.montodistribuibledetalles;"
-                Using cmdQ As New NpgsqlCommand(query, conn)
-                    Using adapter As New NpgsqlDataAdapter(cmdQ)
-                        adapter.Fill(xlsx)
-                    End Using
-                End Using
-
-            End Using
 
             If (RegistrosErrores = jTable.Count) Then
                 filePath = fc.BuildXlsx(xlsx, "MontoDistribuible")
@@ -167,7 +184,7 @@ Public Class MontoDistribuibleCategoriaController
 
             Return Ok(New With {.d = respuesta, .f = filePath, .r = rTable})
         Catch ex As Exception
-            mLog.insertLog("MontoDistribuibleCategoriaController", "InsertData", ex.Message)
+            ' mLog.insertLog("MontoDistribuibleCategoriaController", "InsertData", ex.Message)
             Return InternalServerError(ex)
         End Try
     End Function
@@ -181,7 +198,7 @@ Public Class MontoDistribuibleCategoriaController
             SendSFTP()
             Return Ok(New With {.d = 2, .r = mensaje})
         Catch ex As Exception
-            mLog.insertLog("MontoDistribuibleCategoriaController", "UploadData", ex.Message)
+            'mLog.insertLog("MontoDistribuibleCategoriaController", "UploadData", ex.Message)
             Return InternalServerError(ex)
         End Try
     End Function
@@ -191,13 +208,7 @@ Public Class MontoDistribuibleCategoriaController
     ''' </summary>
     Private Sub CargarInformacion()
         Try
-            Using conn As New NpgsqlConnection(NpgSQL)
-                Const sql As String = "CALL montodistribuible_cargar();"
-                Using cmd As New NpgsqlCommand(sql, conn)
-                    conn.Open()
-                    cmd.ExecuteNonQuery()
-                End Using
-            End Using
+
         Catch ex As Exception
             Throw ex
         End Try

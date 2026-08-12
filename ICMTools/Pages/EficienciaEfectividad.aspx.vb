@@ -1,21 +1,23 @@
 ﻿Imports AjaxControlToolkit
 Imports System.IO
 
-Public Class MontoDistribuibleCategoria
+Public Class EficienciaEfectividad
     Inherits System.Web.UI.Page
 
     Private mUser As User
-    Private mLog As Log
+    Private Const NombrePagina = "EficienciaEfectividad"
+    'Private mLog As Log
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Try
             Me.Master.PageIcon = "<i class='fas fa-trophy fa-fw'></i>"
-            Me.Master.PageName = "Monto Distribuible"
+
+            Me.Master.PageName = NombrePagina
 
             If Not Session.Item("User") Is Nothing Then
                 mUser = CType(Session.Item("User"), User)
-                mLog = New Log
-                mLog.insertLog("Monto Distribuible", "ACCESO", "Acceso a Monto Distribuible")
+                '           mLog = New Log
+                '          mLog.insertLog("Monto Distribuible", "ACCESO", "Acceso a Monto Distribuible")
             Else
                 Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
             End If
@@ -25,18 +27,16 @@ Public Class MontoDistribuibleCategoria
         End Try
     End Sub
 
-    Sub AsyncFileUpload1_UploadedComplete(ByVal sender As Object, ByVal e As AsyncFileUploadEventArgs) Handles AsyncFileUpload1.UploadedComplete
+    Sub FileUploader_UploadedComplete(ByVal sender As Object, ByVal e As AsyncFileUploadEventArgs) Handles FileUploader.UploadedComplete
 
         If Not Session.Item("User") Is Nothing Then
             Dim fileClass As New FileClass
-            Dim folder As String = "~\UploadedFiles\Categoria\MontoDistribuible\"
-            fileClass.SaveUploadedFile(AsyncFileUpload1, folder)
+            Dim folder As String = $"~\UploadedFiles\{NombrePagina}"
 
-            Dim fileName As String = IO.Path.GetFileName(AsyncFileUpload1.FileName)
-            Dim safeFileName As String = fileClass.GetSafeFileName(fileName)
+            fileClass.SaveUploadedFile(FileUploader, folder)
 
-            mLog = New Log
-            mLog.insertLog("Monto Distribuible", "ARCHIVO IMPORTADO", $"Archivo de Monto Distribuible importado: {safeFileName}")
+            '     mLog = New Log
+            '    mLog.insertLog("Monto Distribuible", "ARCHIVO IMPORTADO", $"Archivo de Monto Distribuible importado: {safeFileName}")
         Else
             Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
         End If

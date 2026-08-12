@@ -19,7 +19,7 @@ Public Class VentaServiciosController
 
     <HttpPost>
     <Route("api/ventaservicios/insertdata")>
-    Public Function InsertData(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Thread.Sleep(1000)
             Dim mUser As User = CType(HttpContext.Current.Session.Item("User"), User)

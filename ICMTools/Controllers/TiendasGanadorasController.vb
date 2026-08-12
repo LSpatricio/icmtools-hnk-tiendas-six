@@ -40,7 +40,7 @@ Public Class TiendasGanadorasController
 
     <HttpPost>
     <Route("api/tiendasganadoras/insertdata")>
-    Public Function InsertData(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Dim rTable As String = Nothing
 

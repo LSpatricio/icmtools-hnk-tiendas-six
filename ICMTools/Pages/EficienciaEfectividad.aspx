@@ -1,11 +1,11 @@
-﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Master/MasterPage.Master" CodeBehind="MontoDistribuibleCategoria.aspx.vb" Inherits="ICMTools.MontoDistribuibleCategoria" %>
-
+﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Master/MasterPage.Master" CodeBehind="EficienciaEfectividad.aspx.vb" Inherits="ICMTools.EficienciaEfectividad" %>
 <%@ MasterType VirtualPath="~/Master/MasterPage.Master" %>
+
 
 <%--Contenedor de botones en TopBar--%>
 <asp:Content ID="TopbarContent" ContentPlaceHolderID="TopbarContent" runat="server">
     <div class="d-flex gap-1">
-        <a href="../Pages/MontoDistribuibleCategoria.aspx" class="btn active btn-sm btn-bar d-flex flex-column align-items-center text-dark">
+        <a href="../Pages/EficienciaEfectividad.aspx" class="btn active btn-sm btn-bar d-flex flex-column align-items-center text-dark">
             <i class="fas fa-upload fa-2x"></i>
             <small>Carga</small>
         </a>
@@ -20,39 +20,113 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <meta name="description" content="Description" />
     <meta name="author" content="Author" />
-    <title>Monto Distribuible</title>
-
+    <title>Eficiencia y Efectividad</title>
+<script src="../Scripts/jquery.min.js"></script>
     <script type="text/javascript">
-        const userEmail = "<%= CType(Session.Item("User"), ICMTools.User).Email %>";
-        const serverPath = "<%= Page.Server.MapPath("~").Replace("\", "\\") %>";
-        const pageConfig = {
-            maxFileSize: "<%= ConfigurationManager.AppSettings("maxFileSize")%>",
-            fileUploadSelector: "#<%= AsyncFileUpload1.ClientID %>",
-            columns: ["PLAZA", "CR TIENDA", "DESC_TIENDA", "MONTO SIN IMPUESTOS", "MONTO CON IMPUESTOS"],
-            types: ["String", "String", "String", "String", "Decimal"],
-            LogPage: "Monto Distribuible",
-            LogType: "Validacion",
-            LogBody: "Inicia validación para carga de Monto Distribuible",
-            FileType: "Categoria\\MontoDistribuible",
-            Extension: ".xlsx",
-            apiUploadData: "/api/montodistribuiblecategoria/uploaddata"
-        };
-        $(document).ready(function () {
 
-            $('#btnStartImport').on('click', function (e) {
-                e.preventDefault();
-                CheckExcelFileMDC();
+const configuraciones = {
+    servidor :{
+        userEmail: "",
+        serverPath: "",
+        maxFileSize: ""
+    },
+    carga: {
+
+        selector: "",
+        fileType: "EficienciaEfectividad",
+        extension: ".xlsx",
+        fileClass: "ICMTools.EficienciaEfectividadExcelDto"
+    },
+    logging: {
+        page: "EficienciaEfectividad",
+        type: "Validacion",
+        body: "Inicia validación para carga de EficienciaEfectividad"
+    },
+
+    api: {
+        uploadData: "/api/EficienciaEfectividad/uploaddata"
+    }
+}
+            $(document).ready(function () {
+                initializePage();
             });
 
-            $('#btnStartImport').prop('disabled', true);
-        });
+
+            function initializePage() {
+
+                const app = $("#montoDistribuibleApp");
+
+                loadServerConfiguration(app);
+                configureEvents();
+            }
+
+
+
+            function loadServerConfiguration(app) {
+
+                configuraciones.servidor.userEmail = app.data("user-email");
+                configuraciones.servidor.serverPath = app.data("server-path");
+                configuraciones.servidor.maxFileSize = app.data("max-file-size");
+
+                configuraciones.carga.selector = app.data("upload-selector");
+            }
+
+
+            function configureEvents() {
+
+                const startImportButton = $("#btnStartImport");
+
+                startImportButton.prop("disabled", true);
+
+                startImportButton.on("click", handleStartImport);
+            }
+
+
+            function handleStartImport(event) {
+
+                event.preventDefault();
+
+                CheckExcelFileMDC();
+            }
+
+
+//        const userEmail = "<%= CType(Session.Item("User"), ICMTools.User).Email %>";
+  //      const serverPath = "<%= Page.Server.MapPath("~").Replace("\", "\\") %>";
+   //     const pageConfig = {
+    //        maxFileSize: "<%= ConfigurationManager.AppSettings("maxFileSize")%>",
+     //       fileUploadSelector: "#<%= FileUploader.ClientID %>",
+      //      columns: ["PLAZA", "CR TIENDA", "DESC_TIENDA", "MONTO SIN IMPUESTOS", "MONTO CON IMPUESTOS"],
+       //     types: ["String", "String", "String", "String", "Decimal"],
+        //    LogPage: "Monto Distribuible",
+         //   LogType: "Validacion",
+       //     LogBody: "Inicia validación para carga de Monto Distribuible",
+     //       FileType: "Categoria\\MontoDistribuible",
+    //        Extension: ".xlsx",
+    //        apiUploadData: "/api/montodistribuiblecategoria/uploaddata"
+   //     };
+    //    $(document).ready(function () {
+
+     //       $('#btnStartImport').on('click', function (e) {
+     //           e.preventDefault();
+      //          CheckExcelFileMDC();
+       //     });
+
+       //     $('#btnStartImport').prop('disabled', true);
+      //  });
     </script>
-    <script src="../js/shared.js?v=1"></script>
-    <script src="../js/MontoDistribuibleCategoria.js?v=1"></script>
+    <script src="../js/sharedMejorado.js?v=1"></script>
+    <q>ws</q>
+    <script src="../js/EficienciaEfectividad.js?v=1"></script>
 </asp:Content>
 
 <%-- Contenedor principal --%>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div id="montoDistribuibleApp"
+     data-user-email="<%= CType(Session.Item("User"), ICMTools.User).Email %>"
+     data-server-path="<%= Page.Server.MapPath("~").Replace("\", "\\") %>"
+     data-max-file-size="<%= ConfigurationManager.AppSettings("maxFileSize") %>"
+     data-upload-selector="#<%= FileUploader.ClientID %>">
+
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -86,7 +160,7 @@
                                             <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
                                             <!-- Drop Zone -->
                                             <div class="upload-drop-zone" id="drop-zone">
-                                                <ajaxToolkit:AsyncFileUpload ID="AsyncFileUpload1" runat="server" ThrobberID="myThrobber" OnClientUploadComplete="uploadComplete" OnClientUploadError="uploadError" OnClientUploadStarted="beforeUploadStarts" Width="100%" ErrorBackColor="#FFCCFF" CompleteBackColor="#CCFFCC" ForeColor="Black" />
+                                                <ajaxToolkit:AsyncFileUpload ID="FileUploader" runat="server" ThrobberID="myThrobber" OnClientUploadComplete="uploadComplete" OnClientUploadError="uploadError" OnClientUploadStarted="beforeUploadStarts" Width="100%" ErrorBackColor="#FFCCFF" CompleteBackColor="#CCFFCC" ForeColor="Black" />
                                             </div>
                                             <asp:Label runat="server" ID="myThrobber" Style="display: none;"><i class="fas fa-sync-alt fa-spin fa-fw"></i>Cargando archivo...</asp:Label>
                                             <div class="table-responsive">
@@ -151,6 +225,7 @@
             </div>
         </div>
     </div>
+</div>
     <script src="../vendor/bootstrap-4.1.0/dist/js/bootstrap.min.js"></script>
     <script src="../vendor/bootstrap-filestyle-2.1.0/src/bootstrap-filestyle.min.js"></script>
 </asp:Content>

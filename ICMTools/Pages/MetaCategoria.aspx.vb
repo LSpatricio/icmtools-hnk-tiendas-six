@@ -4,7 +4,7 @@ Public Class MetaCategoria
     Inherits System.Web.UI.Page
 
     Private mUser As User
-    Private mLog As Log
+    '  Private mLog As Log
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Try
@@ -13,8 +13,8 @@ Public Class MetaCategoria
 
             If Not Session.Item("User") Is Nothing Then
                 mUser = CType(Session.Item("User"), User)
-                mLog = New Log
-                mLog.insertLog("META CATEGORIA", "ACCESO", "Acceso a Meta Categoria")
+                'mLog = New Log
+                ' mLog.insertLog("META CATEGORIA", "ACCESO", "Acceso a Meta Categoria")
             Else
                 Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
             End If
@@ -34,8 +34,8 @@ Public Class MetaCategoria
             Dim fileName As String = IO.Path.GetFileName(AsyncFileUpload1.FileName)
             Dim safeFileName As String = fileClass.GetSafeFileName(fileName)
 
-            mLog = New Log
-            mLog.insertLog("META CATEGORIA", "ARCHIVO IMPORTADO", $"Archivo importado: {safeFileName}")
+            'mLog = New Log
+            'mLog.insertLog("META CATEGORIA", "ARCHIVO IMPORTADO", $"Archivo importado: {safeFileName}")
         Else
             Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
         End If

@@ -7,7 +7,7 @@ Public Class CategoriaMontosVentasController
 
     <HttpPost>
     <Route("api/categoriamontosventas/insertdata")>
-    Public Function InsertData(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Dim tBody As String = Nothing
             Dim rTable As String = Nothing

@@ -1,4 +1,48 @@
-﻿function InsertDataMontoDistribuibleCategoria() {
+﻿function CheckExcelFileMDC() {
+    CheckFileExists(configuraciones.carga, ValidarInformacion)
+}
+
+
+function ValidarInformacion(dataRequest) {
+
+    console.log(dataRequest.FileClass);
+    console.log(dataRequest.Path);
+
+   
+    $.ajax({
+        type: "POST",
+        url: "/api/eficienciaefectividad/validarinfo",
+        contentType: "application/json",
+        data: JSON.stringify(dataRequest),
+
+        success: function (response) {
+            if (response.d === true) {
+                setFormStatus("processing");
+                setLoadingBar("Validando datos", 60);
+                ValidateExcelFile(callBack, response.path);
+
+
+                $("#MensajeError").text("");
+            } else {
+                setFormStatus("error");
+                $("#formatErrors").html(response.d);
+                if (typeof activateTable === "function") { activateTable(); }
+                if (response.m) {
+                    document.getElementById("MensajeError").textContent = response.m;
+                }
+            }
+        },
+        error: function (xhr) {
+            console.log(xhr);
+            setFormStatus("error");
+            $("#formatErrors").html("Error de comunicación (ValidarInformacion).");
+            $("#MensajeError").text("No se pudo cargar el documento por que no existe en la carpeta del servidor, Vuelva a intentar la carga ");
+        }
+    });
+}
+
+
+function InsertDataEficienciaEfectividad() {
 
     var fileName = '';
     var fileCCNomina = '';
@@ -40,8 +84,4 @@
             InsertData_OnComplete(requestData);
         }
     });
-}
-
-function CheckExcelFileMDC() {
-    CheckFileExists(InsertDataMontoDistribuibleCategoria)
 }

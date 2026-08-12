@@ -32,7 +32,7 @@ Public Class ConfiguracionDistribucionesController
 
     <HttpPost>
     <Route("api/configuraciondistribuciones/insertdata")>
-    Public Function InsertData(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Dim rTable As String = Nothing
             Dim filePath As String = Nothing

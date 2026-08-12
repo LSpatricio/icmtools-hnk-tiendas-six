@@ -91,37 +91,24 @@ Public Class FileClass
     ''' <param name="asyncFileUpload">Objeto AsyncFileUpload.</param>
     ''' <param name="folder">Carpeta del archivo.</param>
     Public Sub SaveUploadedFile(asyncFileUpload As AsyncFileUpload, folder As String)
-        mLog = New Log
+
+        'mLog = New Log
         Dim fullFilePath As String = ""
-        Dim normalizedBase As String = ""
         Try
             Dim user As User = CType(HttpContext.Current.Session.Item("User"), User)
-            Dim fileName = user.Email
-
             Dim extension As String = Path.GetExtension(asyncFileUpload.FileName).ToLower()
-            Dim fullFileName = String.Concat(fileName, extension)
-            Dim safeName As String = Path.GetFileNameWithoutExtension(fullFileName)
-            Dim finalFileName As String = safeName & extension
+            Dim fileName = String.Concat(user.Email, extension)
 
-            Dim filePath As String = HttpContext.Current.Server.MapPath(folder)
-            fullFilePath = Path.Combine(filePath, finalFileName)
-            Dim normalizedFull = Path.GetFullPath(fullFilePath)
-            normalizedBase = Path.GetFullPath(filePath)
+            Dim filePath As String = Path.GetFullPath(HttpContext.Current.Server.MapPath(folder))
+            fullFilePath = Path.Combine(filePath, fileName)
 
-            ''mLog.NoSessionInsertLog("GuardarArchivo", "ARCHIVO IMPORTADO", $"Archivo de guardado en la ruta {normalizedBase}")
-            ''mLog.NoSessionInsertLog("GuardarArchivo", "ARCHIVO IMPORTADO DEBUG!!!!", $"{fullFileName} fullFileName || {normalizedBase} normalizedBase || safeName {safeName} || finalFileName {finalFileName} filepath {filePath} || fullFilePath {fullFilePath} || normalizedFull {normalizedFull}")
-
-            If Not normalizedFull.StartsWith(normalizedBase) Then
-                Throw New Exception("Ruta inválida.")
-            End If
-
-            If Not Directory.Exists(normalizedBase) Then
-                Directory.CreateDirectory(normalizedBase)
+            If Not Directory.Exists(filePath) Then
+                Directory.CreateDirectory(filePath)
             End If
 
             asyncFileUpload.SaveAs(fullFilePath)
         Catch ex As Exception
-            mLog.insertLog("FileClass", "SaveUploadedFile", $"File: {fullFilePath}. Folder: {normalizedBase}. Error: {ex.Message}")
+            ' mLog.insertLog("FileClass", "SaveUploadedFile", $"File: {fullFilePath}. Folder: {normalizedBase}. Error: {ex.Message}")
             Throw
         End Try
     End Sub

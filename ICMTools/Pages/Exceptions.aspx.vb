@@ -2,7 +2,7 @@
     Inherits System.Web.UI.Page
 
     Private mUser As User
-    Private mLog As Log
+    ' Private mLog As Log
 
     Private Sub Page_Init(sender As Object, e As EventArgs) Handles Me.Init
         '------Evitar Caché del Navegador--------
@@ -20,8 +20,8 @@
 
             If Not Session.Item("User") Is Nothing Then
                 mUser = CType(Session.Item("User"), User)
-                mLog = New Log
-                mLog.insertLog("EXCEPCIONES", "ACCESO", "Acceso a Módulo Excepciones")
+                ' mLog = New Log
+                ' mLog.insertLog("EXCEPCIONES", "ACCESO", "Acceso a Módulo Excepciones")
             Else
                 Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
             End If

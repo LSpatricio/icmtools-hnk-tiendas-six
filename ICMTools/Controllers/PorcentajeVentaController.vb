@@ -34,7 +34,7 @@ Public Class PorcentajeVentaController
 
     <HttpPost>
     <Route("api/porcentajeventa/insertdata")>
-    Public Function InsertData(<FromBody> request As FileController.ValidateFileRequest) As IHttpActionResult
+    Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Dim rTable As String = Nothing
             Dim filePath As String = Nothing

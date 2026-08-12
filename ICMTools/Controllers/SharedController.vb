@@ -358,6 +358,12 @@ Public Class SharedController
                                "@LISTA@" + "</tbody> " + "</table>"
                 elementTable = elementTable.Replace("@LISTA@", String.Join("", elementList))
                 Return elementTable
+            Case 4
+                elementTable = "<table id='Table' class='table table-sm table-hover'>" +
+                               "<thead>" + "<tr>" + "<th>Hoja</th>" + "<th>Detalles</th>" +
+                               "</tr>" + "</thead> " + "<tbody> " + "@LISTA@" + "</tbody> " + "</table>"
+                elementTable = elementTable.Replace("@LISTA@", String.Join("", elementList))
+                Return elementTable
         End Select
         Return Nothing
     End Function
