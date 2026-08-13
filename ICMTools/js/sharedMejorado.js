@@ -277,7 +277,9 @@ function ValidateExcelFile(onSuccessCallback, filePath) {
     setLoadingBar("Validando formato de Excel", 25);
     const requestData = {
         FileClass: configuraciones.carga.fileClass,
-        Path: filePath    }
+        Path: filePath,
+        HeaderRow: configuraciones.carga.headerRow,
+    }
 
     $.ajax({
         type: "POST",

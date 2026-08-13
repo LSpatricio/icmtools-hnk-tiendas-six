@@ -2,7 +2,7 @@
 Imports AjaxControlToolkit
 
 Public Class FileClass
-    Dim mLog As Log
+    '    Dim mLog As Log
 
     Public Function GetNormalizePath(filePath As String) As String
         Try

@@ -19,7 +19,7 @@ function ValidarInformacion(dataRequest) {
             if (response.d === true) {
                 setFormStatus("processing");
                 setLoadingBar("Validando datos", 60);
-                ValidateExcelFile(callBack, response.path);
+                GenerarCSV(response.path);
 
 
                 $("#MensajeError").text("");
@@ -42,8 +42,10 @@ function ValidarInformacion(dataRequest) {
 }
 
 
-function InsertDataEficienciaEfectividad() {
+function GenerarCSV(path) {
 
+
+    console.log("JIJIIA")
     var fileName = '';
     var fileCCNomina = '';
 

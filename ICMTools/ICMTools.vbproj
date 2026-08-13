@@ -212,6 +212,9 @@
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
     <Compile Include="Application\File\ValidateFileRequest.vb" />
+    <Compile Include="Controllers\EficienciaEfectividadController.vb" />
+    <Compile Include="Controllers\FileController.vb" />
+    <Compile Include="Controllers\SharedController.vb" />
     <Compile Include="Infraestructure\Excel\EficienciaEfectividad\EficienciaEfectividadExcelReader.vb" />
     <Compile Include="Infraestructure\Excel\ExcelColumnAttribute.vb" />
     <Compile Include="Application\Authentication\AuthenticationResult.vb" />
@@ -219,13 +222,6 @@
     <Compile Include="Application\Configurations\IAppConfiguration.vb" />
     <Compile Include="Application\Payee\Payee.vb" />
     <Compile Include="Application\Payee\PayeeService.vb" />
-    <Compile Include="App_Code\General\SyncTables.vb" />
-    <Compile Include="App_Code\General\PlantillaCorreo.vb" />
-    <Compile Include="App_Code\General\Sanitizacion.vb" />
-    <Compile Include="Controllers\SyncTablesController.vb" />
-    <Compile Include="Controllers\ValidateHttpAntiForgeryAttribute.vb" />
-    <Compile Include="App_Code\General\QueriesICM.vb" />
-    <Compile Include="CustomService\PostgreService.vb" />
     <Compile Include="Infraestructure\API\Dtos\IcmQueryRequestDto.vb" />
     <Compile Include="Infraestructure\API\Dtos\IcmQueryResponseDto.vb" />
     <Compile Include="Infraestructure\API\Dtos\PayeeResponseDto.vb" />
@@ -235,49 +231,9 @@
     <Compile Include="Infraestructure\Excel\ExcelReader.vb" />
     <Compile Include="Infraestructure\Excel\ExcelSheetAttribute.vb" />
     <Compile Include="Infraestructure\Excel\ExcelValidationError.vb" />
-    <Compile Include="WebServices\JobSchedulerService.vb" />
     <Compile Include="App_Code\Jobs\JobModels.vb" />
-    <Compile Include="App_Code\General\BonosTransporte.vb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Include="App_Code\General\Excepciones.vb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Include="App_Code\General\Log.vb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
     <Compile Include="App_Code\General\MediasAnuales.vb" />
     <Compile Include="App_Start\WebApiConfig.vb" />
-    <Compile Include="Controllers\CierreVirtualController.vb" />
-    <Compile Include="Controllers\ConfiguracionDistribucionesController.vb" />
-    <Compile Include="Controllers\CategoriaMontosMetasController.vb" />
-    <Compile Include="Controllers\CategoriaMontosVentasController.vb" />
-    <Compile Include="Controllers\HistEmpleadosActivosController.vb" />
-    <Compile Include="Controllers\EficienciaEfectividadController.vb" />
-    <Compile Include="Controllers\ImportVentasController.vb" />
-    <Compile Include="Controllers\ImportMetasController.vb" />
-    <Compile Include="Controllers\ConfigSalesPercentageController.vb" />
-    <Compile Include="Controllers\MTTVEntradaEnfoqueController.vb" />
-    <Compile Include="Controllers\MTTVEntradaVentasController.vb" />
-    <Compile Include="Controllers\MTTVEntradaController.vb" />
-    <Compile Include="Controllers\MultiTiendaFijoEntradaController.vb" />
-    <Compile Include="Controllers\EmpleadosActivosController.vb" />
-    <Compile Include="Controllers\ClasificacionesController.vb" />
-    <Compile Include="Controllers\ExcepcionesController.vb" />
-    <Compile Include="Controllers\ImportCuotaServicioController.vb" />
-    <Compile Include="Controllers\PorcentajeVentaController.vb" />
-    <Compile Include="Controllers\EmpleadosLideresController.vb" />
-    <Compile Include="Controllers\TiendasController.vb" />
-    <Compile Include="Controllers\PagosManualesController.vb" />
-    <Compile Include="Controllers\MetaCategoriaController.vb" />
-    <Compile Include="Controllers\TiendasGanadorasController.vb" />
-    <Compile Include="Controllers\FileController.vb" />
-    <Compile Include="Controllers\SharedController.vb" />
-    <Compile Include="Controllers\VentaMontoController.vb" />
-    <Compile Include="CustomService\BonosDeTransporteCustom.vb" />
-    <Compile Include="CustomService\CustomServiceClass.vb" />
-    <Compile Include="Controllers\VentaUnidadesCategoriaController.vb" />
-    <Compile Include="Controllers\VentaServiciosController.vb" />
     <Compile Include="CustomService\EnvioPGPClass.vb" />
     <Compile Include="CustomService\FileClass.vb" />
     <Compile Include="Global.asax.vb">
@@ -287,214 +243,11 @@
     <Compile Include="App_Code\General\Security.vb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="Pages\BonosAuthorization.aspx.designer.vb">
-      <DependentUpon>BonosAuthorization.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\BonosAuthorization.aspx.vb">
-      <DependentUpon>BonosAuthorization.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\BonosDocumentation.aspx.designer.vb">
-      <DependentUpon>BonosDocumentation.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\BonosDocumentation.aspx.vb">
-      <DependentUpon>BonosDocumentation.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\CierreVirtual.aspx.designer.vb">
-      <DependentUpon>CierreVirtual.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\CierreVirtual.aspx.vb">
-      <DependentUpon>CierreVirtual.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\CierreVirtualDocumentacion.aspx.designer.vb">
-      <DependentUpon>CierreVirtualDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\CierreVirtualDocumentacion.aspx.vb">
-      <DependentUpon>CierreVirtualDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ClasificacionesDocumentacion.aspx.designer.vb">
-      <DependentUpon>ClasificacionesDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ClasificacionesDocumentacion.aspx.vb">
-      <DependentUpon>ClasificacionesDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ConfigSalesPercentageCarga.aspx.designer.vb">
-      <DependentUpon>ConfigSalesPercentageCarga.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ConfigSalesPercentageCarga.aspx.vb">
-      <DependentUpon>ConfigSalesPercentageCarga.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ConfigSalesPercentageDocumentacion.aspx.designer.vb">
-      <DependentUpon>ConfigSalesPercentageDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ConfigSalesPercentageDocumentacion.aspx.vb">
-      <DependentUpon>ConfigSalesPercentageDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\CategoriaMontosMetas.aspx.designer.vb">
-      <DependentUpon>CategoriaMontosMetas.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\CategoriaMontosMetas.aspx.vb">
-      <DependentUpon>CategoriaMontosMetas.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\CategoriaMontosMetasDocumentacion.aspx.designer.vb">
-      <DependentUpon>CategoriaMontosMetasDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\CategoriaMontosMetasDocumentacion.aspx.vb">
-      <DependentUpon>CategoriaMontosMetasDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\CategoriaMontosVentas.aspx.designer.vb">
-      <DependentUpon>CategoriaMontosVentas.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\CategoriaMontosVentas.aspx.vb">
-      <DependentUpon>CategoriaMontosVentas.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\CategoriaMontosVentasDocumentacion.aspx.designer.vb">
-      <DependentUpon>CategoriaMontosVentasDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\CategoriaMontosVentasDocumentacion.aspx.vb">
-      <DependentUpon>CategoriaMontosVentasDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Configuracion.aspx.designer.vb">
-      <DependentUpon>Configuracion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Configuracion.aspx.vb">
-      <DependentUpon>Configuracion.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\BonosUpload.aspx.designer.vb">
-      <DependentUpon>BonosUpload.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\BonosUpload.aspx.vb">
-      <DependentUpon>BonosUpload.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\CargaArchivo.aspx.designer.vb">
-      <DependentUpon>CargaArchivo.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\CargaArchivo.aspx.vb">
-      <DependentUpon>CargaArchivo.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\EmpleadosActivosOracle.aspx.designer.vb">
-      <DependentUpon>EmpleadosActivosOracle.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\EmpleadosActivosOracle.aspx.vb">
-      <DependentUpon>EmpleadosActivosOracle.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\EmpleadosActivosOracleDocumentacion.aspx.designer.vb">
-      <DependentUpon>EmpleadosActivosOracleDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\EmpleadosActivosOracleDocumentacion.aspx.vb">
-      <DependentUpon>EmpleadosActivosOracleDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ConfiguracionDistribuciones.aspx.designer.vb">
-      <DependentUpon>ConfiguracionDistribuciones.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ConfiguracionDistribuciones.aspx.vb">
-      <DependentUpon>ConfiguracionDistribuciones.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ConfiguracionDistribucionesDocumentacion.aspx.designer.vb">
-      <DependentUpon>ConfiguracionDistribucionesDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ConfiguracionDistribucionesDocumentacion.aspx.vb">
-      <DependentUpon>ConfiguracionDistribucionesDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\EmpleadosLideres.aspx.designer.vb">
-      <DependentUpon>EmpleadosLideres.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\EmpleadosLideres.aspx.vb">
-      <DependentUpon>EmpleadosLideres.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\EmpleadosLideresDocumentacion.aspx.designer.vb">
-      <DependentUpon>EmpleadosLideresDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\EmpleadosLideresDocumentacion.aspx.vb">
-      <DependentUpon>EmpleadosLideresDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\HistEmpleadosActivos.aspx.designer.vb">
-      <DependentUpon>HistEmpleadosActivos.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\HistEmpleadosActivos.aspx.vb">
-      <DependentUpon>HistEmpleadosActivos.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\HistEmpleadosActivosDocumentacion.aspx.designer.vb">
-      <DependentUpon>HistEmpleadosActivosDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\HistEmpleadosActivosDocumentacion.aspx.vb">
-      <DependentUpon>HistEmpleadosActivosDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Pages\EficienciaEfectividad.aspx.designer.vb">
       <DependentUpon>EficienciaEfectividad.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\EficienciaEfectividad.aspx.vb">
       <DependentUpon>EficienciaEfectividad.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\MTTVEntrada.aspx.designer.vb">
-      <DependentUpon>MTTVEntrada.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\MTTVEntrada.aspx.vb">
-      <DependentUpon>MTTVEntrada.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\MTTVEntradaDocumentacion.aspx.designer.vb">
-      <DependentUpon>MTTVEntradaDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\MTTVEntradaDocumentacion.aspx.vb">
-      <DependentUpon>MTTVEntradaDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\MTTVEntradaEnfoque.aspx.designer.vb">
-      <DependentUpon>MTTVEntradaEnfoque.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\MTTVEntradaEnfoque.aspx.vb">
-      <DependentUpon>MTTVEntradaEnfoque.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ImportMetas.aspx.designer.vb">
-      <DependentUpon>ImportMetas.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ImportMetas.aspx.vb">
-      <DependentUpon>ImportMetas.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\MTTVEntradaEnfoqueDocumentacion.aspx.designer.vb">
-      <DependentUpon>MTTVEntradaEnfoqueDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\MTTVEntradaEnfoqueDocumentacion.aspx.vb">
-      <DependentUpon>MTTVEntradaEnfoqueDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\MTTVEntradaVentas.aspx.designer.vb">
-      <DependentUpon>MTTVEntradaVentas.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\MTTVEntradaVentas.aspx.vb">
-      <DependentUpon>MTTVEntradaVentas.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\MTTVEntradaVentasDocumentacion.aspx.designer.vb">
-      <DependentUpon>MTTVEntradaVentasDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\MTTVEntradaVentasDocumentacion.aspx.vb">
-      <DependentUpon>MTTVEntradaVentasDocumentacion.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Pages\MontoDistribuibleCategoriaDocumentacion.aspx.designer.vb">
@@ -504,246 +257,7 @@
       <DependentUpon>MontoDistribuibleCategoriaDocumentacion.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="Pages\ImportVentas.aspx.designer.vb">
-      <DependentUpon>ImportVentas.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ImportVentas.aspx.vb">
-      <DependentUpon>ImportVentas.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ImportVentasDocumentacion.aspx.designer.vb">
-      <DependentUpon>ImportVentasDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ImportVentasDocumentacion.aspx.vb">
-      <DependentUpon>ImportVentasDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ImportMetasDocumentacion.aspx.designer.vb">
-      <DependentUpon>ImportMetasDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ImportMetasDocumentacion.aspx.vb">
-      <DependentUpon>ImportMetasDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ImportVentaServicios.aspx.designer.vb">
-      <DependentUpon>ImportVentaServicios.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ImportVentaServicios.aspx.vb">
-      <DependentUpon>ImportVentaServicios.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ImportVentaServiciosDocumentacion.aspx.designer.vb">
-      <DependentUpon>ImportVentaServiciosDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ImportVentaServiciosDocumentacion.aspx.vb">
-      <DependentUpon>ImportVentaServiciosDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\EmpleadosActivosDocumentacion.aspx.designer.vb">
-      <DependentUpon>EmpleadosActivosDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\EmpleadosActivosDocumentacion.aspx.vb">
-      <DependentUpon>EmpleadosActivosDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\PagosManualesCarga.aspx.designer.vb">
-      <DependentUpon>PagosManualesCarga.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\PagosManualesCarga.aspx.vb">
-      <DependentUpon>PagosManualesCarga.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\PagosManualesDocumentacion.aspx.designer.vb">
-      <DependentUpon>PagosManualesDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\PagosManualesDocumentacion.aspx.vb">
-      <DependentUpon>PagosManualesDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\PorcentajeVenta.aspx.designer.vb">
-      <DependentUpon>PorcentajeVenta.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\PorcentajeVenta.aspx.vb">
-      <DependentUpon>PorcentajeVenta.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\PorcentajeVentaDocumentacion.aspx.designer.vb">
-      <DependentUpon>PorcentajeVentaDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\PorcentajeVentaDocumentacion.aspx.vb">
-      <DependentUpon>PorcentajeVentaDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\VentaMonto.aspx.designer.vb">
-      <DependentUpon>VentaMonto.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\VentaMonto.aspx.vb">
-      <DependentUpon>VentaMonto.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\VentaMontoDocumentacion.aspx.designer.vb">
-      <DependentUpon>VentaMontoDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\VentaMontoDocumentacion.aspx.vb">
-      <DependentUpon>VentaMontoDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\VentaUnidadesCategoria.aspx.designer.vb">
-      <DependentUpon>VentaUnidadesCategoria.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\VentaUnidadesCategoria.aspx.vb">
-      <DependentUpon>VentaUnidadesCategoria.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\MultiTiendaFijoEntrada.aspx.designer.vb">
-      <DependentUpon>MultiTiendaFijoEntrada.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\MultiTiendaFijoEntrada.aspx.vb">
-      <DependentUpon>MultiTiendaFijoEntrada.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\MultiTiendaFijoEntradaDocumentacion.aspx.designer.vb">
-      <DependentUpon>MultiTiendaFijoEntradaDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\MultiTiendaFijoEntradaDocumentacion.aspx.vb">
-      <DependentUpon>MultiTiendaFijoEntradaDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ImportCuotaServicio.aspx.designer.vb">
-      <DependentUpon>ImportCuotaServicio.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ImportCuotaServicio.aspx.vb">
-      <DependentUpon>ImportCuotaServicio.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ImportCuotaServicioDocumentation.aspx.designer.vb">
-      <DependentUpon>ImportCuotaServicioDocumentation.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ImportCuotaServicioDocumentation.aspx.vb">
-      <DependentUpon>ImportCuotaServicioDocumentation.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\MetaCategoria.aspx.designer.vb">
-      <DependentUpon>MetaCategoria.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\MetaCategoria.aspx.vb">
-      <DependentUpon>MetaCategoria.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\MetaCategoriaDocumentation.aspx.designer.vb">
-      <DependentUpon>MetaCategoriaDocumentation.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\MetaCategoriaDocumentation.aspx.vb">
-      <DependentUpon>MetaCategoriaDocumentation.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\EmpleadosActivos.aspx.designer.vb">
-      <DependentUpon>EmpleadosActivos.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\EmpleadosActivos.aspx.vb">
-      <DependentUpon>EmpleadosActivos.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\TiendasDocumentation.aspx.designer.vb">
-      <DependentUpon>TiendasDocumentation.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\TiendasDocumentation.aspx.vb">
-      <DependentUpon>TiendasDocumentation.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ExceptionsTiendasUpload.aspx.designer.vb">
-      <DependentUpon>ExceptionsTiendasUpload.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ExceptionsTiendasUpload.aspx.vb">
-      <DependentUpon>ExceptionsTiendasUpload.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\TiendasGanadoras.aspx.designer.vb">
-      <DependentUpon>TiendasGanadoras.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\TiendasGanadoras.aspx.vb">
-      <DependentUpon>TiendasGanadoras.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\TiendasGanadorasDocumentación.aspx.designer.vb">
-      <DependentUpon>TiendasGanadorasDocumentación.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\TiendasGanadorasDocumentación.aspx.vb">
-      <DependentUpon>TiendasGanadorasDocumentación.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\TiendasUpload.aspx.designer.vb">
-      <DependentUpon>TiendasUpload.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\TiendasUpload.aspx.vb">
-      <DependentUpon>TiendasUpload.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Clasificaciones.aspx.designer.vb">
-      <DependentUpon>Clasificaciones.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Clasificaciones.aspx.vb">
-      <DependentUpon>Clasificaciones.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\Exceptions.aspx.designer.vb">
-      <DependentUpon>Exceptions.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Exceptions.aspx.vb">
-      <DependentUpon>Exceptions.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ExceptionsConfiguration.aspx.designer.vb">
-      <DependentUpon>ExceptionsConfiguration.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ExceptionsConfiguration.aspx.vb">
-      <DependentUpon>ExceptionsConfiguration.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ExceptionsDocumentation.aspx.designer.vb">
-      <DependentUpon>ExceptionsDocumentation.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ExceptionsDocumentation.aspx.vb">
-      <DependentUpon>ExceptionsDocumentation.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\ExceptionsReportHistory.aspx.designer.vb">
-      <DependentUpon>ExceptionsReportHistory.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ExceptionsReportHistory.aspx.vb">
-      <DependentUpon>ExceptionsReportHistory.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="App_Code\General\ParametersICM.vb" />
-    <Compile Include="App_Code\General\PosicionesReemplazos.vb" />
-    <Compile Include="App_Code\General\ReplacementsConfiguration.vb" />
-    <Compile Include="Pages\VentaUnidadesCategoriaDocumentacion.aspx.designer.vb">
-      <DependentUpon>VentaUnidadesCategoriaDocumentacion.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\VentaUnidadesCategoriaDocumentacion.aspx.vb">
-      <DependentUpon>VentaUnidadesCategoriaDocumentacion.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Response.vb" />
-    <Compile Include="WebServiceQuery\dao\DAO_SQL.vb" />
-    <Compile Include="WebServiceQuery\dao\ICMService.vb" />
-    <Compile Include="WebServiceQuery\dto\ICMActivitiesDtos.vb" />
-    <Compile Include="WebServiceQuery\functionality\FuncionalitySQL.vb" />
-    <Compile Include="WebServiceQuery\functionality\FunctionalityICM.vb" />
-    <Compile Include="WebServiceQuery\general\WebServiceICMGeneral.asmx.vb">
-      <DependentUpon>WebServiceICMGeneral.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SessionProvider\PostgreSQLSessionStateStore.vb" />
-    <Compile Include="CustomService\SyncTablesService.vb" />
-    <Compile Include="WebServices\WebServiceParametros.asmx.vb">
-      <DependentUpon>WebServiceParametros.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WebServices\WebServicesBonosTransporte.asmx.vb">
-      <DependentUpon>WebServicesBonosTransporte.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="WebServices\WebServicesMasterPage.asmx.vb">
       <DependentUpon>WebServicesMasterPage.asmx</DependentUpon>
       <SubType>Component</SubType>
@@ -853,106 +367,17 @@
     <Content Include="images\Procesos-de-apoyo.jpg" />
     <Content Include="images\single-sign-on.png" />
     <Content Include="index.html" />
-    <Content Include="js\CategoriaMontosMetas.js" />
-    <Content Include="js\CategoriaMontosVentas.js" />
-    <Content Include="js\CierreVirtual.js" />
-    <Content Include="js\Clasificaciones.js" />
-    <Content Include="js\ConfigSalesPercentage.js" />
-    <Content Include="js\ConfiguracionDistribuciones.js" />
-    <Content Include="js\EmpleadosActivosHist.js" />
-    <Content Include="js\EmpleadosActivosOracle.js" />
-    <Content Include="js\EmpleadosLideres.js" />
-    <Content Include="js\Excepciones.js" />
-    <Content Include="js\MTTVEntradaEnfoque.js" />
-    <Content Include="js\MTTVEntrada.js" />
-    <Content Include="js\MTTVEntradaVentas.js" />
     <Content Include="js\EficienciaEfectividad.js" />
-    <Content Include="js\ImportVentas.js" />
-    <Content Include="js\ImportMetas.js" />
-    <Content Include="js\MultiTiendaFijoEntrada.js" />
-    <Content Include="js\ImportCuotaServicio.js" />
-    <Content Include="js\MetaCategoria.js" />
     <Content Include="js\onfly.js" />
-    <Content Include="js\PagosManuales.js" />
-    <Content Include="js\PorcentajeVenta.js" />
-    <Content Include="js\sharedMejorado.js" />
     <Content Include="js\shared.js" />
-    <Content Include="js\EmpleadosActivos.js" />
-    <Content Include="js\Tiendas.js" />
-    <Content Include="js\TiendasGanadoras.js" />
-    <Content Include="js\VentaMonto.js" />
-    <Content Include="js\VentaUnidadesCategoria.js" />
-    <Content Include="js\VentaServicios.js" />
+    <Content Include="js\sharedMejorado.js" />
     <Content Include="Pages\404.html" />
-    <Content Include="Pages\BonosAuthorization.aspx" />
-    <Content Include="Pages\BonosDocumentation.aspx" />
-    <Content Include="Pages\CierreVirtual.aspx" />
-    <Content Include="Pages\CierreVirtualDocumentacion.aspx" />
-    <Content Include="Pages\ClasificacionesDocumentacion.aspx" />
-    <Content Include="Pages\ConfigSalesPercentageCarga.aspx" />
-    <Content Include="Pages\ConfigSalesPercentageDocumentacion.aspx" />
-    <Content Include="Pages\CategoriaMontosMetas.aspx" />
-    <Content Include="Pages\CategoriaMontosMetasDocumentacion.aspx" />
-    <Content Include="Pages\CategoriaMontosVentas.aspx" />
-    <Content Include="Pages\CategoriaMontosVentasDocumentacion.aspx" />
-    <Content Include="Pages\Configuracion.aspx" />
-    <Content Include="Pages\BonosUpload.aspx" />
-    <Content Include="Pages\CargaArchivo.aspx" />
-    <Content Include="Pages\EmpleadosActivosOracle.aspx" />
-    <Content Include="Pages\EmpleadosActivosOracleDocumentacion.aspx" />
-    <Content Include="Pages\ConfiguracionDistribuciones.aspx" />
-    <Content Include="Pages\ConfiguracionDistribucionesDocumentacion.aspx" />
-    <Content Include="Pages\EmpleadosLideres.aspx" />
-    <Content Include="Pages\EmpleadosLideresDocumentacion.aspx" />
     <Content Include="Pages\ErrorGeneral.html" />
-    <Content Include="Pages\HistEmpleadosActivos.aspx" />
-    <Content Include="Pages\HistEmpleadosActivosDocumentacion.aspx" />
-    <Content Include="Pages\MTTVEntrada.aspx" />
-    <Content Include="Pages\MTTVEntradaDocumentacion.aspx" />
-    <Content Include="Pages\MTTVEntradaEnfoque.aspx" />
-    <Content Include="Pages\MTTVEntradaEnfoqueDocumentacion.aspx" />
-    <Content Include="Pages\MTTVEntradaVentas.aspx" />
-    <Content Include="Pages\MTTVEntradaVentasDocumentacion.aspx" />
     <Content Include="Pages\EficienciaEfectividad.aspx" />
     <Content Include="Pages\MontoDistribuibleCategoriaDocumentacion.aspx" />
-    <Content Include="Pages\ImportVentas.aspx" />
-    <Content Include="Pages\ImportVentasDocumentacion.aspx" />
-    <Content Include="Pages\ImportMetas.aspx" />
-    <Content Include="Pages\ImportMetasDocumentacion.aspx" />
-    <Content Include="Pages\ImportVentaServicios.aspx" />
-    <Content Include="Pages\ImportVentaServiciosDocumentacion.aspx" />
-    <Content Include="Pages\EmpleadosActivosDocumentacion.aspx" />
-    <Content Include="Pages\VentaMonto.aspx" />
-    <Content Include="Pages\VentaMontoDocumentacion.aspx" />
-    <Content Include="Pages\VentaUnidadesCategoria.aspx" />
-    <Content Include="Pages\MultiTiendaFijoEntrada.aspx" />
-    <Content Include="Pages\MultiTiendaFijoEntradaDocumentacion.aspx" />
-    <Content Include="Pages\ImportCuotaServicio.aspx" />
-    <Content Include="Pages\ImportCuotaServicioDocumentation.aspx" />
-    <Content Include="Pages\MetaCategoria.aspx" />
-    <Content Include="Pages\MetaCategoriaDocumentation.aspx" />
-    <Content Include="Pages\PagosManualesCarga.aspx" />
-    <Content Include="Pages\PagosManualesDocumentacion.aspx" />
-    <Content Include="Pages\PorcentajeVenta.aspx" />
-    <Content Include="Pages\PorcentajeVentaDocumentacion.aspx" />
-    <Content Include="Pages\EmpleadosActivos.aspx" />
-    <Content Include="Pages\TiendasDocumentation.aspx" />
-    <Content Include="Pages\ExceptionsTiendasUpload.aspx" />
-    <Content Include="Pages\TiendasGanadoras.aspx" />
-    <Content Include="Pages\TiendasGanadorasDocumentación.aspx" />
-    <Content Include="Pages\TiendasUpload.aspx" />
-    <Content Include="Pages\Clasificaciones.aspx" />
-    <Content Include="Pages\Exceptions.aspx" />
-    <Content Include="Pages\ExceptionsUpload.aspx" />
-    <Content Include="Pages\ExceptionsConfiguration.aspx" />
-    <Content Include="Pages\ExceptionsDocumentation.aspx" />
-    <Content Include="Pages\ExceptionsReportHistory.aspx" />
     <Content Include="Pages\Home.aspx" />
     <Content Include="Pages\login.aspx" />
     <Content Include="Pages\logout.aspx" />
-    <Content Include="Pages\VentaUnidadesCategoriaDocumentacion.aspx" />
-    <Content Include="UploadedFiles\ExcepcionesTiendas\readme.txt" />
-    <Content Include="UploadedFiles\Excepciones\readme.txt" />
     <Content Include="vendor\bootstrap-4-multi-dropdown-navbar-master\css\bootstrap-4-navbar.css" />
     <Content Include="vendor\bootstrap-4-multi-dropdown-navbar-master\desktop.png" />
     <Content Include="vendor\bootstrap-4-multi-dropdown-navbar-master\index.html" />
@@ -1563,9 +988,6 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="WebServiceQuery\general\WebServiceICMGeneral.asmx" />
-    <Content Include="WebServices\WebServiceParametros.asmx" />
-    <Content Include="WebServices\WebServicesBonosTransporte.asmx" />
     <Content Include="WebServices\WebServicesMasterPage.asmx" />
     <Content Include="WebServices\WebServicesFiles.asmx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1575,19 +997,7 @@
     <Compile Include="App_Code\DataBase\Database.vb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="App_Code\General\ControlsData.vb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Include="App_Code\General\PersonnelDivisions.vb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
     <Compile Include="App_Code\General\htmlMessage.vb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Include="App_Code\General\Periods.vb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Include="App_Code\General\Societies.vb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="App_Code\General\User.vb">
@@ -1619,13 +1029,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="Pages\ExceptionsUpload.aspx.designer.vb">
-      <DependentUpon>ExceptionsUpload.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ExceptionsUpload.aspx.vb">
-      <DependentUpon>ExceptionsUpload.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Pages\Home.aspx.designer.vb">
       <DependentUpon>Home.aspx</DependentUpon>
@@ -2067,38 +1470,7 @@
     <Folder Include="images\Modulos\ImportVentas\" />
     <Folder Include="images\Modulos\MontoDistribuibleCategoria\" />
     <Folder Include="UploadedFilesCategoriaVentaMonto\" />
-    <Folder Include="UploadedFiles\BonosTransporte\" />
-    <Folder Include="UploadedFiles\Categoria\EmpleadosActivos\Final\" />
-    <Folder Include="UploadedFiles\Categoria\EmpleadosActivos\Inicial\" />
-    <Folder Include="UploadedFiles\Categoria\MetaCategoria\" />
-    <Folder Include="UploadedFiles\Categoria\MontoDistribuible\" />
-    <Folder Include="UploadedFiles\Categoria\PorcentajeVenta\" />
-    <Folder Include="UploadedFiles\Categoria\VentaMonto\" />
-    <Folder Include="UploadedFiles\Categoria\VentaUnidades\" />
-    <Folder Include="UploadedFiles\Clasificaciones\" />
-    <Folder Include="UploadedFiles\EmpleadosLideres\" />
-    <Folder Include="UploadedFiles\IncentivoCerveza\CategoriaMontosMetas\" />
-    <Folder Include="UploadedFiles\IncentivoCerveza\CategoriaMontosVentas\" />
-    <Folder Include="UploadedFiles\IncentivoCerveza\ConfiguracionDistribuciones\" />
-    <Folder Include="UploadedFiles\IncentivoCerveza\ConfiguracionPorcentajeVentas\" />
-    <Folder Include="UploadedFiles\IncentivoCerveza\HistEmpleadosActivos\Final\" />
-    <Folder Include="UploadedFiles\IncentivoCerveza\HistEmpleadosActivos\Inicial\" />
-    <Folder Include="UploadedFiles\IncentivoCerveza\ImportMetas\" />
-    <Folder Include="UploadedFiles\IncentivoCerveza\ImportVentas\" />
-    <Folder Include="UploadedFiles\IncentivosCerveza\ConfiguracionPorcentajeVentas\" />
-    <Folder Include="UploadedFiles\MultiTiendaVariable\EntradaEnfoque\" />
-    <Folder Include="UploadedFiles\MultiTiendaVariable\EntradaVentas\" />
-    <Folder Include="UploadedFiles\MultiTiendaVariable\Entrada\" />
-    <Folder Include="UploadedFiles\Multi_Tienda_Fijo_Entrada\" />
-    <Folder Include="UploadedFiles\PagosManuales\" />
-    <Folder Include="UploadedFiles\Servicios\CuotaServicio\" />
-    <Folder Include="UploadedFiles\Servicios\VentaServicios\" />
-    <Folder Include="UploadedFiles\TiendasGanadoras\" />
-    <Folder Include="UploadedFiles\Tiendas\" />
-    <Folder Include="UploadedFiles\VentaSugerida\ImportVentas\" />
-    <Folder Include="UploadedFiles\VentaSugerida\IncentivoCategorias\Final\" />
-    <Folder Include="UploadedFiles\VentaSugerida\IncentivoCategorias\Inicial\" />
-    <Folder Include="UploadedFiles\VentaSugerida\Metas\" />
+    <Folder Include="UploadedFiles\" />
     <Folder Include="Views\CategoriaMontosMetas\" />
     <Folder Include="Views\CategoriaMontosVentas\" />
     <Folder Include="Views\Categorias\" />
@@ -2122,6 +1494,10 @@
     <Folder Include="Views\Tiendas\" />
     <Folder Include="Views\VentaMonto\" />
     <Folder Include="Views\VentaUnidadesCategoria\" />
+    <Folder Include="WebServiceQuery\dao\" />
+    <Folder Include="WebServiceQuery\dto\" />
+    <Folder Include="WebServiceQuery\functionality\" />
+    <Folder Include="WebServiceQuery\general\" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">

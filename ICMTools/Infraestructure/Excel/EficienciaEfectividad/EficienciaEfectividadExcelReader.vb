@@ -16,7 +16,6 @@ Public Class EficienciaEfectividadExcelReader
 
     End Sub
     Public Function ValidacionesEficienciaEfectividad(
-    fileType As Type,
     rutaArchivo As String,
     filaEncabezado As Integer,
     nombreHoja As String,

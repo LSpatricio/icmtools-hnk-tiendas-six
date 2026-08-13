@@ -7,7 +7,8 @@ Public Class ExcelService
 
         For Each propiedad In tipoClass.GetProperties()
 
-            If propiedad.PropertyType.IsGenericType Then
+            If propiedad.PropertyType.IsGenericType AndAlso
+           propiedad.PropertyType.GetGenericTypeDefinition() = GetType(List(Of )) Then
 
                 Dim tipoElemento As Type =
                 propiedad.PropertyType.GetGenericArguments()(0)

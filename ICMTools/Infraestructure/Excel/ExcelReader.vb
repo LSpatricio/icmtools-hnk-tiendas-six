@@ -59,91 +59,12 @@ Public Class ExcelReader
     End Function
 
 
-    Public Function ValidarEncabezadosExcel(
-    fileType As Type,
-    rutaArchivo As String,
-    filaEncabezado As Integer,
-    hoja As Integer,
-    mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute)
-) As Boolean
-
-        Using stream = File.Open(
-        rutaArchivo,
-        FileMode.Open,
-        FileAccess.Read
-    )
-
-            Using reader = ExcelReaderFactory.CreateReader(stream)
-
-                ' Ir a la hoja indicada
-                For i As Integer = 0 To hoja - 1
-                    If Not reader.NextResult() Then
-                        Return False
-                    End If
-                Next
-
-                ' Ir a la fila de encabezados
-                For i As Integer = 0 To filaEncabezado
-                    reader.Read()
-                Next
-
-                ' Obtener encabezados del Excel de los atributos de la clase
-                Dim encabezados As New List(Of String)
-                Dim atributos = fileType.
-                GetProperties().
-                SelectMany(Function(p) p.GetCustomAttributes(
-                    GetType(ExcelColumnAttribute),
-                    False
-                )).
-                Cast(Of ExcelColumnAttribute)().
-                ToList()
-
-                For i As Integer = 0 To mapeoColumnas.Count - 1
-
-                    Dim headerName As String =
-        If(reader.GetValue(i)?.ToString(), "").Trim()
-
-                    If String.IsNullOrWhiteSpace(headerName) Then
-                        headerName = i.ToString()
-                    End If
-
-                    encabezados.Add(headerName)
-
-                Next
-
-
-                For Each atributo In atributos
-
-                    Dim existe = encabezados.Any(
-                    Function(encabezado) String.Equals(
-                        encabezado,
-                        atributo.ColumnName.Trim(),
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
-
-                    If Not existe Then
-                        Return False
-                    End If
-
-                Next
-
-
-
-
-                Return True
-
-            End Using
-        End Using
-
-    End Function
-
 
     Public Function ValidarEncabezadosExcel(
     fileType As Type,
     rutaArchivo As String,
     filaEncabezado As Integer,
-    nombreHoja As String,
+    hoja As String,
     mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute)) As List(Of ExcelValidationError)
 
         Dim listHojasError As New List(Of ExcelValidationError)
@@ -157,21 +78,39 @@ Public Class ExcelReader
 
             Using reader = ExcelReaderFactory.CreateReader(stream)
 
-                Dim hojaEncontrada As Boolean = False
+                Dim indiceHoja As Integer
 
-                Do
-                    If String.Equals(
-                    reader.Name,
-                    nombreHoja,
-                    StringComparison.OrdinalIgnoreCase
-                ) Then
+                If Integer.TryParse(hoja, indiceHoja) Then
 
-                        hojaEncontrada = True
-                        Exit Do
+                    Dim indiceActual As Integer = 0
 
-                    End If
+                    Do
 
-                Loop While reader.NextResult()
+                        If indiceActual = indiceHoja Then
+                            hoja = (indiceActual + 1).ToString()
+                            Exit Do
+                        End If
+
+                        indiceActual += 1
+
+                    Loop While reader.NextResult()
+
+                Else
+
+                    Do
+
+                        If String.Equals(
+            reader.Name,
+            hoja,
+            StringComparison.OrdinalIgnoreCase
+        ) Then
+                            Exit Do
+
+                        End If
+
+                    Loop While reader.NextResult()
+
+                End If
 
 
                 For i As Integer = 1 To filaEncabezado
@@ -196,7 +135,7 @@ Public Class ExcelReader
 
                 If encabezados.Count <> mapeoColumnas.Count Then
                     listHojasError.Add(New ExcelValidationError With {
-                        .Problema = $"El número de columnas en la hoja <strong>{nombreHoja}</strong> no coincide con el número de columnas esperadas.",
+                        .Problema = $"El número de columnas en la hoja <strong>{hoja}</strong> no coincide con el número de columnas esperadas.",
                         .Detalle = $"Columnas encontradas en el archivo Excel: {String.Join(", ", encabezados)}"
                     })
 
@@ -223,7 +162,7 @@ Public Class ExcelReader
                                 mapeo.Value.ColumnIndex.ToString().Trim().Replace(vbCrLf, vbLf),
                                 StringComparison.OrdinalIgnoreCase
                             )
-                            mensajeError = $"La columna #'{mapeo.Value.ColumnIndex + 1}' no existe en la hoja <strong>{nombreHoja}</strong> ."
+                            mensajeError = $"La columna #'{mapeo.Value.ColumnIndex + 1}' no existe en la hoja <strong>{hoja}</strong> ."
 
                         End If
 
@@ -238,16 +177,10 @@ Public Class ExcelReader
                                 mapeo.Value.ColumnName.Trim().Replace(vbCrLf, vbLf),
                                 StringComparison.OrdinalIgnoreCase
                             )
-                            mensajeError = $"La columna '{mapeo.Value.ColumnName}' no se encuentra en la hoja <strong>{nombreHoja}</strong> o no está ubicada en la posición esperada (columna {mapeo.Value.ColumnIndex + 1})."
+                            mensajeError = $"La columna '{mapeo.Value.ColumnName}' no se encuentra en la hoja <strong>{hoja}</strong> o no está ubicada en la posición esperada (columna {mapeo.Value.ColumnIndex + 1})."
                         End If
 
-                        '    existe = encabezados.Any(
-                        'Function(encabezado) String.Equals(
-                        '    encabezado,
-                        '    mapeo.Value.ColumnName.Trim().Replace(vbCrLf, vbLf),
-                        '    StringComparison.OrdinalIgnoreCase))
 
-                        'mensajeError = $"La columna '{mapeo.Value.ColumnName}' no existe en la hoja <strong>{nombreHoja}</strong> ."
 
                     End If
 
@@ -293,38 +226,57 @@ Public Class ExcelReader
 
 
         'moverse a la hoja pedida
-        Do
-            If String.Equals(
-                    reader.Name,
-                    nombreHoja,
-                    StringComparison.OrdinalIgnoreCase) Then
+        'Do
+        '    If String.Equals(
+        '            reader.Name,
+        '            nombreHoja,
+        '            StringComparison.OrdinalIgnoreCase) Then
 
-                Exit Do
+        '        Exit Do
 
-            End If
+        '    End If
 
 
-        Loop While reader.NextResult()
+        'Loop While reader.NextResult()
+
+        Dim indiceHoja As Integer
+
+        If Integer.TryParse(nombreHoja, indiceHoja) Then
+
+            Dim indiceActual As Integer = 0
+
+            Do
+
+                If indiceActual = indiceHoja Then
+                    nombreHoja = (indiceActual + 1).ToString()
+                    Exit Do
+                End If
+
+                indiceActual += 1
+
+            Loop While reader.NextResult()
+
+        Else
+
+            Do
+
+                If String.Equals(
+            reader.Name,
+            nombreHoja,
+            StringComparison.OrdinalIgnoreCase
+        ) Then
+
+                    Exit Do
+
+                End If
+
+            Loop While reader.NextResult()
+
+        End If
 
         'moverse al ennabezado
         For i As Integer = 1 To filaEncabezado
             reader.Read()
-        Next
-
-        Dim encabezados As New List(Of String)
-
-        'obtener encebezados 
-        For i As Integer = 0 To mapeoColumnas.Count - 1
-
-            Dim headerName As String =
-            If(reader.GetValue(i)?.ToString(), "").Trim().Replace(vbCrLf, vbLf)
-
-            If String.IsNullOrWhiteSpace(headerName) Then
-                headerName = i.ToString()
-            End If
-
-            encabezados.Add(headerName)
-
         Next
 
         'Moverse a la fila despues del encabezado

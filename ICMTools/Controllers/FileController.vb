@@ -19,14 +19,14 @@ Public Class FileController
 #Region "Variables Locales"
 
     Private mUser As User
-    Private mLog As Log
+    'Private mLog As Log
     Private sc As New SharedController
-    Private sanitize As New FileClass
+    'Private sanitize As New FileClass
     Private ReadOnly _excelService As New ExcelService
     Private ReadOnly _excelReader As New ExcelReader
 
 
-    Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
+    '   Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
 
 #End Region
 
@@ -55,7 +55,6 @@ Public Class FileController
     <Route("api/files/checkexists")>
     Public Function CheckFileExists(<FromBody> request As CheckFileRequest) As IHttpActionResult
         Try
-            Dim sanitizeClass As New Sanitizacion
             If HttpContext.Current.Session.Item("User") Is Nothing Then Return Unauthorized()
             'mLog = New Log()
 
@@ -74,20 +73,6 @@ Public Class FileController
             End If
 
             If File.Exists(fullPath) Then
-                'If safeExtension = ".csv" Then
-                '    Try
-                '        Dim firstLine As String = File.ReadLines(fullPath).FirstOrDefault()
-                '        If firstLine IsNot Nothing AndAlso Not firstLine.Contains(",") Then
-                '            Dim errorHtml As String = "<tr><td>Delimitador incorrecto</td><td>El archivo CSV debe estar delimitado por comas (,).</td></tr>"
-                '            mLog.InsertApplicationLog("FileController", "CheckFileExists", "Error", "El archivo importado no contiene el delimitador correcto")
-                '            Return Ok(New With {.d = sc.TableBuilder(errorHtml, 1)})
-                '        End If
-                '    Catch ex As Exception
-                '        Dim errorHtml As String = "<tr><td>Error de lectura</td><td>No se pudo leer el archivo CSV para validación.</td></tr>"
-                '        mLog.InsertApplicationLog("FileController", "CheckFileExists", "Error", $"Error al intentar leer el archivo {ex}")
-                '        Return Ok(New With {.d = sc.TableBuilder(errorHtml, 1)})
-                '    End Try
-                'End If
 
                 Return Ok(New With {.d = True, .path = fullPath})
             Else
@@ -114,6 +99,8 @@ Public Class FileController
 
             Dim errorsList As String = Nothing
             Dim erroresValidacion As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
+            Dim encabezadosErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
+
             Dim validarEncabezados As Boolean = True
 
             If request.FileClass Is Nothing Then
@@ -141,10 +128,7 @@ Public Class FileController
                     Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
                 End If
 
-                Dim encabezadosErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
-                'Dim valoresVaciosErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
 
-                'Validacion encabezados de hojas
                 For Each hoja In hojasDefinidas
 
 
@@ -161,61 +145,32 @@ Public Class FileController
 
                     encabezadosErrores.AddRange(_excelReader.ValidarEncabezadosExcel(hoja, request.Path, atributo.HeaderRow, atributo.SheetName, mapeoColumnas))
 
-
-                    If encabezadosErrores.Count > 0 Then
-                        Continue For
-                    End If
-
-                    'valoresVaciosErrores.AddRange(_excelReader.ValidarVacios(hoja, request.Path, atributo.HeaderRow, atributo.SheetName, mapeoColumnas))
-
-                    'If valoresVaciosErrores.Count > 0 Then
-                    'Continue For
-                    'End If
-
-
-                    '_excelReader.ValidarTipoDato(hoja, request.Path, atributo.HeaderRow, atributo.SheetName, mapeoColumnas)
-
-
-
-
                 Next
-
-                If encabezadosErrores.Count > 0 Then
-                    For Each encabezadosError In encabezadosErrores
-                        errorsList += $"<tr><td>{encabezadosError.Problema}</td><td>" & String.Join(", ", encabezadosError.Detalle) & "</td></tr>"
-                    Next
-
-                    Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
-
-                End If
-
-                'If valoresVaciosErrores.Count > 0 Then
-                'For Each valoresVaciosError In valoresVaciosErrores
-                'errorsList += $"<tr><td>{valoresVaciosError.Problema}</td><td>" & String.Join(", ", valoresVaciosError.Detalle) & "</td></tr>"
-                'Next
-
-                'Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
-
-                '            End If
 
             Else
                 Dim cantidadHojas As Integer = _excelReader.ContarHojas(request.Path)
 
                 For i As Integer = 0 To cantidadHojas - 1
 
-                    'validarEncabezados = _excelReader.ValidarEncabezadosExcel(tipo, request.Path, request.HeaderRow, i)
+                    Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(tipo)
 
-                    If Not validarEncabezados Then
-                        Return Ok(New With {
-                    .d = $"Nombres de columnas incorrectos. El archivo no contiene los nombres de columnas correctos en la hoja {i + 1}, por favor corrija a los titulos esperados y vuelva a intentar la carga."
-                })
-                    End If
-
+                    encabezadosErrores.AddRange(_excelReader.ValidarEncabezadosExcel(tipo, request.Path, request.HeaderRow, i.ToString(), mapeoColumnas))
 
                 Next
 
 
             End If
+
+
+            If encabezadosErrores.Count > 0 Then
+                For Each encabezadosError In encabezadosErrores
+                    errorsList += $"<tr><td>{encabezadosError.Problema}</td><td>" & String.Join(", ", encabezadosError.Detalle) & "</td></tr>"
+                Next
+
+                Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
+
+            End If
+
 
             Return Ok(New With {.d = True})
 
@@ -235,7 +190,7 @@ Public Class FileController
     <HttpGet>
     <Route("api/files/download")>
     Public Function DownloadFile(ByVal filename As String) As HttpResponseMessage
-        mLog = New Log
+        ' mLog = New Log
         Try
             Dim fileClass As New FileClass
             Dim safeFileName = fileClass.GetSafeFileName(filename)
@@ -256,7 +211,7 @@ Public Class FileController
             Return response
 
         Catch ex As Exception
-            mLog.insertLog("FileController", "DownloadFile", $"Ocurrió un error: " + ex.Message)
+            'mLog.insertLog("FileController", "DownloadFile", $"Ocurrió un error: " + ex.Message)
             Return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex)
         End Try
     End Function
@@ -270,7 +225,7 @@ Public Class FileController
     <HttpDelete>
     <Route("api/files/delete")>
     Public Function DeleteFileFunction(<FromBody> request As DeleteFunction) As IHttpActionResult
-        mLog = New Log
+        'mLog = New Log
         Try
             Dim fileClass As New FileClass
 
@@ -288,7 +243,7 @@ Public Class FileController
 
             Return Nothing
         Catch ex As Exception
-            mLog.insertLog("FileController", "DeleteFileFunction", $"Ocurrió un error: " + ex.Message)
+            'mLog.insertLog("FileController", "DeleteFileFunction", $"Ocurrió un error: " + ex.Message)
             Return InternalServerError(ex)
         End Try
     End Function
@@ -300,7 +255,7 @@ Public Class FileController
     <HttpDelete>
     <Route("api/files/deleteall")>
     Public Function DeleteAllFunction(<FromBody> request As DeleteFunction) As IHttpActionResult
-        mLog = New Log
+        'mLog = New Log
         Try
             Dim fileClass As New FileClass
             Dim basePath As String = HttpContext.Current.Server.MapPath("~\UploadedFiles")
@@ -325,7 +280,7 @@ Public Class FileController
 
             Return Ok(New With {.d = True})
         Catch ex As Exception
-            mLog.insertLog("FileController", "DeleteAllFunction", $"Ocurrió un error: " + ex.Message)
+            'mLog.insertLog("FileController", "DeleteAllFunction", $"Ocurrió un error: " + ex.Message)
             Return InternalServerError(ex)
         End Try
     End Function
@@ -362,262 +317,236 @@ Public Class FileController
         Return resultado
     End Function
 
-    '''<summary>
-    '''Lee un Archivo Excel almacenado en UploadedFiles y convierte su contenido en un array bidimensional 1-based.
-    '''</summary>
-    '''<returns>Un array de objetos (Object(,)) 1-based que contiene los datos de la hoja de cálculo.</returns>
-    '''<remarks>
-    '''Esta funcion usa la libreriía ClosedXML para leer un archivo .xlsx.
-    '''A diferencia de los arrays de .NET, que son 0-based, este método retorna un array 1-based para que coincida con la numeración de filas y columnas de Excel.
-    '''</remarks>
-    Public Function GetExcelArray(Modulo As String, Extension As String, Optional AllowDuplicateEntries As Boolean = False) As Object
-        Dim finalArray As Object = Nothing
+    'Public Function GetExcelArray(Modulo As String, Extension As String, Optional AllowDuplicateEntries As Boolean = False) As Object
+    '    Dim finalArray As Object = Nothing
 
-        Dim safeModulo As String = Modulo.Replace("..", "").Replace("\\", "").Replace("//", "")
-        Dim safeExtension As String = Path.GetExtension(Extension)
+    '    Dim safeModulo As String = Modulo.Replace("..", "").Replace("\\", "").Replace("//", "")
+    '    Dim safeExtension As String = Path.GetExtension(Extension)
 
-        Dim mUser As User = CType(HttpContext.Current.Session.Item("User"), User)
-        Dim filePath As String = HttpContext.Current.Server.MapPath("~\UploadedFiles\" + safeModulo + "\" + mUser.Email + safeExtension)
+    '    Dim mUser As User = CType(HttpContext.Current.Session.Item("User"), User)
+    '    Dim filePath As String = HttpContext.Current.Server.MapPath("~\UploadedFiles\" + safeModulo + "\" + mUser.Email + safeExtension)
 
-        If safeExtension = ".csv" Then
-            finalArray = GetCSVArray(filePath)
+    '    If safeExtension = ".csv" Then
+    '        finalArray = GetCSVArray(filePath)
 
-            Dim result As Object(,) = finalArray
-            If (Not AllowDuplicateEntries) Then
-                result = DeleteDoppelganger(finalArray)
-            End If
+    '        Dim result As Object(,) = finalArray
+    '        If (Not AllowDuplicateEntries) Then
+    '            result = DeleteDoppelganger(finalArray)
+    '        End If
 
-            Return result
-        End If
+    '        Return result
+    '    End If
 
-        Using workbook As New XLWorkbook(filePath)
-            Dim worksheet = workbook.Worksheet(1)
-            If worksheet Is Nothing OrElse worksheet.LastCellUsed() Is Nothing Then Return Nothing
+    '    Using workbook As New XLWorkbook(filePath)
+    '        Dim worksheet = workbook.Worksheet(1)
+    '        If worksheet Is Nothing OrElse worksheet.LastCellUsed() Is Nothing Then Return Nothing
 
-            Dim range = worksheet.RangeUsed()
-            Dim numCols As Integer = range.ColumnCount()
+    '        Dim range = worksheet.RangeUsed()
+    '        Dim numCols As Integer = range.ColumnCount()
 
-            If numCols < 3 Then numCols = 3
-            Dim dataRows As New List(Of Object())
+    '        If numCols < 3 Then numCols = 3
+    '        Dim dataRows As New List(Of Object())
 
-            For Each row In range.Rows()
-                If row.IsEmpty() Then Continue For
+    '        For Each row In range.Rows()
+    '            If row.IsEmpty() Then Continue For
 
-                Dim rowArray(numCols - 1) As Object
-                Dim isRowEmpty As Boolean = True
+    '            Dim rowArray(numCols - 1) As Object
+    '            Dim isRowEmpty As Boolean = True
 
-                For j As Integer = 0 To numCols - 1
-                    Dim cell = row.Cell(j + 1)
-                    Dim cellValue As Object = Nothing
+    '            For j As Integer = 0 To numCols - 1
+    '                Dim cell = row.Cell(j + 1)
+    '                Dim cellValue As Object = Nothing
 
-                    If Not cell.IsEmpty() Then
-                        If cell.DataType = XLDataType.DateTime Then
-                            cellValue = cell.GetDateTime().ToString("dd/MM/yyyy")
-                        Else
-                            cellValue = cell.GetFormattedString()
-                        End If
-                    End If
+    '                If Not cell.IsEmpty() Then
+    '                    If cell.DataType = XLDataType.DateTime Then
+    '                        cellValue = cell.GetDateTime().ToString("dd/MM/yyyy")
+    '                    Else
+    '                        cellValue = cell.GetFormattedString()
+    '                    End If
+    '                End If
 
-                    rowArray(j) = cellValue
-                    If j < 3 AndAlso cellValue IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(cellValue.ToString()) Then isRowEmpty = False
-                Next
+    '                rowArray(j) = cellValue
+    '                If j < 3 AndAlso cellValue IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(cellValue.ToString()) Then isRowEmpty = False
+    '            Next
 
-                If Not isRowEmpty Then dataRows.Add(rowArray)
+    '            If Not isRowEmpty Then dataRows.Add(rowArray)
 
-            Next
+    '        Next
 
-            If dataRows.Count = 0 Then Return Nothing
+    '        If dataRows.Count = 0 Then Return Nothing
 
-            Dim finalNumRows As Integer = dataRows.Count
-            Dim finalNumCols As Integer = dataRows(0).Length
-            finalArray = Array.CreateInstance(GetType(Object), {finalNumRows, finalNumCols}, {1, 1})
+    '        Dim finalNumRows As Integer = dataRows.Count
+    '        Dim finalNumCols As Integer = dataRows(0).Length
+    '        finalArray = Array.CreateInstance(GetType(Object), {finalNumRows, finalNumCols}, {1, 1})
 
-            For i As Integer = 0 To finalNumRows - 1
-                For j As Integer = 0 To finalNumCols - 1
-                    finalArray(i + 1, j + 1) = dataRows(i)(j)
-                Next
-            Next
+    '        For i As Integer = 0 To finalNumRows - 1
+    '            For j As Integer = 0 To finalNumCols - 1
+    '                finalArray(i + 1, j + 1) = dataRows(i)(j)
+    '            Next
+    '        Next
 
-            Dim result As Object(,) = finalArray
-            If (Not AllowDuplicateEntries) Then
-                result = DeleteDoppelganger(finalArray)
-            End If
+    '        Dim result As Object(,) = finalArray
+    '        If (Not AllowDuplicateEntries) Then
+    '            result = DeleteDoppelganger(finalArray)
+    '        End If
 
-            Return result
-        End Using
-    End Function
+    '        Return result
+    '    End Using
+    'End Function
 
-    '''<summary>
-    '''Lee un Archivo CSV almacenado en UploadedFiles y convierte su contenido en un array bidimensional 1-based.
-    '''</summary>
-    '''<returns>Un array de objetos (Object(,)) 1-based que contiene los datos del Archivo.</returns>
-    '''<remarks>
-    '''Esta funcion usa la libreriía ClosedXML para leer un archivo .xlsx.
-    '''A diferencia de los arrays de .NET, que son 0-based, este método retorna un array 1-based para que coincida con la numeración de filas y columnas del CSV.
-    '''</remarks>
-    Public Function GetCSVArray(filePath As String) As Object
-        Try
-            Dim safeFilePath As String = sanitize.GetSafeFilePath(filePath)
-            If Not File.Exists(safeFilePath) Then
-                Return Nothing
-            End If
 
-            If Not File.Exists(safeFilePath) Then
-                Return Nothing
-            End If
+    'Public Function GetCSVArray(filePath As String) As Object
+    '    Try
+    '        Dim safeFilePath As String = sanitize.GetSafeFilePath(filePath)
+    '        If Not File.Exists(safeFilePath) Then
+    '            Return Nothing
+    '        End If
 
-            Dim content As String
-            content = File.ReadAllText(safeFilePath, System.Text.Encoding.UTF8)
+    '        If Not File.Exists(safeFilePath) Then
+    '            Return Nothing
+    '        End If
 
-            If content.Contains("") Then
-                content = File.ReadAllText(safeFilePath, System.Text.Encoding.GetEncoding(1252)) ' 1252 es la página de códigos para Windows - 1252
-            End If
+    '        Dim content As String
+    '        content = File.ReadAllText(safeFilePath, System.Text.Encoding.UTF8)
 
-            Dim lines As List(Of String()) = New List(Of String())
-            Using reader As New StringReader(content)
-                While reader.Peek() >= 0
-                    Dim line As String = reader.ReadLine()
-                    If String.IsNullOrWhiteSpace(line) Then
-                        Continue While
-                    End If
-                    'If Not String.IsNullOrWhiteSpace(line) Then
-                    '    Dim fields As String() = line.Split(","c)
-                    '    If Not fields.All(Function(f) String.IsNullOrWhiteSpace(f.Trim())) Then
-                    '        lines.Add(fields)
-                    '    End If
-                    'End If
-                    Dim fields As String() = line.Split(","c)
-                    If Not fields.All(Function(f) String.IsNullOrWhiteSpace(f.Trim())) Then
-                        lines.Add(fields)
-                    End If
-                End While
-            End Using
+    '        If content.Contains("") Then
+    '            content = File.ReadAllText(safeFilePath, System.Text.Encoding.GetEncoding(1252)) ' 1252 es la página de códigos para Windows - 1252
+    '        End If
 
-            If lines.Count = 0 Then
-                Return Nothing
-            End If
+    '        Dim lines As List(Of String()) = New List(Of String())
+    '        Using reader As New StringReader(content)
+    '            While reader.Peek() >= 0
+    '                Dim line As String = reader.ReadLine()
+    '                If String.IsNullOrWhiteSpace(line) Then
+    '                    Continue While
+    '                End If
+    '                'If Not String.IsNullOrWhiteSpace(line) Then
+    '                '    Dim fields As String() = line.Split(","c)
+    '                '    If Not fields.All(Function(f) String.IsNullOrWhiteSpace(f.Trim())) Then
+    '                '        lines.Add(fields)
+    '                '    End If
+    '                'End If
+    '                Dim fields As String() = line.Split(","c)
+    '                If Not fields.All(Function(f) String.IsNullOrWhiteSpace(f.Trim())) Then
+    '                    lines.Add(fields)
+    '                End If
+    '            End While
+    '        End Using
 
-            Dim numRows As Integer = lines.Count
-            Dim numCols As Integer = lines(0).Length
-            Dim finalArray As Array = Array.CreateInstance(GetType(Object), {numRows, numCols}, {1, 1})
+    '        If lines.Count = 0 Then
+    '            Return Nothing
+    '        End If
 
-            For i As Integer = 0 To numRows - 1
-                For j As Integer = 0 To numCols - 1
-                    If j < lines(i).Length Then
-                        finalArray.SetValue(lines(i)(j), i + 1, j + 1)
-                    Else
-                        finalArray.SetValue(Nothing, i + 1, j + 1)
-                    End If
-                Next
-            Next
+    '        Dim numRows As Integer = lines.Count
+    '        Dim numCols As Integer = lines(0).Length
+    '        Dim finalArray As Array = Array.CreateInstance(GetType(Object), {numRows, numCols}, {1, 1})
 
-            Return finalArray
-        Catch ex As Exception
-            Throw
-        End Try
-    End Function
+    '        For i As Integer = 0 To numRows - 1
+    '            For j As Integer = 0 To numCols - 1
+    '                If j < lines(i).Length Then
+    '                    finalArray.SetValue(lines(i)(j), i + 1, j + 1)
+    '                Else
+    '                    finalArray.SetValue(Nothing, i + 1, j + 1)
+    '                End If
+    '            Next
+    '        Next
 
-    '''<summary>
-    '''Lee un Archivo CSV almacenado en UploadedFiles y convierte su contenido en un array bidimensional 1-based.
-    '''</summary>
-    '''<returns>Un array de objetos (Object(,)) 1-based que contiene los datos del Archivo.</returns>
-    '''<remarks>
-    '''Esta funcion usa la libreriía ClosedXML para leer un archivo .xlsx.
-    '''A diferencia de los arrays de .NET, que son 0-based, este método retorna un array 1-based para que coincida con la numeración de filas y columnas del CSV.
-    '''</remarks>
-    Public Function GetChunkArray(filePath As String) As Object
-        Try
-            Dim mUser As User = CType(HttpContext.Current.Session.Item("User"), User)
+    '        Return finalArray
+    '    Catch ex As Exception
+    '        Throw
+    '    End Try
+    'End Function
 
-            Dim safeFilePath As String = sanitize.GetSafeFilePath(filePath)
-            If Not File.Exists(safeFilePath) Then
-                Return Nothing
-            End If
 
-            Dim lines As List(Of String()) = New List(Of String())
-            Using reader As New StreamReader(safeFilePath)
-                While Not reader.EndOfStream
-                    Dim line As String = reader.ReadLine()
-                    If Not String.IsNullOrWhiteSpace(line) Then
-                        Dim fields As String() = line.Split(","c)
-                        If Not fields.All(Function(f) String.IsNullOrWhiteSpace(f)) Then
-                            lines.Add(fields)
-                        End If
-                    End If
-                End While
-            End Using
+    'Public Function GetChunkArray(filePath As String) As Object
+    '    Try
+    '        Dim mUser As User = CType(HttpContext.Current.Session.Item("User"), User)
 
-            If lines.Count = 0 Then
-                Return Nothing
-            End If
+    '        Dim safeFilePath As String = sanitize.GetSafeFilePath(filePath)
+    '        If Not File.Exists(safeFilePath) Then
+    '            Return Nothing
+    '        End If
 
-            Dim numRows As Integer = lines.Count
-            Dim numCols As Integer = lines(0).Length
-            Dim finalArray As Array = Array.CreateInstance(GetType(Object), {numRows, numCols}, {1, 1})
+    '        Dim lines As List(Of String()) = New List(Of String())
+    '        Using reader As New StreamReader(safeFilePath)
+    '            While Not reader.EndOfStream
+    '                Dim line As String = reader.ReadLine()
+    '                If Not String.IsNullOrWhiteSpace(line) Then
+    '                    Dim fields As String() = line.Split(","c)
+    '                    If Not fields.All(Function(f) String.IsNullOrWhiteSpace(f)) Then
+    '                        lines.Add(fields)
+    '                    End If
+    '                End If
+    '            End While
+    '        End Using
 
-            For i As Integer = 0 To numRows - 1
-                For j As Integer = 0 To numCols - 1
-                    If j < lines(i).Length Then
-                        finalArray.SetValue(lines(i)(j), i + 1, j + 1)
-                    Else
-                        finalArray.SetValue(Nothing, i + 1, j + 1)
-                    End If
-                Next
-            Next
+    '        If lines.Count = 0 Then
+    '            Return Nothing
+    '        End If
 
-            Return finalArray
-        Catch ex As Exception
-            Throw
-        End Try
-    End Function
+    '        Dim numRows As Integer = lines.Count
+    '        Dim numCols As Integer = lines(0).Length
+    '        Dim finalArray As Array = Array.CreateInstance(GetType(Object), {numRows, numCols}, {1, 1})
 
-    ''' <summary>
-    ''' Crea un archivo .xlsx a partir de un DataTable y lo guarda en el servidor.
-    ''' </summary>
-    ''' <param name="dt">El DataTable que contiene los datos para el archivo Excel.</param>
-    ''' <returns>La ruta absoluta del archivo .xlsx generado en el servidor.</returns>
-    Public Function BuildXlsx(dt As DataTable, ScreenName As String) As String
-        Dim timestamp As String = DateTime.Now.ToString("ddMMyyyy_HH_mm_ss")
-        Dim fileName As String = $"Resultados_{ScreenName}_{timestamp}.xlsx"
-        Dim safeFileName As String = sanitize.GetSafeFileName(fileName)
-        Dim filePath As String = HttpContext.Current.Server.MapPath("~/UploadedFiles/" + safeFileName)
+    '        For i As Integer = 0 To numRows - 1
+    '            For j As Integer = 0 To numCols - 1
+    '                If j < lines(i).Length Then
+    '                    finalArray.SetValue(lines(i)(j), i + 1, j + 1)
+    '                Else
+    '                    finalArray.SetValue(Nothing, i + 1, j + 1)
+    '                End If
+    '            Next
+    '        Next
 
-        Using workbook As New XLWorkbook()
-            workbook.Worksheets.Add(dt, "Resultados")
-            workbook.Worksheet(1).Columns().AdjustToContents()
-            workbook.SaveAs(filePath)
-        End Using
+    '        Return finalArray
+    '    Catch ex As Exception
+    '        Throw
+    '    End Try
+    'End Function
 
-        Return filePath
-    End Function
 
-    Public Function BuildXlsx(dt As DataTable) As String
-        Dim now As DateTime = DateTime.Now
-        Dim hour12 As Integer = If(now.Hour Mod 12 = 0, 12, now.Hour Mod 12)
-        Dim hour As String = hour12.ToString() & If(now.Hour < 12, "AM", "PM")
-        Dim FileName As String = $"Log-CargaExcepciones{now.Month}-{now.Day}-{now.Year}_{hour}.xlsx"
+    'Public Function BuildXlsx(dt As DataTable, ScreenName As String) As String
+    '    Dim timestamp As String = DateTime.Now.ToString("ddMMyyyy_HH_mm_ss")
+    '    Dim fileName As String = $"Resultados_{ScreenName}_{timestamp}.xlsx"
+    '    Dim safeFileName As String = sanitize.GetSafeFileName(fileName)
+    '    Dim filePath As String = HttpContext.Current.Server.MapPath("~/UploadedFiles/" + safeFileName)
 
-        Dim safeFileName As String = sanitize.GetSafeFileName(FileName)
+    '    Using workbook As New XLWorkbook()
+    '        workbook.Worksheets.Add(dt, "Resultados")
+    '        workbook.Worksheet(1).Columns().AdjustToContents()
+    '        workbook.SaveAs(filePath)
+    '    End Using
 
-        If String.IsNullOrWhiteSpace(safeFileName) Then
-            Throw New ArgumentException("El nombre del archivo no es válido.")
-        End If
+    '    Return filePath
+    'End Function
 
-        Dim basePath As String = Path.GetTempPath()
-        Dim filePath As String = Path.Combine(basePath, safeFileName)
+    'Public Function BuildXlsx(dt As DataTable) As String
+    '    Dim now As DateTime = DateTime.Now
+    '    Dim hour12 As Integer = If(now.Hour Mod 12 = 0, 12, now.Hour Mod 12)
+    '    Dim hour As String = hour12.ToString() & If(now.Hour < 12, "AM", "PM")
+    '    Dim FileName As String = $"Log-CargaExcepciones{now.Month}-{now.Day}-{now.Year}_{hour}.xlsx"
 
-        If Not filePath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase) Then
-            Throw New UnauthorizedAccessException("Ruta de archivo no permitida.")
-        End If
+    '    Dim safeFileName As String = sanitize.GetSafeFileName(FileName)
 
-        Using workbook As New XLWorkbook()
-            workbook.Worksheets.Add(dt, "Resultados")
-            workbook.Worksheet(1).Columns().AdjustToContents()
-            workbook.SaveAs(filePath)
-        End Using
+    '    If String.IsNullOrWhiteSpace(safeFileName) Then
+    '        Throw New ArgumentException("El nombre del archivo no es válido.")
+    '    End If
 
-        Return filePath
-    End Function
+    '    Dim basePath As String = Path.GetTempPath()
+    '    Dim filePath As String = Path.Combine(basePath, safeFileName)
+
+    '    If Not filePath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase) Then
+    '        Throw New UnauthorizedAccessException("Ruta de archivo no permitida.")
+    '    End If
+
+    '    Using workbook As New XLWorkbook()
+    '        workbook.Worksheets.Add(dt, "Resultados")
+    '        workbook.Worksheet(1).Columns().AdjustToContents()
+    '        workbook.SaveAs(filePath)
+    '    End Using
+
+    '    Return filePath
+    'End Function
 
     '''<summary>
     '''Concatena todos los campos de un registro, Detecta duplicidades y posteriormente las elimina.

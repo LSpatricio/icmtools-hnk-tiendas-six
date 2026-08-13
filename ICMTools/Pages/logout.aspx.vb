@@ -3,7 +3,7 @@
 Public Class logout
     Inherits System.Web.UI.Page
 
-    Private mLog As Log
+    ' Private mLog As Log
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         SessionEnd()
@@ -14,8 +14,8 @@ Public Class logout
     End Sub
     Private Sub SessionEnd()
         If Not Session.Item("User") Is Nothing Then
-            mLog = New Log
-            mLog.insertLog("ICMTools", "LOGOUT", "Termina sesion")
+            'mLog = New Log
+            'mLog.insertLog("ICMTools", "LOGOUT", "Termina sesion")
 
             Session.RemoveAll()
             Session.Abandon()

@@ -2,6 +2,8 @@
 
     Property FileClass As String
     Property Path As String
+    Property HeaderRow As Integer
+
 
 End Class
 
