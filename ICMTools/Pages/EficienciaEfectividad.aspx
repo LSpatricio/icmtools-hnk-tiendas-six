@@ -35,7 +35,7 @@ const configuraciones = {
         selector: "",
         fileType: "EficienciaEfectividad",
         extension: ".xlsx",
-        fileClass: "ICMTools.EficienciaEfectividadExcelDto",
+        fileClass: "ICMTools.EficienciaExcelDto",
         headerRow:6
     },
     logging: {
