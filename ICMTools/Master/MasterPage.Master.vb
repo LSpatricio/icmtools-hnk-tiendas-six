@@ -61,21 +61,21 @@ Public Class MasterPage
 
         'Valida la sesion del usuario, en caso de que ya haya caducado segun el web.config, 
         'redirecciona a la pagina de auttenticación.
-        'If Not Session.Item("User") Is Nothing Then
-        '    mUser = CType(Session.Item("User"), User)
-        'Else
-        '    Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
-        'End If
+        If Not Session.Item("User") Is Nothing Then
+            mUser = CType(Session.Item("User"), User)
+        Else
+            Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
+        End If
 
-        'MessageBoxRefresh()
+        MessageBoxRefresh()
 
-        'If Not Me.IsPostBack Then
-        '    'Establece los valores iniciales.
-
-        '    'Dim idModel As String = CargarModelos()
-        '    'CargarPantallas(idModel)
-        '    'SetInitialValues()
-        'End If
+        If Not Me.IsPostBack Then
+            'Establece los valores iniciales.
+            litModeloInicial.Text = mUser.Model
+            'Dim idModel As String = CargarModelos()
+            CargarPantallas()
+            SetInitialValues()
+        End If
 
     End Sub
 
@@ -122,37 +122,59 @@ Public Class MasterPage
     ''' <summary>
     ''' Método que carga las pantallas habilitadas para el modelo seleccionado.
     ''' </summary>
-    ''' <param name="idModelo"></param>
-    Private Sub CargarPantallas(idModelo As String)
+    Private Sub CargarPantallas()
         mUser = CType(Session.Item("User"), User)
 
         If Not mUser Is Nothing Then
-            ' La función ahora devuelve un solo objeto MenuData, no una lista.
-            Dim menu As MenuData = ScreenPermission.ScreenPermission(CInt(idModelo))
-
+            'Dim menu As MenuData = ScreenPermission.ScreenPermission(CInt(1))
+            Dim menu As New List(Of AppScreen) From {
+    New AppScreen With {
+        .IDModel = 1,
+        .IDScreen = 1,
+        .ScreenName = "Inicio",
+        .URL = "~/Pages/Home.aspx"
+    },
+    New AppScreen With {
+        .IDModel = 1,
+        .IDScreen = 2,
+        .ScreenName = "EficienciaEfectividad",
+        .URL = "~/Pages/EficienciaEfectividad.aspx"
+    },
+    New AppScreen With {
+        .IDModel = 1,
+        .IDScreen = 3,
+        .ScreenName = "Configuración",
+        .URL = "~/Pages/EmpleadosActivos.aspx"
+    },
+    New AppScreen With {
+        .IDModel = 1,
+        .IDScreen = 4,
+        .ScreenName = "Carga de archivos",
+        .URL = "~/Pages/ExceptionsUpload.aspx"
+    },
+    New AppScreen With {
+        .IDModel = 2,
+        .IDScreen = 1,
+        .ScreenName = "Inicio",
+        .URL = "~/Pages/Home.aspx"
+    },
+    New AppScreen With {
+        .IDModel = 2,
+        .IDScreen = 5,
+        .ScreenName = "Reportes",
+        .URL = "~/Pages/ExceptionsReportHistory.aspx"
+    }
+}
             If menu IsNot Nothing Then
-                ' Asigna directamente las listas del objeto MenuData a los repeaters.
-                RepeaterModuloAgrupado.DataSource = menu.AggregatedItems
-                RepeaterModuloAgrupado.DataBind()
-                RepeaterModuloSinAgrupas.DataSource = menu.SimpleItems
+
+                RepeaterModuloSinAgrupas.DataSource = menu
                 RepeaterModuloSinAgrupas.DataBind()
             End If
         Else
             Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
         End If
     End Sub
-    Protected Sub RepeaterModulo_ItemDataBound(sender As Object, e As RepeaterItemEventArgs)
 
-        If e.Item.ItemType = ListItemType.Item OrElse e.Item.ItemType = ListItemType.AlternatingItem Then
-            Dim repeaterInterno As Repeater = e.Item.FindControl("RepeaterPantallas")
-            ' La propiedad ahora se llama "Screens" en la clase ScreenAggregator
-            Dim aggregatorItem As ScreenAggregator = CType(e.Item.DataItem, ScreenAggregator)
-
-            repeaterInterno.DataSource = aggregatorItem.Screens
-            repeaterInterno.DataBind()
-        End If
-
-    End Sub
 
     Public Sub MessageBoxRefresh()
         Dim myGenericControl As HtmlGenericControl
@@ -180,18 +202,7 @@ Public Class MasterPage
 
     End Sub
 
-    Public Sub MessageBoxShow(ex As Exception)
 
-        Dim msg As New htmlMessage(Me, "Message", "MessageTitle", "MessagePrimary", "MessageSecondary", "MessageIcon")
-
-        msg.Title = ex.Source
-        msg.MessagePrimary = ex.Message
-        msg.MessagensSecondary = ex.StackTrace
-        msg.MessageType = htmlMessageIcon.IconError
-
-        msg.Show()
-
-    End Sub
 
 
 End Class

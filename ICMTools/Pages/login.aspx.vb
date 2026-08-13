@@ -1,9 +1,23 @@
+Imports System.Net.NetworkInformation
+Imports System.Web.ApplicationServices
+
 Public Class login
     Inherits System.Web.UI.Page
 
-    Private mUser As User
-    Private mLog As Log
 
+    Private ReadOnly _configuration As IAppConfiguration
+    Private ReadOnly _authenticationService As AuthenticationService
+    Private ReadOnly _payeeService As PayeeService
+
+
+    Private mUser As User
+    'Private mLog As Log
+
+    Public Sub New()
+        _configuration = New AppConfiguration()
+        _authenticationService = New AuthenticationService()
+        _payeeService = New PayeeService()
+    End Sub
     Private Sub login_Init(sender As Object, e As EventArgs) Handles Me.Init
         '------Evitar Caché del Navegador--------
         Response.Expires = -10000
@@ -15,136 +29,74 @@ Public Class login
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Try
-            Dim EncodeModel As String = Request.QueryString("m")
-            Dim EncodeICMUser As String = Request.QueryString("u")
-            Dim EncodeKey As String = Request.QueryString("k")
+            Dim EncodeModel As String = "WlpaWlpa" 'Request.QueryString("m")
+            Dim EncodeICMUser As String = "WlpaWlpa" ' Request.QueryString("u")
+            Dim EncodeKey As String = "WlpaWlpa" 'Request.QueryString("k")
 
-            If (Not EncodeModel Is Nothing AndAlso Not EncodeICMUser Is Nothing AndAlso Not EncodeKey Is Nothing) Then
-                SessionStart(EncodeModel, EncodeICMUser, EncodeKey)
-            Else
-                MessageBoxShow("Aviso: Acceso Denegado", "El portal de ICMTools solo es accesible desde ICM Web.", "Acceso bloqueado por seguridad.", htmlMessageIcon.IconError)
-            End If
+            'If (Not EncodeModel Is Nothing AndAlso Not EncodeICMUser Is Nothing AndAlso Not EncodeKey Is Nothing) Then
+            'SessionStart(EncodeModel, EncodeICMUser, EncodeKey)
+            RegisterAsyncTask(
+            New PageAsyncTask(
+                Function()
+                    Return SessionStart(EncodeModel, EncodeICMUser, EncodeKey)
+                End Function))
+            'Else
+            'MessageBoxShow("Aviso: Acceso Denegado", "El portal de ICMTools solo es accesible desde ICM Web.", "Acceso bloqueado por seguridad.", htmlMessageIcon.IconError)
+            'End If
         Catch ex As Exception
             MessageBoxShow("Error en autenticación", ex.Message, "Fuente:" & ex.InnerException.Source, htmlMessageIcon.IconError)
         End Try
     End Sub
 
-    Private Sub SessionStart(ByVal Model As String, ByVal User As String, ByVal Key As String)
+    Private Async Function SessionStart(ByVal Model As String, ByVal User As String, ByVal Key As String) As Threading.Tasks.Task
         Try
             Dim Maintenance As Boolean
-            Maintenance = ConfigurationManager.AppSettings("Maintenance")
-            Dim userAccess As String = ""
-            Dim modelAccess As String = ""
+            Maintenance = _configuration.Maintenance
 
             If Maintenance = True Then
                 MessageBoxShow("Aviso: Mantenimiento", "El sistema no se encuentra disponible debido a un mantenimiento, para cualquier duda favor de contactar al área de soporte ICM.", "Temporalmente fuera de servicio.", htmlMessageIcon.IconInfo1)
             Else
 
-                Dim DecodeModel As String = DecodificarCredencial(Model)
-                Dim DecodeICMUser As String = DecodificarCredencial(User)
-                Dim DecodeKey As String = DecodificarCredencial(Key)
+                Dim resultToken As AuthenticationResult = _authenticationService.ValidateToken(Model, User, Key)
+                resultToken.Status = AuthenticationService.AuthenticationStatus.Valid
+                resultToken.Model = "ICMMNFHeinekenQA"
+                resultToken.User = "00000301@heineken.com"
 
-                userAccess = DecodeICMUser
-                modelAccess = DecodeModel
+                Select Case resultToken.Status
 
-                Dim cstTimeZoneInfo As TimeZoneInfo = TimeZoneInfo.Utc
-                Dim HoraActual As DateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, cstTimeZoneInfo)
+                    Case AuthenticationService.AuthenticationStatus.InvalidToken
+                        MessageBoxShow("Error: Acceso Denegado", "El portal de ICMTools solo es accesible desde ICM Web.", "Token de acceso inválido.", htmlMessageIcon.IconError)
 
-                Dim DateKey As DateTime = DecodeKey
-                Dim TimeDiff As TimeSpan = HoraActual - DateKey
-                Dim TMinutesDiff As Double = TimeDiff.TotalMinutes
-                Dim isAuth = False
+                    Case AuthenticationService.AuthenticationStatus.ExpiredToken
+                        MessageBoxShow("Error: Acceso Denegado", "El portal de ICMTools solo es accesible desde ICM Web.", "Token de acceso caducado.", htmlMessageIcon.IconError)
 
-                If (TMinutesDiff < 0 AndAlso Not DecodeModel = "DEBUG") Then
-                    MessageBoxShow("Error: Acceso Denegado", "El portal de ICMTools solo es accesible desde ICM Web.", "Token de acceso inválido.", htmlMessageIcon.IconError)
-                ElseIf (TMinutesDiff > 10 AndAlso Not DecodeModel = "DEBUG") Then
-                    MessageBoxShow("Error: Acceso Denegado", "El portal de ICMTools solo es accesible desde ICM Web.", "Token de acceso caducado.", htmlMessageIcon.IconError)
-                Else
-                    Try
-                        Dim ws As New WebServiceICMGeneral()
-                        Dim dtPayee As DataTable
-
-                        ''pruebas
-                        If DecodeModel = "DEBUG" Then
-                            dtPayee = ws.Validate_Payee_byUserEmailAndModel(DecodeICMUser, "femcoepdev")
-                        Else
-                            dtPayee = ws.Validate_Payee_byUserEmailAndModel(DecodeICMUser, DecodeModel)
-
-                        End If
+                    Case AuthenticationService.AuthenticationStatus.Valid
 
 
-                        If dtPayee.Rows.Count > 0 Then isAuth = True
+                        Dim isAuth As Boolean = Await _payeeService.ValidarPayeePorCorreoModelo(resultToken.User, resultToken.Model)
 
-                    Catch ex As Exception
-                        MessageBoxShow("Error en la autentificación", "No se pudo conectar con el servicio de validación", ex.Message, htmlMessageIcon.IconError)
-                        Return
-                    End Try
+                        Dim safeUser As String = Server.HtmlEncode(resultToken.User)
+                        Dim safeModel As String = Server.HtmlEncode(resultToken.Model)
 
-                    Dim safeUser As String = Server.HtmlEncode(userAccess)
-                    Dim safeModel As String = Server.HtmlEncode(modelAccess)
-
-                    If isAuth Then
-                        If (ValidarModelo(DecodeModel, DecodeICMUser.ToLower)) Then
+                        If isAuth Then
                             mUser = New User()
-                            mUser.Model = DecodeModel
-                            mUser.Email = DecodeICMUser.ToLower
-                            mUser.DataBase = ConfigurationManager.AppSettings(DecodeModel)
+                            mUser.Model = resultToken.Model
+                            mUser.Email = resultToken.User.ToLower
                             Session.Add("User", mUser)
 
                             ''mLog = New Log
                             ''mLog.insertLog("ICMTools", "LOGIN", "Login via portal ICM Web FEMCO_EP")
 
-                            Response.Redirect(ConfigurationManager.AppSettings("HomePage"), False)
+                            Response.Redirect(_configuration.HomePage, False)
+
                         Else
                             MessageBoxShow("Aviso: Acceso Denegado", "Las credenciales de acceso no son correctas, el usuario " + safeUser + " no tiene acceso a ICMTool del Modelo " + safeModel + ".", "Acceso bloqueado por seguridad.", htmlMessageIcon.IconWarning)
                         End If
-                    Else
-                        MessageBoxShow("Aviso: Acceso Denegado", "Las credenciales de acceso no son correctas, el usuario " + safeUser + " no tiene acceso a ICMTool del Modelo " + safeModel + ".", "Acceso bloqueado por seguridad.", htmlMessageIcon.IconWarning)
-                    End If
-                End If
+                End Select
 
             End If
         Catch ex As Exception
             MessageBoxShow("Error en autenticación", ex.Message, "Fuente:" & ex.InnerException.Source, htmlMessageIcon.IconError)
-        End Try
-    End Sub
-
-    ''' <summary>
-    ''' Método que valida que el modelo seleccionado exista.
-    ''' </summary>
-    ''' <returns>Regresa true si todo esta correcto.</returns>
-    Private Function ValidarModelo(Modelo As String, Usuario As String) As Boolean
-        Dim esValido As Boolean = True
-        Try
-            'Dim listaPermisosModelo As List(Of ModelPermission) = ScreenPermission.ModelPermission(Usuario)
-            'esValido = listaPermisosModelo.Where(Function(w) w.Model = Modelo).Any()
-            'Return esValido
-            Return True
-        Catch ex As Exception
-            Throw
-        End Try
-    End Function
-
-    ''' <summary>
-    ''' Método que de decodifica una credencial.
-    ''' </summary>
-    ''' <param name="Key">Llave.</param>
-    ''' <returns>Regresa la llave decodificada.</returns>
-    Private Function DecodificarCredencial(Key As String) As String
-        Try
-            If (String.IsNullOrEmpty(Key)) Then
-                Throw New ArgumentNullException("Las credenciales no pueden estar vacías, por favor ingresa nuevamente.")
-            End If
-
-            Dim DecodeKey As String = Encoding.UTF8.GetString(Convert.FromBase64String(Key))
-            Return DecodeKey
-
-        Catch ex As FormatException
-            Throw New FormatException("Las credenciales no están en un formato válido, por favor ingresa nuevamente.", ex)
-        Catch ex As ArgumentNullException
-            Throw New ArgumentNullException("Las credenciales no pueden estar vacías, por favor ingresa nuevamente.", ex)
-        Catch ex As Exception
-            Throw New ApplicationException("Las credenciales de acceso sin inválidas, por favor ingresa nuevamente.", ex)
         End Try
     End Function
 

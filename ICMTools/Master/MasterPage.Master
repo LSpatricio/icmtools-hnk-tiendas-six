@@ -253,27 +253,7 @@
           </ItemTemplate>
       </asp:Repeater>
 
-      <%-- Repeater para los elementos agrupados (menús desplegables) --%>
-      <asp:Repeater runat="server" ID="RepeaterModuloAgrupado" OnItemDataBound="RepeaterModulo_ItemDataBound">
-          <ItemTemplate>
-              <li>
-                  <a href='<%# "#submenu" & Container.ItemIndex %>' data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                      <%# Eval("AggregatorDescription") %>
-                  </a>
-                  <ul class="collapse list-unstyled" id='<%# "submenu" & Container.ItemIndex %>'>
-                      <asp:Repeater runat="server" ID="RepeaterPantallas">
-                          <ItemTemplate>
-                              <li>
-                                  <a href='<%# Eval("URL") %>' class="pl-4">
-                                      <%# Eval("ScreenName") %>
-                                  </a>
-                              </li>
-                          </ItemTemplate>
-                      </asp:Repeater>
-                  </ul>
-              </li>
-          </ItemTemplate>
-      </asp:Repeater>
+   
   </ul>
 
 
@@ -292,7 +272,7 @@
                     <div id="module-buttons">
                         <asp:ContentPlaceHolder ID="TopbarContent" runat="server" />
                     </div>
-                    <img src="../images/logo_oxxo.png" alt="Logo" id="topbar-logo" />
+                    <img src="../images/Heineken-Logo.png" alt="Logo" id="topbar-logo" />
                 </div>
             </div>
 

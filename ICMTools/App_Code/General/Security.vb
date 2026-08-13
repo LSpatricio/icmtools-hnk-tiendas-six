@@ -26,7 +26,6 @@ Public Class ScreenAggregator
 End Class
 Public Class MenuData
     Public Property SimpleItems As New List(Of AppScreen)
-    Public Property AggregatedItems As New List(Of ScreenAggregator)
 End Class
 
 Public Class ScreenPermission
@@ -176,7 +175,7 @@ Public Class ScreenPermission
                 ' Crea una instancia de la clase contenedora y la retorna
                 Dim menuData As New MenuData()
                 menuData.SimpleItems = simpleList
-                menuData.AggregatedItems = aggregatedList
+                'menuData.AggregatedItems = aggregatedList
 
                 Return menuData
             Else

@@ -11,7 +11,6 @@ Public Class User
     Private mUserName As String
     Private mUserEmail As String
     Private mAuthenticated As Boolean
-    Private mUserDatabase As String
 
 #End Region
 
@@ -49,14 +48,7 @@ Public Class User
             mAuthenticated = Value
         End Set
     End Property
-    Public Property DataBase() As String
-        Get
-            Return mUserDatabase
-        End Get
-        Set(ByVal value As String)
-            mUserDatabase = value
-        End Set
-    End Property
+
 
 #End Region
 

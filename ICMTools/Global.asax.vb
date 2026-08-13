@@ -16,8 +16,8 @@ Public Class Global_asax
 
     Sub Application_Error(sender As Object, e As EventArgs)
         Dim ex As Exception = Server.GetLastError()
-        Dim oLog As New Log()
-        oLog.NotificacionError(ex)
+        'Dim oLog As New Log()
+        'oLog.NotificacionError(ex)
     End Sub
 
     Sub Application_PostAuthorizeRequest()

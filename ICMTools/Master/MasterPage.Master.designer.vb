@@ -149,15 +149,6 @@ Partial Public Class MasterPage
     Protected WithEvents RepeaterModuloSinAgrupas As Global.System.Web.UI.WebControls.Repeater
 
     '''<summary>
-    '''Control RepeaterModuloAgrupado.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents RepeaterModuloAgrupado As Global.System.Web.UI.WebControls.Repeater
-
-    '''<summary>
     '''Control moduleName.
     '''</summary>
     '''<remarks>

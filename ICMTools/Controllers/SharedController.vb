@@ -9,86 +9,16 @@ Public Class SharedController
     Inherits ApiController
 #Region "Variables Locales"
     Private ReadOnly mUser As User
-    Private ReadOnly mLog As Log
+    'Private ReadOnly mLog As Log
     Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
 
-    Dim serviceData As New CustomServiceClass
+    'Dim serviceData As New CustomServiceClass
 #End Region
     Public Sub New()
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
-        Me.mLog = New Log()
+        'Me.mLog = New Log()
     End Sub
-#Region "Metodos GET"
-    '''<summary>
-    '''Obtiene las Divisiones de Personal por Sociedad
-    '''</summary>
-    '''<returns>Una Lista de Divisiones de Personal.</returns>
-    '''<remarks>
-    '''Esta funcion suele ser usada para llenar listas de seleccion en el FrontEnd.
-    '''</remarks>
-    <HttpGet>
-    <Route("api/shared/personneldivisions")>
-    Public Function GetPersonnelDivision(Society As String) As IHttpActionResult
-        If Me.mUser Is Nothing Then Return BadRequest("Session Expired or User Not Authenticated")
 
-        Try
-            Thread.Sleep(1000)
-
-            Dim myList As List(Of PersonnelDivisions)
-            myList = serviceData.GetPersonnelDivisions(mUser.Model, mUser.Email, Society)
-
-            Return Ok(New With {.l = myList})
-
-        Catch ex As Exception
-            Dim myList As ArrayList = Nothing
-            Return Ok(New With {.l = myList})
-        End Try
-    End Function
-
-    '''<summary>
-    '''Obtiene las Divisiones de Personal por Sociedad
-    '''</summary>
-    '''<returns>Una Lista de Divisiones de Personal.</returns>
-    '''<remarks>
-    '''Esta funcion suele ser usada para llenar listas de seleccion en el FrontEnd.
-    '''</remarks>
-    <HttpGet>
-    <Route("api/shared/personneldivisionsex")>
-    Public Function GetPersonnelDivisionex(Society As String) As IHttpActionResult
-        If Me.mUser Is Nothing Then Return BadRequest("Session Expired or User Not Authenticated")
-
-        Try
-            Thread.Sleep(1000)
-
-            Dim myList As List(Of PersonnelDivisions)
-            myList = serviceData.GetPersonnelDivisionsex(mUser.Model, mUser.Email, Society)
-
-            Return Ok(New With {.l = myList})
-
-        Catch ex As Exception
-            Dim myList As ArrayList = Nothing
-            Return Ok(New With {.l = myList})
-        End Try
-    End Function
-    '''<summary>
-    '''Obtiene Sociedades
-    '''</summary>
-    '''<returns>Una lista de Sociedades.</returns>
-    '''<remarks>
-    '''Esta funcion suele usarse para llenar listas de seleccion en el FrontEnd
-    '''</remarks>
-    <HttpGet>
-    <Route("api/shared/societies")>
-    Public Function GetSocieties() As IHttpActionResult
-        Dim mUser As User = CType(HttpContext.Current.Session.Item("User"), User)
-
-        If mUser Is Nothing Then Return BadRequest("Session Expired")
-
-        Dim result = New List(Of Societies)
-
-        result = serviceData.GetSocieties(mUser.Model, mUser.Email)
-        Return Ok(result)
-    End Function
 
     <HttpGet>
     <Route("api/shared/successmessage")>
@@ -97,7 +27,6 @@ Public Class SharedController
         Return Ok(New With {.d = 1, .r = mensaje})
     End Function
 
-#End Region
 #Region "Funciones"
 
     ''' <summary>
@@ -356,6 +285,12 @@ Public Class SharedController
                 elementTable = "<table id='Table' class='table table-sm table-hover'>" + "<thead>" + "<tr>" +
                                "<th>Estatus</th>" + "<th>Mensaje</th>" + "</tr>" + "</thead> " + "<tbody> " +
                                "@LISTA@" + "</tbody> " + "</table>"
+                elementTable = elementTable.Replace("@LISTA@", String.Join("", elementList))
+                Return elementTable
+            Case 4
+                elementTable = "<table id='Table' class='table table-sm table-hover'>" +
+                               "<thead>" + "<tr>" + "<th>Hoja</th>" + "<th>Detalles</th>" +
+                               "</tr>" + "</thead> " + "<tbody> " + "@LISTA@" + "</tbody> " + "</table>"
                 elementTable = elementTable.Replace("@LISTA@", String.Join("", elementList))
                 Return elementTable
         End Select
