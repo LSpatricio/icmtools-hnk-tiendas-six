@@ -272,7 +272,7 @@
                     <div id="module-buttons">
                         <asp:ContentPlaceHolder ID="TopbarContent" runat="server" />
                     </div>
-                    <img src="../images/logo_oxxo.png" alt="Logo" id="topbar-logo" />
+                    <img src="../images/Heineken-Logo.png" alt="Logo" id="topbar-logo" />
                 </div>
             </div>
 

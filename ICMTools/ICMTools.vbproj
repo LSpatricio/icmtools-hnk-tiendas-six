@@ -327,6 +327,7 @@
     <Content Include="images\Modulos\Excepciones\pantalla_reporte_historial_boton_detalles.png" />
     <Content Include="images\Modulos\Excepciones\pantalla_reporte_historial_lotes.png" />
     <Content Include="images\Modulos\Excepciones\pantalla_reporte_historial_lotes_detalles.png" />
+    <Content Include="images\Heineken-Logo.png" />
     <Content Include="images\Modulos\HistEmpleadosActivos\Ejemplo_HistEmpleadosActivos.png" />
     <Content Include="images\Modulos\HistEmpleadosActivos\Pantalla_HistEmpleadosActivos.png" />
     <Content Include="images\Modulos\ImportCuotaServicio\Ejemplo_ImportCuotaServicio.png" />
