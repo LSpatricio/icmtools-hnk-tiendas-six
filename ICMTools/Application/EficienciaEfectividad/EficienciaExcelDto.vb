@@ -1,15 +1,15 @@
 ﻿Public Class EficienciaExcelDto
 
-    <ExcelColumn("Mes / Año", Requerido:=True, ValoresIgnorados:={"Resultado total"})>
+    <ExcelColumn(0, "Mes / Año", Requerido:=True, ValoresIgnorados:={"Resultado total"})>
     Public Property Mes As String
 
-    <ExcelColumn("Semana", Requerido:=True, ValoresIgnorados:={"Resultado"})>
+    <ExcelColumn(1, "Semana", Requerido:=True, ValoresIgnorados:={"Resultado"})>
     Public Property Semana As String
 
-    <ExcelColumn("Ruta de Venta", Requerido:=True, ValoresIgnorados:={"Resultado"})>
+    <ExcelColumn(2, "Ruta de Venta", Requerido:=True, ValoresIgnorados:={"Resultado"})>
     Public Property Ruta As String
 
-    <ExcelColumn("% Eficiencia de vista", Requerido:=False)>
+    <ExcelColumn(3, "% Eficiencia de vista", ValoresIgnorados:={})>
     Public Property Eficiencia As Decimal?
 
 

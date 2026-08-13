@@ -142,15 +142,22 @@ Public Class FileController
                 End If
 
                 Dim encabezadosErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
-                Dim valoresVaciosErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
+                'Dim valoresVaciosErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
 
                 'Validacion encabezados de hojas
                 For Each hoja In hojasDefinidas
 
 
-                    Dim mapeoColumnas As Dictionary(Of String, ExcelColumnAttribute) = _excelReader.CrearMepeoAtributos(hoja)
+                    Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(hoja)
 
-                    Dim atributo = tipo.GetProperties().ToList().FirstOrDefault(Function(p) p.PropertyType.GetGenericArguments()(0) = hoja).GetCustomAttributes(GetType(ExcelSheetAttribute), False).Cast(Of ExcelSheetAttribute)().First()
+                    Dim propiedad = tipo.GetProperties().
+                                                FirstOrDefault(Function(p) p.PropertyType.IsGenericType AndAlso
+                                                                           p.PropertyType.GetGenericArguments()(0) = hoja)
+
+                    Dim atributo = propiedad?.
+                                                GetCustomAttributes(GetType(ExcelSheetAttribute), False).
+                                                Cast(Of ExcelSheetAttribute)().
+                                                FirstOrDefault()
 
                     encabezadosErrores.AddRange(_excelReader.ValidarEncabezadosExcel(hoja, request.Path, atributo.HeaderRow, atributo.SheetName, mapeoColumnas))
 
@@ -182,14 +189,14 @@ Public Class FileController
 
                 End If
 
-                If valoresVaciosErrores.Count > 0 Then
-                    For Each valoresVaciosError In valoresVaciosErrores
-                        errorsList += $"<tr><td>{valoresVaciosError.Problema}</td><td>" & String.Join(", ", valoresVaciosError.Detalle) & "</td></tr>"
-                    Next
+                'If valoresVaciosErrores.Count > 0 Then
+                'For Each valoresVaciosError In valoresVaciosErrores
+                'errorsList += $"<tr><td>{valoresVaciosError.Problema}</td><td>" & String.Join(", ", valoresVaciosError.Detalle) & "</td></tr>"
+                'Next
 
-                    Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
+                'Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
 
-                End If
+                '            End If
 
             Else
                 Dim cantidadHojas As Integer = _excelReader.ContarHojas(request.Path)
@@ -210,135 +217,6 @@ Public Class FileController
 
             End If
 
-
-
-            'Dim ExcelArray(,) As Object = GetExcelArray(request.FileType, request.Extension)
-
-            'If ExcelArray IsNot Nothing Then
-
-            '    Dim usedRows As Integer = ExcelArray.GetUpperBound(0)
-            '    Dim usedColumns As Integer = ExcelArray.GetUpperBound(1)
-
-            '    If (usedColumns) <> request.columns.Length() Then
-            '        errorsList = "<tr><td>Cantidad incorrecta de columnas</td><td>El archivo contiene " & usedColumns.ToString & " columnas, por favor corrija a " & request.columns.Length() & " columnas: <b>" & String.Join(", ", request.columns) & "</b>, y vuelva a intentar la carga.</td></tr>"
-            '        Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
-            '    End If
-
-            '    If errorsList IsNot Nothing Then
-            '        Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
-            '    End If
-
-            '    Dim realColumns As String() = New String(0) {}
-            '    Dim StringColumns As String = Nothing
-
-            '    For col As Integer = 0 To usedColumns - 1
-            '        Array.Resize(realColumns, realColumns.Length + 1)
-            '        realColumns(realColumns.Length - 1) = Convert.ToString(ExcelArray(1, col + 1))
-            '        StringColumns += request.columns(col)
-            '        If col < usedColumns - 1 Then StringColumns += ", "
-            '    Next
-
-            '    realColumns = realColumns.Skip(1).ToArray()
-            '    realColumns = QuitarAcentos(realColumns)
-            '    request.columns = QuitarAcentos(request.columns)
-
-            '    For col As Integer = 0 To realColumns.Length - 1
-            '        If CStr(realColumns(col)).Trim().ToLower() <> request.columns(col).Trim.ToLower() Then
-            '            errorsList = "<tr><td>Nombres de columnas incorrectos</td><td>El archivo no contiene los nombres de columnas correctos, por favor corrija a los titulos esperados: <b>" & StringColumns & "</b>, y vuelva a intentar la carga.</td></tr>"
-            '            Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
-            '        End If
-            '    Next
-
-            '    For row As Integer = 2 To usedRows
-            '        For col As Integer = 1 To request.columns.Length
-            '            Dim cellValue As Object = ExcelArray(row, col)
-            '            Dim expectedType As String = request.types(col - 1)
-            '            Dim columnName As String = request.columns(col - 1)
-
-            '            If cellValue Is Nothing OrElse String.IsNullOrWhiteSpace(CStr(cellValue)) Then Continue For
-            '            Select Case expectedType
-            '                Case "String"
-            '                    If CStr(cellValue).Length > 100 Then
-            '                        errorsList += "<tr><td>Formato incorrecto en Fila #" & (row + 1).ToString & "</td><td>El IDPlaza no debe superar los 100 caracteres.</td></tr>"
-            '                    End If
-            '                Case "Date", "Datetime"
-            '                    Dim tempDate As Date
-            '                    Dim esFechaValida As Boolean = False
-            '                    esFechaValida = esFechaValida Or Date.TryParseExact(CStr(cellValue), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.None, tempDate)
-            '                    esFechaValida = esFechaValida Or Date.TryParseExact(CStr(cellValue), "dd-MM-yyyy", System.Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.None, tempDate)
-            '                    esFechaValida = esFechaValida Or Date.TryParseExact(CStr(cellValue), "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.None, tempDate)
-            '                    esFechaValida = esFechaValida Or Date.TryParseExact(CStr(cellValue), "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.None, tempDate)
-            '                    If Not esFechaValida Then
-            '                        errorsList += "<tr><td>Formato incorrecto en Fila #" & row & "</td><td>El valor en la columna <strong>" & columnName & "</strong> no es una fecha válida.</td></tr>"
-            '                    End If
-            '                Case "Integer"
-            '                    Dim tempInt As Integer
-            '                    If Not Integer.TryParse(CStr(cellValue), tempInt) Then
-            '                        errorsList += "<tr><td>Formato incorrecto en Fila #" & row & "</td><td>El valor en la columna <strong>" & columnName & "</strong> no es un número entero válido.</td></tr>"
-            '                    End If
-            '                Case "Decimal"
-            '                    Dim tempDecimal As Decimal
-            '                    If (CStr(cellValue).Contains("$")) Then
-            '                        cellValue = CStr(cellValue).Replace("$", "")
-            '                    End If
-            '                    If Not Decimal.TryParse(CStr(cellValue), tempDecimal) Then
-            '                        errorsList += "<tr><td>Formato incorrecto en Fila #" & row & "</td><td>El valor en la columna <strong>" & columnName & "</strong> no es un número decimal válido.</td></tr>"
-            '                    End If
-            '                Case "Alphabetic"
-            '                    Dim isAlphabetOnly As Boolean = Regex.IsMatch(cellValue, "^[A-Za-z+]+$")
-            '                    If Not isAlphabetOnly Then
-            '                        errorsList += "<tr><td>Formato incorrecto en Fila #" & row & "</td><td>El valor en la columna <strong>" & columnName & "</strong> debe contener solo letras.</td></tr>"
-            '                    End If
-            '            End Select
-            '        Next
-            '    Next
-
-            '    If errorsList IsNot Nothing Then Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
-
-            '    Dim ContainsInfo As Boolean = False
-            '    Dim allowSomeNulls As Boolean = request.nulleable_columns IsNot Nothing
-
-            '    For row As Integer = 2 To usedRows
-            '        Dim doesRowHaveAnyData As Boolean = False
-            '        Dim isRowPartiallyEmpty As Boolean = False
-            '        Dim emptyColumns As String = Nothing
-
-            '        For col As Integer = 1 To request.columns.Length
-            '            Dim cellValue As Object = ExcelArray(row, col)
-            '            Dim columnName As String = request.columns(col - 1)
-
-            '            Dim is_nulleable As Boolean = If(allowSomeNulls, request.nulleable_columns(col - 1) = "NULL", False)
-            '            If (cellValue Is Nothing OrElse String.IsNullOrWhiteSpace(CStr(cellValue))) AndAlso Not is_nulleable Then
-            '                isRowPartiallyEmpty = True
-            '                emptyColumns += columnName & ", "
-            '            Else
-            '                doesRowHaveAnyData = True
-            '            End If
-            '        Next
-
-            '        If doesRowHaveAnyData AndAlso isRowPartiallyEmpty Then
-            '            If allowSomeNulls Then
-            '                emptyColumns = If(emptyColumns IsNot Nothing, emptyColumns.Substring(0, emptyColumns.Length - 2), emptyColumns)
-
-            '                errorsList += "<tr><td>Datos incompletos en Fila #" & row & "</td><td>La fila contiene celda(s) vacía(s): " & emptyColumns & "</td></tr>"
-            '            Else
-            '                errorsList += "<tr><td>Datos incompletos en Fila #" & row & "</td><td>La fila debe tener todas sus celdas con información o estar completamente vacía.</td></tr>"
-            '            End If
-            '        End If
-
-            '        If doesRowHaveAnyData Then ContainsInfo = True
-            '    Next
-
-            '    If errorsList IsNot Nothing Then
-            '        Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
-            '    End If
-
-            '    Return Ok(New With {.d = True})
-
-            'End If
-
-            ' errorsList = "<tr><td>Archivo vacio</td><td>El archivo esta vacio</td></tr>"
-            '   Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
             Return Ok(New With {.d = True})
 
         Catch ex As Exception

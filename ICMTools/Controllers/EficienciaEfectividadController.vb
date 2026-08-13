@@ -1,10 +1,11 @@
-﻿Imports System.Threading
+﻿Imports System.Reflection
+Imports System.Threading
 Imports System.Web.Http
 Imports Newtonsoft.Json
 Imports Npgsql
 Imports NpgsqlTypes
 
-Public Class MontoDistribuibleCategoriaController
+Public Class EficienciaEfectividadController
     Inherits ApiController
 
     Private mUser As User
@@ -42,18 +43,28 @@ Public Class MontoDistribuibleCategoriaController
             If hojasDefinidas.Any() Then
 
 
-                Dim valoresVaciosErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
+                Dim valoresErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
 
                 For Each hoja In hojasDefinidas
-                    Dim mapeoColumnas As Dictionary(Of String, ExcelColumnAttribute) = _excelReader.CrearMepeoAtributos(hoja)
+                    Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(hoja)
                     Dim atributo = tipo.GetProperties().ToList().FirstOrDefault(Function(p) p.PropertyType.GetGenericArguments()(0) = hoja).GetCustomAttributes(GetType(ExcelSheetAttribute), False).Cast(Of ExcelSheetAttribute)().First()
 
-                    _eficienciaEfectividadExcelReader.ValiacionesEficienciaEfectividad(hoja, request.Path, atributo.HeaderRow, atributo.SheetName, mapeoColumnas)
+                    valoresErrores.AddRange(_eficienciaEfectividadExcelReader.ValidacionesEficienciaEfectividad(hoja, request.Path, atributo.HeaderRow, atributo.SheetName, mapeoColumnas))
 
 
 
                 Next
 
+
+
+                If valoresErrores.Count > 0 Then
+                    For Each errores In valoresErrores
+                        errorsList += $"<tr><td>{errores.Problema}</td><td>" & String.Join(", ", errores.Detalle) & "</td></tr>"
+                    Next
+
+                    Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
+
+                End If
 
 
             End If

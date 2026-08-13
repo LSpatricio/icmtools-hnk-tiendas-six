@@ -253,7 +253,7 @@
     <Compile Include="Controllers\CategoriaMontosMetasController.vb" />
     <Compile Include="Controllers\CategoriaMontosVentasController.vb" />
     <Compile Include="Controllers\HistEmpleadosActivosController.vb" />
-    <Compile Include="Controllers\MontoDistribuibleCategoriaController.vb" />
+    <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\ImportVentasController.vb" />
     <Compile Include="Controllers\ImportMetasController.vb" />
     <Compile Include="Controllers\ConfigSalesPercentageController.vb" />

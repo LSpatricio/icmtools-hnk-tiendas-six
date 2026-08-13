@@ -16,7 +16,7 @@ Public Class SharedController
 #End Region
     Public Sub New()
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
-        Me.mLog = New Log()
+        'Me.mLog = New Log()
     End Sub
 #Region "Metodos GET"
     '''<summary>
