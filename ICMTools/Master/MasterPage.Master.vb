@@ -156,6 +156,12 @@ Public Class MasterPage
     },
     New AppScreen With {
         .IDModel = 1,
+        .IDScreen = 5,
+        .ScreenName = "Arqueos",
+        .URL = "~/Pages/Arqueos.aspx"
+    },
+    New AppScreen With {
+        .IDModel = 1,
         .IDScreen = 3,
         .ScreenName = "Configuración",
         .URL = "~/Pages/EmpleadosActivos.aspx"
