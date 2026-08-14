@@ -206,15 +206,20 @@
     <Import Include="System.Web.UI.HtmlControls" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\Arqueos\ArqueosExcelDto.vb" />
+    <Compile Include="Application\Arqueos\ArqueosEfectividadExcelDto.vb" />
+    <Compile Include="Application\Arqueos\ArqueosEficienciaExcelDto.vb" />
     <Compile Include="Application\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
     <Compile Include="Application\EficienciaEfectividad\EfectividadExcelDto.vb" />
     <Compile Include="Application\EficienciaEfectividad\EficienciaExcelDto.vb" />
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
     <Compile Include="Application\File\ValidateFileRequest.vb" />
+    <Compile Include="Controllers\ArqueosController.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
     <Compile Include="Controllers\SharedController.vb" />
+    <Compile Include="Infraestructure\Excel\Arqueos\ArqueosExcelReader.vb" />
     <Compile Include="Infraestructure\Excel\EficienciaEfectividad\EficienciaEfectividadExcelReader.vb" />
     <Compile Include="Infraestructure\Excel\ExcelColumnAttribute.vb" />
     <Compile Include="Application\Authentication\AuthenticationResult.vb" />
@@ -242,6 +247,13 @@
     <Compile Include="Modules.vb" />
     <Compile Include="App_Code\General\Security.vb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Pages\Arqueos.aspx.designer.vb">
+      <DependentUpon>Arqueos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Arqueos.aspx.vb">
+      <DependentUpon>Arqueos.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Pages\EficienciaEfectividad.aspx.designer.vb">
       <DependentUpon>EficienciaEfectividad.aspx</DependentUpon>
@@ -368,12 +380,14 @@
     <Content Include="images\Procesos-de-apoyo.jpg" />
     <Content Include="images\single-sign-on.png" />
     <Content Include="index.html" />
+    <Content Include="js\Arqueos.js" />
     <Content Include="js\EficienciaEfectividad.js" />
     <Content Include="js\onfly.js" />
     <Content Include="js\shared.js" />
     <Content Include="js\sharedMejorado.js" />
     <Content Include="Pages\404.html" />
     <Content Include="Pages\ErrorGeneral.html" />
+    <Content Include="Pages\Arqueos.aspx" />
     <Content Include="Pages\EficienciaEfectividad.aspx" />
     <Content Include="Pages\MontoDistribuibleCategoriaDocumentacion.aspx" />
     <Content Include="Pages\Home.aspx" />

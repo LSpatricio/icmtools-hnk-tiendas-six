@@ -65,12 +65,20 @@ Public Class MasterPage
             mUser = CType(Session.Item("User"), User)
         Else
             Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
+            Context.ApplicationInstance.CompleteRequest()
+            Exit Sub
         End If
 
         MessageBoxRefresh()
 
         If Not Me.IsPostBack Then
             'Establece los valores iniciales.
+            If mUser Is Nothing Then
+                Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
+                Context.ApplicationInstance.CompleteRequest()
+                Exit Sub
+            End If
+
             litModeloInicial.Text = mUser.Model
             'Dim idModel As String = CargarModelos()
             CargarPantallas()
@@ -80,12 +88,12 @@ Public Class MasterPage
     End Sub
 
     Private Sub SetInitialValues()
-        If Not mUser Is Nothing Then
-            lblModel.Text = mUser.Model
-            lblUserEmail.Text = mUser.Email
-            lblUserName.Text = mUser.Name
-            lblTopUserEmail.Text = mUser.Email
-        End If
+        If mUser Is Nothing Then Exit Sub
+
+        lblModel.Text = mUser.Model
+        lblUserEmail.Text = mUser.Email
+        lblUserName.Text = mUser.Name
+        lblTopUserEmail.Text = mUser.Email
 
     End Sub
 
@@ -142,6 +150,12 @@ Public Class MasterPage
     },
     New AppScreen With {
         .IDModel = 1,
+        .IDScreen = 5,
+        .ScreenName = "Arqueos",
+        .URL = "~/Pages/Arqueos.aspx"
+    },
+    New AppScreen With {
+        .IDModel = 1,
         .IDScreen = 3,
         .ScreenName = "Configuración",
         .URL = "~/Pages/EmpleadosActivos.aspx"
@@ -172,6 +186,8 @@ Public Class MasterPage
             End If
         Else
             Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
+            Context.ApplicationInstance.CompleteRequest()
+            Exit Sub
         End If
     End Sub
 
