@@ -322,6 +322,12 @@
     <Compile Include="Application\DTOs\EstructuraNegociosExcelDto.vb" />
     <Compile Include="Application\DTOs\PeriodsDto.vb" />
     <Compile Include="Application\DTOs\RegionDto.vb" />
+    <Compile Include="Application\Arqueos\ArqueosExcelDto.vb" />
+    <Compile Include="Application\Arqueos\ArqueosEfectividadExcelDto.vb" />
+    <Compile Include="Application\Arqueos\ArqueosEficienciaExcelDto.vb" />
+    <Compile Include="Application\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
+    <Compile Include="Application\EficienciaEfectividad\EfectividadExcelDto.vb" />
+    <Compile Include="Application\EficienciaEfectividad\EficienciaExcelDto.vb" />
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
     <Compile Include="Application\File\SendInfoRequest.vb" />
@@ -335,11 +341,14 @@
     <Compile Include="Application\Services\RegistrosADCService.vb" />
     <Compile Include="Controllers\EstructuraJOSController.vb" />
     <Compile Include="Controllers\EstructuraNegociosController.vb" />
+    <Compile Include="Controllers\ArqueosController.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
     <Compile Include="Controllers\SharedController.vb" />
     <Compile Include="Infraestructure\API\IcmQueryMapper.vb" />
     <Compile Include="Infraestructure\Configurations\LoggerConfig.vb" />
+    <Compile Include="Infraestructure\Excel\Arqueos\ArqueosExcelReader.vb" />
+    <Compile Include="Infraestructure\Excel\EficienciaEfectividad\EficienciaEfectividadExcelReader.vb" />
     <Compile Include="Infraestructure\Excel\ExcelColumnAttribute.vb" />
     <Compile Include="Application\Authentication\AuthenticationResult.vb" />
     <Compile Include="Application\Authentication\AuthenticationService.vb" />
@@ -387,6 +396,13 @@
     </Compile>
     <Compile Include="Pages\RegistrosADC.aspx.vb">
       <DependentUpon>RegistrosADC.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Arqueos.aspx.designer.vb">
+      <DependentUpon>Arqueos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Arqueos.aspx.vb">
+      <DependentUpon>Arqueos.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Pages\EficienciaEfectividad.aspx.designer.vb">
@@ -518,6 +534,7 @@
     <Content Include="js\RegistrosADC.js" />
     <Content Include="js\EstructuraNegocios.js" />
     <Content Include="js\RegistrosADC.js" />
+    <Content Include="js\Arqueos.js" />
     <Content Include="js\EficienciaEfectividad.js" />
     <Content Include="js\onfly.js" />
     <Content Include="js\shared.js" />
@@ -528,6 +545,7 @@
     <Content Include="Pages\EstructuraNegocios.aspx" />
     <Content Include="Pages\RegistrosADC.aspx" />
     <Content Include="Pages\ErrorGeneral.html" />
+    <Content Include="Pages\Arqueos.aspx" />
     <Content Include="Pages\EficienciaEfectividad.aspx" />
     <Content Include="Pages\MontoDistribuibleCategoriaDocumentacion.aspx" />
     <Content Include="Pages\Home.aspx" />
