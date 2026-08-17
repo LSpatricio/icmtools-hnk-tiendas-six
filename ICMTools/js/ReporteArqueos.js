@@ -33,7 +33,7 @@ function ValidarInformacionReporteArqueos(dataRequest) {
         error: function (xhr) {
             console.log(xhr);
             setFormStatus("error");
-            $("#formatErrors").html("Error de comunicación (ValidarInformacionReporteArqueos).");
+            $("#formatErrors").html("Error de comunicaciÃ³n (ValidarInformacionReporteArqueos).");
             $("#MensajeError").text("No se pudo cargar el documento por que no existe en la carpeta del servidor, Vuelva a intentar la carga ");
         }
     });
@@ -41,38 +41,23 @@ function ValidarInformacionReporteArqueos(dataRequest) {
 
 
 function GenerarCSV(path) {
-
-
-    console.log("JIJIIA")
     var fileName = '';
-    var fileCCNomina = '';
+    var fileNameWithoutExt = '';
 
     try {
-
-        fileName = $("#ctl00_ContentPlaceHolder1_AsyncFileUpload1_ctl02")[0].files[0].name.trim()
-        $("#ctl00_ContentPlaceHolder1_AsyncFileUpload1_ctl02").prop("last_uploaded_file_name", fileName)
-        var fileNameWithoutExt = fileName.split('.').slice(0, -1).join('.');
-        var extension = "." + fileName.split('.').pop();
-        if (fileNameWithoutExt.includes('_')) {
-            fileCCNomina = fileNameWithoutExt.substring(fileNameWithoutExt.lastIndexOf('_') + 1);
-        }
+        fileName = $("#ctl00_ContentPlaceHolder1_AsyncFileUpload1_ctl02")[0].files[0].name.trim();
+        $("#ctl00_ContentPlaceHolder1_AsyncFileUpload1_ctl02").prop("last_uploaded_file_name", fileName);
+        fileNameWithoutExt = fileName.split('.').slice(0, -1).join('.');
     } catch (e) {
-    }
-
-    if (fileCCNomina === '') {
-        setFormStatus("error");
-        $("#formatErrors").html("El nombre del archivo no es válido (" + fileName + "). Debe finalizar con el CCNomina, precedido por un guion bajo. Ejemplo: <b>NombreArchivo_118A.xlsx</b>");
-        $('#btnStartImport').prop('disabled', false).html('<i class="fas fa-play fa-fw"></i> Reintentar');
-
-        return;
     }
 
     setLoadingBar("Insertando datos...", 75);
     const requestData = {
         FileType: configuraciones.carga.fileType,
-        LogBody: fileCCNomina,
+        LogBody: fileNameWithoutExt,
         Extension: configuraciones.carga.extension
-    }
+    };
+
     $.ajax({
         type: "POST",
         url: "/api/reportearqueos/insertdata",
