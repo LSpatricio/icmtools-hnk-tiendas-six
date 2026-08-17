@@ -33,7 +33,7 @@ Public Class ArqueosDetalleExcelDto
     <ExcelColumn(10, "Usuario-Autorizador-Perfil", Requerido:=False)>
     Public Property UsuarioAutorizadorPerfil As String
 
-    <ExcelColumn(11, "Tipo de Cierre", Requerido:=True)>
+    <ExcelColumn(11, "Tipo de Cierre", Requerido:=False)>
     Public Property TipoCierre As String
 
     <ExcelColumn(12, "Inicio de Conteo", Requerido:=True)>
@@ -45,7 +45,7 @@ Public Class ArqueosDetalleExcelDto
     <ExcelColumn(14, "Cierre de Conteo", Requerido:=True)>
     Public Property FechaCierreConteo As DateTime
 
-    <ExcelColumn(15, "Término de Conteo", Requerido:=True)>
+    <ExcelColumn(15, "Término de Conteo", Requerido:=False)>
     Public Property FechaTerminoConteo As DateTime
 
     <ExcelColumn(16, "Subinventario", Requerido:=True)>

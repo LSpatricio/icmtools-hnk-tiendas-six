@@ -73,8 +73,8 @@ function handleStartImport(event) {
     CheckExcelFileReporteArqueos();
 }
     </script>
-    <script src="../js/sharedMejorado.js?v=1"></script>
-    <script src="../js/ReporteArqueos.js?v=1"></script>
+    <script src="../js/sharedMejorado.js?v=2"></script>
+    <script src="../js/ReporteArqueos.js?v=2"></script>
 </asp:Content>
 
 <%-- Contenedor principal --%>
