@@ -106,13 +106,13 @@ Public Class ExcelReader
                         headerName = i.ToString()
                     End If
 
-                    encabezados.Add(headerName)
+                    encabezados.Add(NormalizarTextoComparacion(headerName))
 
                 Next
 
                 For Each mapeo In mapeoColumnas
                     If Not String.IsNullOrWhiteSpace(mapeo.Value.ColumnName) Then
-                        If Not encabezados.Contains(mapeo.Value.ColumnName.Trim().Replace(vbCrLf, vbLf)) Then
+                        If Not encabezados.Contains(NormalizarTextoComparacion(mapeo.Value.ColumnName.Trim().Replace(vbCrLf, vbLf))) Then
                             mensajeError = $"La columna '{mapeo.Value.ColumnName}' no se encuentra en la hoja <strong>{hoja}</strong>."
                             listHojasError.Add(New ExcelValidationError With {
                                               .Problema = mensajeError,
@@ -158,7 +158,7 @@ Public Class ExcelReader
                 headerName = i.ToString()
             End If
 
-            encabezados.Add(headerName, i)
+            encabezados.Add(NormalizarTextoComparacion(headerName), i)
 
         Next
 
@@ -168,7 +168,7 @@ Public Class ExcelReader
 
                 Dim indice As Integer
 
-                If encabezados.TryGetValue(mapeo.Value.ColumnName.Trim().Replace(vbCrLf, vbLf), indice) Then
+                If encabezados.TryGetValue(NormalizarTextoComparacion(mapeo.Value.ColumnName.Trim().Replace(vbCrLf, vbLf)), indice) Then
                     mapeo.Value.ColumnIndex = indice
                 End If
 
@@ -465,7 +465,20 @@ Public Class ExcelReader
 
     End Function
 
+    Private Function NormalizarTextoComparacion(valor As String) As String
+        If String.IsNullOrWhiteSpace(valor) Then
+            Return String.Empty
+        End If
 
+        Dim textoNormalizado = valor.Trim().Replace(vbCrLf, vbLf).Replace(vbCr, vbLf)
+        textoNormalizado = textoNormalizado.Normalize(System.Text.NormalizationForm.FormD)
+
+        Dim caracteres = textoNormalizado.
+            Where(Function(c) System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) <> System.Globalization.UnicodeCategory.NonSpacingMark).
+            ToArray()
+
+        Return New String(caracteres).Normalize(System.Text.NormalizationForm.FormC).ToLowerInvariant()
+    End Function
     Private Function MoverAHoja(
     reader As IExcelDataReader,
     nombreHoja As String
