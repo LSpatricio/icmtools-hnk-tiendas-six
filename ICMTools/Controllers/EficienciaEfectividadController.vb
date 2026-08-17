@@ -1,5 +1,6 @@
 ﻿Imports System.Reflection
 Imports System.Threading
+Imports System.Threading.Tasks
 Imports System.Web.Http
 Imports Newtonsoft.Json
 Imports Npgsql
@@ -11,7 +12,11 @@ Public Class EficienciaEfectividadController
     Private mUser As User
     Private ReadOnly _excelReader As ExcelReader
     Private ReadOnly _excelService As ExcelService
-    Private ReadOnly _eficienciaEfectividadExcelReader As EficienciaEfectividadExcelReader
+    Private ReadOnly _repository As Repository
+    Private ReadOnly _configuration As IAppConfiguration
+    Private ReadOnly _eficienciaEfectividadServices As EficienciaEfectividadServices
+
+
     ' Private mLog As Log
 
     ' Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
@@ -20,7 +25,9 @@ Public Class EficienciaEfectividadController
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
         _excelReader = New ExcelReader()
         _excelService = New ExcelService()
-        _eficienciaEfectividadExcelReader = New EficienciaEfectividadExcelReader()
+        _configuration = New AppConfiguration()
+        _repository = New Repository(_configuration.ConnectionString)
+        _eficienciaEfectividadServices = New EficienciaEfectividadServices()
 
         '     Me.mLog = New Log
     End Sub
@@ -29,32 +36,16 @@ Public Class EficienciaEfectividadController
     ReadOnly sc As New SharedController
 
     <HttpPost>
-    <Route("api/eficienciaefectividad/validarinfo")>
-    Public Function ValidarInfo(<FromBody> request As ValidateFileRequestt) As IHttpActionResult
+    <Route("api/eficienciaefectividad/cargarinfo")>
+    Public Async Function CargarInfoAsync(<FromBody> request As ValidateFileRequestt) As Task(Of IHttpActionResult)
         Try
             Thread.Sleep(1000)
 
             Dim errorsList As String = Nothing
 
-            Dim tipo As Type = GetType(EficienciaEfectividadExcelDto)
-
-            Dim hojasDefinidas As List(Of Type) = _excelService.ObtenerTipos(tipo)
-
-
-
             Dim valoresErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
 
-            For Each hoja In hojasDefinidas
-                Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(hoja)
-                Dim atributo = tipo.GetProperties().ToList().FirstOrDefault(Function(p) p.PropertyType.GetGenericArguments()(0) = hoja).GetCustomAttributes(GetType(ExcelSheetAttribute), False).Cast(Of ExcelSheetAttribute)().First()
-
-                valoresErrores.AddRange(_eficienciaEfectividadExcelReader.ValidacionesEficienciaEfectividad(request.Path, atributo.HeaderRow, atributo.SheetName, mapeoColumnas))
-
-
-
-            Next
-
-
+            valoresErrores = Await _eficienciaEfectividadServices.ValidacionesEficiencia(request)
 
             If valoresErrores.Count > 0 Then
                 For Each errores In valoresErrores
@@ -64,6 +55,8 @@ Public Class EficienciaEfectividadController
                 Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
 
             End If
+
+            'Ejecución de SP 
 
             Dim rTable As String = Nothing
 

@@ -121,4 +121,27 @@ Public Class ExcelService
         End Select
 
     End Function
+
+    Public Function CrearDataTable(
+    mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute)
+) As DataTable
+
+        Dim dt As New DataTable()
+
+        For Each mapeo In mapeoColumnas
+
+            Dim propiedad As PropertyInfo = mapeo.Key
+            Dim tipo As Type = Nullable.GetUnderlyingType(propiedad.PropertyType)
+
+            If tipo Is Nothing Then
+                tipo = propiedad.PropertyType
+            End If
+
+            dt.Columns.Add(propiedad.Name, tipo)
+
+        Next
+
+        Return dt
+
+    End Function
 End Class

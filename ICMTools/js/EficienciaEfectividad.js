@@ -1,17 +1,13 @@
 ﻿function CheckExcelFileMDC() {
-    CheckFileExists(configuraciones.carga, ValidarInformacion)
+    CheckFileExists(configuraciones.carga, CargarInformacion)
 }
 
 
-function ValidarInformacion(dataRequest) {
-
-    console.log(dataRequest.FileClass);
-    console.log(dataRequest.Path);
-
-   
+function CargarInformacion(dataRequest) {
+  
     $.ajax({
         type: "POST",
-        url: "/api/eficienciaefectividad/validarinfo",
+        url: "/api/eficienciaefectividad/cargarinfo",
         contentType: "application/json",
         data: JSON.stringify(dataRequest),
 
@@ -35,8 +31,8 @@ function ValidarInformacion(dataRequest) {
         error: function (xhr) {
             console.log(xhr);
             setFormStatus("error");
-            $("#formatErrors").html("Error de comunicación (ValidarInformacion).");
-            $("#MensajeError").text("No se pudo cargar el documento por que no existe en la carpeta del servidor, Vuelva a intentar la carga ");
+            $("#formatErrors").html("Error en la validación y carga.");
+            $("#MensajeError").text("No se pudo validar y cargar el documento. Revise el documento y vuelva a intentar.");
         }
     });
 }

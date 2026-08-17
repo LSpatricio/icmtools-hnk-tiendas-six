@@ -62,6 +62,9 @@
     <Reference Include="CsvHelper, Version=33.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <HintPath>..\packages\CsvHelper.33.1.0\lib\net48\CsvHelper.dll</HintPath>
     </Reference>
+    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.2.1.79\lib\net461\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=3.3.0.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
       <HintPath>..\packages\DocumentFormat.OpenXml.3.3.0\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
@@ -74,8 +77,8 @@
     <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.9, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.9\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=10.0.0.8, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.10.0.8\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
@@ -122,8 +125,8 @@
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
@@ -136,8 +139,8 @@
     <Reference Include="System.Threading.Channels, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Channels.4.7.0\lib\netstandard2.0\System.Threading.Channels.dll</HintPath>
     </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.6.3\lib\net462\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
@@ -206,16 +209,17 @@
     <Import Include="System.Web.UI.HtmlControls" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Application\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
-    <Compile Include="Application\EficienciaEfectividad\EfectividadExcelDto.vb" />
-    <Compile Include="Application\EficienciaEfectividad\EficienciaExcelDto.vb" />
+    <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
+    <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDto.vb" />
+    <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaExcelDto.vb" />
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
     <Compile Include="Application\File\ValidateFileRequest.vb" />
+    <Compile Include="Application\Services\EficienciaEfectividadServices.vb" />
+    <Compile Include="Application\Services\FileServices.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
     <Compile Include="Controllers\SharedController.vb" />
-    <Compile Include="Infraestructure\Excel\EficienciaEfectividad\EficienciaEfectividadExcelReader.vb" />
     <Compile Include="Infraestructure\Excel\ExcelColumnAttribute.vb" />
     <Compile Include="Application\Authentication\AuthenticationResult.vb" />
     <Compile Include="Application\Authentication\AuthenticationService.vb" />
@@ -227,7 +231,6 @@
     <Compile Include="Infraestructure\API\Dtos\PayeeResponseDto.vb" />
     <Compile Include="Infraestructure\API\IcmApiClient.vb" />
     <Compile Include="Infraestructure\Configurations\AppConfiguration.vb" />
-    <Compile Include="Infraestructure\Excel\ExcelPropertyMap.vb" />
     <Compile Include="Infraestructure\Excel\ExcelReader.vb" />
     <Compile Include="Infraestructure\Excel\ExcelSheetAttribute.vb" />
     <Compile Include="Infraestructure\Excel\ExcelValidationError.vb" />
@@ -239,6 +242,7 @@
     <Compile Include="Global.asax.vb">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infraestructure\SQL\Repository.vb" />
     <Compile Include="Modules.vb" />
     <Compile Include="App_Code\General\Security.vb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
