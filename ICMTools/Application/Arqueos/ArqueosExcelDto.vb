@@ -1,7 +1,7 @@
 Public Class ArqueosExcelDto
-    <ExcelSheet("EFECTIVIDAD", 6)>
-    Property Efectividad As List(Of ArqueosEfectividadExcelDto)
-    <ExcelSheet("EFICIENCIA", 6)>
-    Property Eficiencia As List(Of ArqueosEficienciaExcelDto)
+    <ExcelSheet("p1", 1)>
+    Property p1 As List(Of ArqueosDetalleExcelDto)
+    <ExcelSheet("p2", 1)>
+    Property p2 As List(Of ArqueosDetalleExcelDto)
 
 End Class

@@ -206,16 +206,15 @@
     <Import Include="System.Web.UI.HtmlControls" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\Arqueos\ArqueosDetalleExcelDto.vb" />
     <Compile Include="Application\Arqueos\ArqueosExcelDto.vb" />
-    <Compile Include="Application\Arqueos\ArqueosEfectividadExcelDto.vb" />
-    <Compile Include="Application\Arqueos\ArqueosEficienciaExcelDto.vb" />
     <Compile Include="Application\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
     <Compile Include="Application\EficienciaEfectividad\EfectividadExcelDto.vb" />
     <Compile Include="Application\EficienciaEfectividad\EficienciaExcelDto.vb" />
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
     <Compile Include="Application\File\ValidateFileRequest.vb" />
-    <Compile Include="Controllers\ArqueosController.vb" />
+    <Compile Include="Controllers\ReporteArqueosController.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
     <Compile Include="Controllers\SharedController.vb" />
@@ -380,7 +379,7 @@
     <Content Include="images\Procesos-de-apoyo.jpg" />
     <Content Include="images\single-sign-on.png" />
     <Content Include="index.html" />
-    <Content Include="js\Arqueos.js" />
+    <Content Include="js\ReporteArqueos.js" />
     <Content Include="js\EficienciaEfectividad.js" />
     <Content Include="js\onfly.js" />
     <Content Include="js\shared.js" />

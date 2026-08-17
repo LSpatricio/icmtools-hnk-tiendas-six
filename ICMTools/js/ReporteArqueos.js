@@ -1,16 +1,16 @@
-function CheckExcelFileArqueos() {
-    CheckFileExists(configuraciones.carga, ValidarInformacionArqueos)
+function CheckExcelFileReporteArqueos() {
+    CheckFileExists(configuraciones.carga, ValidarInformacionReporteArqueos)
 }
 
 
-function ValidarInformacionArqueos(dataRequest) {
+function ValidarInformacionReporteArqueos(dataRequest) {
 
     console.log(dataRequest.FileClass);
     console.log(dataRequest.Path);
 
     $.ajax({
         type: "POST",
-        url: "/api/arqueos/validarinfo",
+        url: "/api/reportearqueos/validarinfo",
         contentType: "application/json",
         data: JSON.stringify(dataRequest),
 
@@ -33,7 +33,7 @@ function ValidarInformacionArqueos(dataRequest) {
         error: function (xhr) {
             console.log(xhr);
             setFormStatus("error");
-            $("#formatErrors").html("Error de comunicación (ValidarInformacionArqueos).");
+            $("#formatErrors").html("Error de comunicación (ValidarInformacionReporteArqueos).");
             $("#MensajeError").text("No se pudo cargar el documento por que no existe en la carpeta del servidor, Vuelva a intentar la carga ");
         }
     });
@@ -75,7 +75,7 @@ function GenerarCSV(path) {
     }
     $.ajax({
         type: "POST",
-        url: "/api/arqueos/insertdata",
+        url: "/api/reportearqueos/insertdata",
         contentType: "application/json",
         data: JSON.stringify(requestData),
         success: InsertData_OnSuccess,
