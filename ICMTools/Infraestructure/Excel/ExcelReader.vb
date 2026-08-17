@@ -2,6 +2,7 @@
 Imports System.DirectoryServices.ActiveDirectory
 Imports System.IO
 Imports System.Reflection
+Imports System.Linq
 Imports ExcelDataReader
 Imports Microsoft.Vbe.Interop
 Imports SixLabors.Fonts.Tables.General
@@ -158,8 +159,8 @@ Public Class ExcelReader
 
                         If index >= 0 AndAlso index < encabezados.Count Then
                             existe = String.Equals(
-                                encabezados(index),
-                                mapeo.Value.ColumnIndex.ToString().Trim().Replace(vbCrLf, vbLf),
+                                NormalizarTextoComparacion(encabezados(index)),
+                                NormalizarTextoComparacion(mapeo.Value.ColumnIndex.ToString()),
                                 StringComparison.OrdinalIgnoreCase
                             )
                             mensajeError = $"La columna #'{mapeo.Value.ColumnIndex + 1}' no existe en la hoja <strong>{hoja}</strong> ."
@@ -173,8 +174,8 @@ Public Class ExcelReader
 
                         If encabezadoExcel IsNot Nothing Then
                             existe = String.Equals(
-                                encabezadoExcel,
-                                mapeo.Value.ColumnName.Trim().Replace(vbCrLf, vbLf),
+                                NormalizarTextoComparacion(encabezadoExcel),
+                                NormalizarTextoComparacion(mapeo.Value.ColumnName),
                                 StringComparison.OrdinalIgnoreCase
                             )
                             mensajeError = $"La columna '{mapeo.Value.ColumnName}' no se encuentra en la hoja <strong>{hoja}</strong> o no está ubicada en la posición esperada (columna {mapeo.Value.ColumnIndex + 1})."
@@ -373,6 +374,21 @@ Public Class ExcelReader
         Return listaError
 
 
+    End Function
+
+    Private Function NormalizarTextoComparacion(valor As String) As String
+        If String.IsNullOrWhiteSpace(valor) Then
+            Return String.Empty
+        End If
+
+        Dim textoNormalizado = valor.Trim().Replace(vbCrLf, vbLf).Replace(vbCr, vbLf)
+        textoNormalizado = textoNormalizado.Normalize(System.Text.NormalizationForm.FormD)
+
+        Dim caracteres = textoNormalizado.
+            Where(Function(c) System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) <> System.Globalization.UnicodeCategory.NonSpacingMark).
+            ToArray()
+
+        Return New String(caracteres).Normalize(System.Text.NormalizationForm.FormC).ToLowerInvariant()
     End Function
 
 
