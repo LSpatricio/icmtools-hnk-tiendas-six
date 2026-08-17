@@ -3,6 +3,7 @@ Imports System.DirectoryServices.ActiveDirectory
 Imports System.IO
 Imports System.Reflection
 Imports System.Threading.Tasks
+Imports System.Linq
 Imports ExcelDataReader
 Imports Microsoft.Vbe.Interop
 Imports SixLabors.Fonts.Tables.General

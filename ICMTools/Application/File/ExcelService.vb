@@ -129,7 +129,6 @@ Public Class ExcelService
                     resultado
                 )
 
-
             Case GetType(Boolean)
                 Dim resultado As Boolean
                 Return Boolean.TryParse(valor.ToString(), resultado)

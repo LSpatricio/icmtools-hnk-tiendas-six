@@ -339,7 +339,7 @@ Public Class ArqueosExcelReader
             Return DirectCast(valor, DateTime)
         End If
 
-        Dim texto = valor.ToString().Trim()
+        Dim texto = NormalizarTextoFecha(valor.ToString())
         Dim resultado As DateTime
         Dim formatos As String() = {
             "dd/MM/yyyy",
@@ -374,6 +374,22 @@ Public Class ArqueosExcelReader
         End If
 
         Return Nothing
+    End Function
+
+    Private Function NormalizarTextoFecha(valor As String) As String
+        If String.IsNullOrWhiteSpace(valor) Then
+            Return String.Empty
+        End If
+
+        Dim texto = valor.Trim()
+        texto = System.Text.RegularExpressions.Regex.Replace(
+            texto,
+            "\s*(a|p)\.?\s*m\.?",
+            String.Empty,
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase
+        )
+
+        Return texto.Trim()
     End Function
 
     Private Function EsVacio(valor As Object) As Boolean
