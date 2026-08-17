@@ -322,9 +322,8 @@
     <Compile Include="Application\DTOs\EstructuraNegociosExcelDto.vb" />
     <Compile Include="Application\DTOs\PeriodsDto.vb" />
     <Compile Include="Application\DTOs\RegionDto.vb" />
+    <Compile Include="Application\Arqueos\ArqueosDetalleExcelDto.vb" />
     <Compile Include="Application\Arqueos\ArqueosExcelDto.vb" />
-    <Compile Include="Application\Arqueos\ArqueosEfectividadExcelDto.vb" />
-    <Compile Include="Application\Arqueos\ArqueosEficienciaExcelDto.vb" />
     <Compile Include="Application\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
     <Compile Include="Application\EficienciaEfectividad\EfectividadExcelDto.vb" />
     <Compile Include="Application\EficienciaEfectividad\EficienciaExcelDto.vb" />
@@ -342,6 +341,7 @@
     <Compile Include="Controllers\EstructuraJOSController.vb" />
     <Compile Include="Controllers\EstructuraNegociosController.vb" />
     <Compile Include="Controllers\ArqueosController.vb" />
+    <Compile Include="Controllers\ReporteArqueosController.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
     <Compile Include="Controllers\SharedController.vb" />
@@ -535,6 +535,7 @@
     <Content Include="js\EstructuraNegocios.js" />
     <Content Include="js\RegistrosADC.js" />
     <Content Include="js\Arqueos.js" />
+    <Content Include="js\ReporteArqueos.js" />
     <Content Include="js\EficienciaEfectividad.js" />
     <Content Include="js\onfly.js" />
     <Content Include="js\shared.js" />

@@ -5,7 +5,7 @@ Imports Newtonsoft.Json
 Imports Npgsql
 Imports NpgsqlTypes
 
-Public Class ArqueosController
+Public Class ReporteArqueosController
     Inherits ApiController
 
     Private mUser As User
@@ -23,7 +23,7 @@ Public Class ArqueosController
     ReadOnly sc As New SharedController
 
     <HttpPost>
-    <Route("api/arqueos/validarinfo")>
+    <Route("api/reportearqueos/validarinfo")>
     Public Function ValidarInfo(<FromBody> request As ValidateFileRequestt) As IHttpActionResult
         Try
             Thread.Sleep(1000)
@@ -62,7 +62,7 @@ Public Class ArqueosController
     End Function
 
     <HttpPost>
-    <Route("api/arqueos/insertdata")>
+    <Route("api/reportearqueos/insertdata")>
     Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
         Try
             Thread.Sleep(500)

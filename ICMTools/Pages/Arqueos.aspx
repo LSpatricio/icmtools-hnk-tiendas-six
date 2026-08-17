@@ -33,7 +33,7 @@ const configuraciones = {
         fileType: "Arqueos",
         extension: ".xlsx",
         fileClass: "ICMTools.ArqueosExcelDto",
-        headerRow: 6
+        headerRow: 1
     },
     logging: {
         page: "Arqueos",
@@ -41,7 +41,7 @@ const configuraciones = {
         body: "Inicia validacion para carga de Arqueos"
     },
     api: {
-        uploadData: "/api/arqueos/validarinfo"
+        uploadData: "/api/reportearqueos/validarinfo"
     }
 };
 
@@ -70,11 +70,11 @@ function configureEvents() {
 
 function handleStartImport(event) {
     event.preventDefault();
-    CheckExcelFileArqueos();
+    CheckExcelFileReporteArqueos();
 }
     </script>
     <script src="../js/sharedMejorado.js?v=1"></script>
-    <script src="../js/Arqueos.js?v=1"></script>
+    <script src="../js/ReporteArqueos.js?v=1"></script>
 </asp:Content>
 
 <%-- Contenedor principal --%>
