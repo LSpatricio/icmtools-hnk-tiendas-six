@@ -10,7 +10,7 @@ Public Class SharedController
 #Region "Variables Locales"
     Private ReadOnly mUser As User
     'Private ReadOnly mLog As Log
-    Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
+    'Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
 
     'Dim serviceData As New CustomServiceClass
 #End Region

@@ -24,7 +24,7 @@ Public Class FileController
     'Private sanitize As New FileClass
     Private ReadOnly _excelService As New ExcelService
     Private ReadOnly _excelReader As New ExcelReader
-
+    Private ReadOnly _fileService As New FileServices
 
     '   Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
 
@@ -34,6 +34,7 @@ Public Class FileController
     Public Sub New()
         _excelService = New ExcelService()
         _excelReader = New ExcelReader()
+        _fileService = New FileServices()
 
     End Sub
 
@@ -99,7 +100,6 @@ Public Class FileController
 
             Dim errorsList As String = Nothing
             Dim erroresValidacion As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
-            Dim encabezadosErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
 
             Dim validarEncabezados As Boolean = True
 
@@ -109,68 +109,16 @@ Public Class FileController
                 })
             End If
 
+            erroresValidacion = _fileService.ValidarExcel(request)
 
-            Dim tipo As Type = Type.GetType(request.FileClass)
-
-
-
-            Dim hojasDefinidas As List(Of Type) = _excelService.ObtenerTipos(tipo)
-
-            If hojasDefinidas.Any() Then
-                'Validacion nombre de ojas
-                erroresValidacion = _excelReader.ValidarHojasDefinidas(tipo, request.Path)
-
-
-                If erroresValidacion.Count > 0 Then
-                    For Each hojaError In erroresValidacion
-                        errorsList += $"<tr><td>{hojaError.Problema}</td><td>" & String.Join(", ", hojaError.Detalle) & "</td></tr>"
-                    Next
-                    Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
-                End If
-
-
-                For Each hoja In hojasDefinidas
-
-
-                    Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(hoja)
-
-                    Dim propiedad = tipo.GetProperties().
-                                                FirstOrDefault(Function(p) p.PropertyType.IsGenericType AndAlso
-                                                                           p.PropertyType.GetGenericArguments()(0) = hoja)
-
-                    Dim atributo = propiedad?.
-                                                GetCustomAttributes(GetType(ExcelSheetAttribute), False).
-                                                Cast(Of ExcelSheetAttribute)().
-                                                FirstOrDefault()
-
-                    encabezadosErrores.AddRange(_excelReader.ValidarEncabezadosExcel(hoja, request.Path, atributo.HeaderRow, atributo.SheetName, mapeoColumnas))
-
-                Next
-
-            Else
-                Dim cantidadHojas As Integer = _excelReader.ContarHojas(request.Path)
-
-                For i As Integer = 0 To cantidadHojas - 1
-
-                    Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(tipo)
-
-                    encabezadosErrores.AddRange(_excelReader.ValidarEncabezadosExcel(tipo, request.Path, request.HeaderRow, i.ToString(), mapeoColumnas))
-
-                Next
-
-
-            End If
-
-
-            If encabezadosErrores.Count > 0 Then
-                For Each encabezadosError In encabezadosErrores
-                    errorsList += $"<tr><td>{encabezadosError.Problema}</td><td>" & String.Join(", ", encabezadosError.Detalle) & "</td></tr>"
+            If erroresValidacion.Count > 0 Then
+                For Each errores In erroresValidacion
+                    errorsList += $"<tr><td>{errores.Problema}</td><td>" & String.Join(", ", errores.Detalle) & "</td></tr>"
                 Next
 
                 Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
 
             End If
-
 
             Return Ok(New With {.d = True})
 

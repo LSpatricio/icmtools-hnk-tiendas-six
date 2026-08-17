@@ -8,5 +8,6 @@
 
     ReadOnly Property BearerToken As String
 
+    ReadOnly Property ConnectionString As String
 
 End Interface
