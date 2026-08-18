@@ -43,9 +43,10 @@ Public Class EficienciaEfectividadController
 
             Dim errorsList As String = Nothing
 
-            Dim valoresErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
+            Dim valoresErrores = Await _eficienciaEfectividadServices.ProcesarEficienciaEfectividad(request)
 
-            valoresErrores = Await _eficienciaEfectividadServices.ValidacionesEficiencia(request)
+
+            ' valoresErrores = Await _eficienciaEfectividadServices.ValidacionesEficiencia(request)
 
             If valoresErrores.Count > 0 Then
                 For Each errores In valoresErrores
@@ -55,6 +56,8 @@ Public Class EficienciaEfectividadController
                 Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
 
             End If
+
+
 
             'Ejecución de SP 
 

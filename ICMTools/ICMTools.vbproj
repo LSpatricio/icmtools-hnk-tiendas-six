@@ -215,6 +215,7 @@
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
     <Compile Include="Application\File\ValidateFileRequest.vb" />
+    <Compile Include="Application\Interfaces\IExcelSpecificValidator.vb" />
     <Compile Include="Application\Services\EficienciaEfectividadServices.vb" />
     <Compile Include="Application\Services\FileServices.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
@@ -223,7 +224,7 @@
     <Compile Include="Infraestructure\Excel\ExcelColumnAttribute.vb" />
     <Compile Include="Application\Authentication\AuthenticationResult.vb" />
     <Compile Include="Application\Authentication\AuthenticationService.vb" />
-    <Compile Include="Application\Configurations\IAppConfiguration.vb" />
+    <Compile Include="Application\Interfaces\IAppConfiguration.vb" />
     <Compile Include="Application\Payee\Payee.vb" />
     <Compile Include="Application\Payee\PayeeService.vb" />
     <Compile Include="Infraestructure\API\Dtos\IcmQueryRequestDto.vb" />
@@ -1470,6 +1471,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Application\Configurations\" />
     <Folder Include="File\" />
     <Folder Include="images\Modulos\ImportMetas\" />
     <Folder Include="images\Modulos\ImportVentas\" />
