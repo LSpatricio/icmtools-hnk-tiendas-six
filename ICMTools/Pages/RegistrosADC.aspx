@@ -138,7 +138,7 @@ const configuraciones = {
                             <div class="row">
                                 <div class="col-md-7">
                                     <div class="row form-group">
-                                        <label class="control-label col-sm-5 text-right">Sociedad</label>
+                                        <label class="control-label col-sm-5 text-right">Periodo</label>
                                         <div class="col-sm-7">
                                             <select id="SelectSociety" class="form-control form-control-sm" clientidmode="Static">
                                                 <option value="-1">(!)TODAS</option>
@@ -146,7 +146,7 @@ const configuraciones = {
                                         </div>
                                     </div>
                                     <div class="row form-group">
-                                        <label class="control-label col-sm-5 text-right">División de Personal</label>
+                                        <label class="control-label col-sm-5 text-right">Región</label>
                                         <div class="col-sm-7">
                                             <select id="SelectPersonnelDivision" class="form-control form-control-sm" clientidmode="Static">
                                                 <option value="-1">(!)TODAS</option>
@@ -156,7 +156,7 @@ const configuraciones = {
                                 </div>
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        <label class="control-label col-sm-12">Archivo de Monto Distribuible</label>
+                                        <label class="control-label col-sm-12">Archivo de Registros ADC</label>
                                         <div class="col">
                                             <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
                                             <!-- Drop Zone -->
@@ -185,8 +185,8 @@ const configuraciones = {
                                 </div>
                             </div>
                             <div class="col-5">
-                                <button id="btnStartImport" class="btn btn-sm btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Click aquí despues de elegir archivo de Monto Distribuible"><i class="fas fa-upload fa-fw"></i>Iniciar Importacion</button>
-                                <a href="../TemplateFiles/ICMToolsPlantilla_MontoDistribuible_CCNOM.xlsx" class="btn btn-sm btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Descarga de Plantilla Monto Distribuible para la importación"><i class="fas fa-download fa-fw"></i>Descargar Plantilla</a>
+                                <button id="btnStartImport" class="btn btn-sm btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Click aquí despues de elegir archivo de Registros ADC"><i class="fas fa-upload fa-fw"></i>Iniciar Importacion</button>
+                                <a href="../TemplateFiles/ICMToolsPlantilla_MontoDistribuible_CCNOM.xlsx" class="btn btn-sm btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Descarga de Plantilla Registros ADC para la importación"><i class="fas fa-download fa-fw"></i>Descargar Plantilla</a>
                             </div>
                         </div>
                     </div>
@@ -209,14 +209,14 @@ const configuraciones = {
                     </div>
                 </div>
                 <div id="successPanel" class="RespuestaPanel card border-success" style="display: none;">
-                    <div class="card-header text-success lead">Confirmación de Carga Exitosa de Monto Distribuible<span class="badge badge-success float-right"><i class="fas fa-check-circle fa-fw"></i>Listo</span></div>
+                    <div class="card-header text-success lead">Confirmación de Carga Exitosa de Registros ADC<span class="badge badge-success float-right"><i class="fas fa-check-circle fa-fw"></i>Listo</span></div>
                     <div class="card-body">
                         <h5 class="card-title"><i class='fas fa-file-excel fa-fw'></i><span id="fileNameSuccess"></span></h5>
                         <div id="formatSuccess" class="pt-3 table-responsive text-default"></div>
                     </div>
                 </div>
                 <div id="WarningPanel" class="RespuestaPanel card border-warning" style="display: none;">
-                    <div class="card-header text-warning lead">Confirmación de carga parcial de Monto Distribuible<span class="badge badge-warning float-right"><i class="fas fa-exclamation-circle fa-fw"></i>Advertencia</span></div>
+                    <div class="card-header text-warning lead">Confirmación de carga parcial de Registros ADC<span class="badge badge-warning float-right"><i class="fas fa-exclamation-circle fa-fw"></i>Advertencia</span></div>
                     <div class="card-body">
                         <h5 class="card-title"><i class='fas fa-file-excel fa-fw'></i><span id="fileNameWarning"></span></h5>
                         <div id="formatWarning" class="pt-3 table-responsive text-default">
