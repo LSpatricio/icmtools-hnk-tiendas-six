@@ -1,10 +1,10 @@
 ﻿Public Class RegistrosADCDetalleExcelDto
 
     <ExcelColumn(0, "ID", Requerido:=True, ValoresIgnorados:={})>
-    Public Property ID As Decimal
+    Public Property ID As Integer
 
     <ExcelColumn(1, "Conteo de Archivos", Requerido:=False, ValoresIgnorados:={})>
-    Public Property ConteoArchivos As Decimal
+    Public Property ConteoArchivos As Integer
 
     <ExcelColumn(2, "CeCo", Requerido:=True, ValoresIgnorados:={})>
     Public Property Ceco As Decimal
