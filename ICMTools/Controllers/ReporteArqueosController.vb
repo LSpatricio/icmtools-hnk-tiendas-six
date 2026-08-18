@@ -1,4 +1,5 @@
 Imports System.Configuration
+Imports System.Globalization
 Imports System.Data
 Imports System.Data.SqlClient
 Imports System.IO
@@ -8,6 +9,7 @@ Imports System.Web.Http
 Imports Newtonsoft.Json
 Imports Npgsql
 Imports NpgsqlTypes
+Imports System.Text
 
 Public Class ReporteArqueosController
     Inherits ApiController
@@ -112,14 +114,83 @@ Public Class ReporteArqueosController
                 db.ExecuteStoredProcedure("dbo.SP_VALIDATE_ARQUEOS", DataBase.EnumExecutionType.NonQuery)
             End Using
 
+            Dim csvPath As String = ExportarBdiArqueosCsv(connStr)
+
             Dim rTable As String = sc.GetMessage("Arqueos", "CargaCompleta")
-            Return Ok(New With {.d = True, .r = rTable, .rows = tablaStg.Rows.Count})
+            Return Ok(New With {.d = True, .r = rTable, .rows = tablaStg.Rows.Count, .csv = csvPath})
         Catch ex As Exception
             Return Ok(New With {
                 .d = False,
                 .r = ex.Message
             })
         End Try
+    End Function
+
+    Private Function ExportarBdiArqueosCsv(connStr As String) As String
+        Dim carpetaSalida As String = "C:\Users\dsuazo\OneDrive - Excelencia en Soluciones Informaticas SA\Escritorio\csv prueba"
+        Directory.CreateDirectory(carpetaSalida)
+
+        Dim nombreArchivo As String = $"BDIARQUEOS_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+        Dim rutaSalida As String = Path.Combine(carpetaSalida, nombreArchivo)
+
+        Using conn As New SqlConnection(connStr)
+            conn.Open()
+
+            Using cmd As New SqlCommand("SELECT * FROM dbo.BDIARQUEOS ORDER BY NumeroSAP, Almacen, TipoListado, FechaCreacion, CodigoProducto", conn)
+                Using reader As SqlDataReader = cmd.ExecuteReader()
+                    Using writer As New StreamWriter(rutaSalida, False, New UTF8Encoding(True))
+                        Dim headers(reader.FieldCount - 1) As String
+                        For i As Integer = 0 To reader.FieldCount - 1
+                            headers(i) = EscapeCsvValue(reader.GetName(i))
+                        Next
+                        writer.WriteLine(String.Join(";", headers))
+
+                        While reader.Read()
+                            Dim values(reader.FieldCount - 1) As String
+                            For i As Integer = 0 To reader.FieldCount - 1
+                                values(i) = EscapeCsvValue(GetCsvValue(reader, i))
+                            Next
+                            writer.WriteLine(String.Join(";", values))
+                        End While
+                    End Using
+                End Using
+            End Using
+        End Using
+
+        Return rutaSalida
+    End Function
+
+    Private Function GetCsvValue(reader As SqlDataReader, index As Integer) As String
+        If reader.IsDBNull(index) Then
+            Return ""
+        End If
+
+        Dim value As Object = reader.GetValue(index)
+
+        If TypeOf value Is DateTime Then
+            Return DirectCast(value, DateTime).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
+        End If
+
+        If TypeOf value Is Decimal OrElse TypeOf value Is Double OrElse TypeOf value Is Single Then
+            Return Convert.ToString(value, CultureInfo.InvariantCulture)
+        End If
+
+        Return Convert.ToString(value, CultureInfo.InvariantCulture)
+    End Function
+
+    Private Function EscapeCsvValue(value As String) As String
+        If value Is Nothing Then
+            Return ""
+        End If
+
+        Dim needsQuotes As Boolean = value.Contains(";") OrElse value.Contains("""") OrElse value.Contains(vbCr) OrElse value.Contains(vbLf)
+        Dim escaped As String = value.Replace("""", """""")
+
+        If needsQuotes Then
+            Return $"""{escaped}"""
+        End If
+
+        Return escaped
     End Function
 
     Private Function ObtenerRutaArchivoCarga(request As ValidateFileRequest) As String
