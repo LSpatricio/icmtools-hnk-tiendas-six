@@ -28,6 +28,19 @@ Public Class Repository
 
     End Function
 
+    Public Async Function EjecutarSPAsync(nombreSP As String) As Task
+
+        Using connection As New SqlConnection(_connectionString)
+
+            Await connection.ExecuteAsync(
+            nombreSP,
+            commandType:=CommandType.StoredProcedure
+        )
+
+        End Using
+
+    End Function
+
     ' Dapper
     Public Async Function LimpiarStaging(
         nombreTabla As String
@@ -45,7 +58,6 @@ Public Class Repository
 
     End Function
 
-    ' ADO.NET / SqlBulkCopy
     Public Async Function InsertarBatch(
         nombreTabla As String,
         dataTable As DataTable

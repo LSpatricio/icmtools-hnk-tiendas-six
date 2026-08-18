@@ -15,7 +15,29 @@ Public Class EficienciaEfectividadServices
 
     End Sub
 
-    Public Async Function ValidacionesEficiencia(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    Public Async Function ProcesarEficienciaEfectividad(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+
+        Dim errores = Await ValidacionesEficienciaEfectividad(request)
+
+        If errores.Any() Then
+            Return errores
+        End If
+
+        Await _repository.EjecutarSPAsync(
+        "dbo.SP_VALIDATE_EFECTIVIDAD"
+    )
+
+        Await _repository.EjecutarSPAsync(
+        "dbo.SP_VALIDATE_EFICIENCIA"
+    )
+
+        Return errores
+
+    End Function
+
+
+
+    Public Async Function ValidacionesEficienciaEfectividad(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
         Dim errorsList As String = Nothing
 
         Dim tipo As Type = GetType(EficienciaEfectividadExcelDto)
@@ -33,26 +55,34 @@ Public Class EficienciaEfectividadServices
             Await _repository.LimpiarStaging(atributo.TableName)
 
             valoresErrores.AddRange(
-                    Await _excelReader.CargaAsync(
-                        request.Path,
-                        atributo.HeaderRow,
-                        atributo.SheetName,
-                        mapeoColumnas,
-                        atributo.TableName
+                        Await _excelReader.CargaAsync(
+                            request.Path,
+                            atributo.HeaderRow,
+                            atributo.SheetName,
+                            mapeoColumnas,
+                            atributo.TableName
+                        )
                     )
-                )
-
-
         Next
-
-
 
         Return valoresErrores
 
     End Function
 
+    'AddressOf ValidarEficienciaEfectividad
+    Private Function ValidarEficienciaEfectividad(
+    fila As DataRow
+) As String
 
+        Dim ruta As String = fila("Ruta").ToString().Trim()
 
+        If Not ruta Then
+            Return $"La ruta '{ruta}' no existe."
+        End If
+
+        Return Nothing
+
+    End Function
 
 
 
