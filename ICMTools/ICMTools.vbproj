@@ -321,6 +321,11 @@
     <Compile Include="Application\DTOs\EstructuraNegociosExcelDto.vb" />
     <Compile Include="Application\DTOs\PeriodsDto.vb" />
     <Compile Include="Application\DTOs\RegionDto.vb" />
+    <Compile Include="Application\RegistrosADC\RegistrosADCExcelDto.vb" />
+    <Compile Include="Application\RegistrosADC\RegistrosADCDetalleExcelDto.vb" />
+    <Compile Include="Application\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
+    <Compile Include="Application\EficienciaEfectividad\EfectividadExcelDto.vb" />
+    <Compile Include="Application\EficienciaEfectividad\EficienciaExcelDto.vb" />
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
     <Compile Include="Application\File\SendInfoRequest.vb" />
@@ -331,6 +336,7 @@
     <Compile Include="Application\Services\FileService.vb" />
     <Compile Include="Application\Services\PeriodService.vb" />
     <Compile Include="Controllers\EstructuraNegociosController.vb" />
+    <Compile Include="Controllers\ReporteRegistrosADCController.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
     <Compile Include="Controllers\SharedController.vb" />
@@ -369,6 +375,13 @@
     </Compile>
     <Compile Include="Pages\EstructuraNegocios.aspx.vb">
       <DependentUpon>EstructuraNegocios.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Pages\RegistrosADC.aspx.designer.vb">
+      <DependentUpon>RegistrosADC.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\RegistrosADC.aspx.vb">
+      <DependentUpon>RegistrosADC.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Pages\EficienciaEfectividad.aspx.designer.vb">
@@ -497,12 +510,14 @@
     <Content Include="images\single-sign-on.png" />
     <Content Include="index.html" />
     <Content Include="js\EstructuraNegocios.js" />
+    <Content Include="js\RegistrosADC.js" />
     <Content Include="js\EficienciaEfectividad.js" />
     <Content Include="js\onfly.js" />
     <Content Include="js\shared.js" />
     <Content Include="js\sharedMejorado.js" />
     <Content Include="Pages\404.html" />
     <Content Include="Pages\EstructuraNegocios.aspx" />
+    <Content Include="Pages\RegistrosADC.aspx" />
     <Content Include="Pages\ErrorGeneral.html" />
     <Content Include="Pages\EficienciaEfectividad.aspx" />
     <Content Include="Pages\MontoDistribuibleCategoriaDocumentacion.aspx" />
