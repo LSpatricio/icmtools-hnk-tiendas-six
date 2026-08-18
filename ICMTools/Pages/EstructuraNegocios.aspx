@@ -36,7 +36,7 @@ const configuraciones = {
         fileType: "EstructuraNegocios",
         extension: ".xlsx",
         fileClass: "ICMTools.EstructuraNegociosExcelDto",
-        headerRow:6
+        headerRow:1
     },
     logging: {
         page: "EstructuraNegocios",

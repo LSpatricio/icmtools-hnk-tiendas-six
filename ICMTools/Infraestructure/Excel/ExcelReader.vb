@@ -96,7 +96,9 @@ Public Class ExcelReader
                     reader.Read()
                 Next
 
-                Dim encabezados As New List(Of String)
+                'Dim encabezados As New List(Of String)
+                Dim encabezados As New HashSet(Of String)(
+                StringComparer.OrdinalIgnoreCase)
 
                 For i As Integer = 0 To reader.FieldCount - 1
 
@@ -491,8 +493,9 @@ Public Class ExcelReader
             Where(Function(c) System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) <> System.Globalization.UnicodeCategory.NonSpacingMark).
             ToArray()
 
-        Return New String(caracteres).Normalize(System.Text.NormalizationForm.FormC).ToLowerInvariant()
+        Return New String(caracteres).Normalize(System.Text.NormalizationForm.FormC)
     End Function
+
     Private Function MoverAHoja(
     reader As IExcelDataReader,
     nombreHoja As String

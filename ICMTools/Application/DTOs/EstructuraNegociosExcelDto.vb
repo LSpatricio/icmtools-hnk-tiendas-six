@@ -95,6 +95,6 @@
     <ExcelColumn("No. Empleado Coordinador", ValoresIgnorados:={})>
     Public Property NumeroEmpleadoCoordinador As String
 
-    <ExcelColumn("Nombre Coordinador", ValoresIgnorados:={})>
+    <ExcelColumn("|", ValoresIgnorados:={})>
     Public Property NombreCoordinador As String
 End Class

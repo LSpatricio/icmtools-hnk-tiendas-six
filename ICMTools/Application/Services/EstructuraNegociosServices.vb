@@ -1,7 +1,7 @@
 ﻿Imports System.Reflection
 Imports System.Threading.Tasks
 
-Public Class EficienciaEfectividadServices
+Public Class EstructuraNegociosServices
 
     Private ReadOnly _excelReader As ExcelReader
     Private ReadOnly _excelService As ExcelService
@@ -15,21 +15,21 @@ Public Class EficienciaEfectividadServices
 
     End Sub
 
-    Public Async Function ProcesarEficienciaEfectividad(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    Public Async Function ProcesarEstructuraNegocios(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
 
-        Dim errores = Await ValidacionesEficienciaEfectividad(request)
+        Dim errores = Await ValidacionesEstructuraNegociosServices(request)
 
         If errores.Any() Then
             Return errores
         End If
 
-        Await _repository.EjecutarSPAsync(
-        "dbo.SP_VALIDATE_EFECTIVIDAD"
-    )
+        '    Await _repository.EjecutarSPAsync(
+        '    "dbo.SP_VALIDATE_EFECTIVIDAD"
+        ')
 
-        Await _repository.EjecutarSPAsync(
-        "dbo.SP_VALIDATE_EFICIENCIA"
-    )
+        '    Await _repository.EjecutarSPAsync(
+        '    "dbo.SP_VALIDATE_EFICIENCIA"
+        ')
 
         Return errores
 
@@ -37,35 +37,35 @@ Public Class EficienciaEfectividadServices
 
 
 
-    Public Async Function ValidacionesEficienciaEfectividad(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    Public Async Function ValidacionesEstructuraNegociosServices(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
         Dim errorsList As String = Nothing
+        Dim tableName As String = "STG_ESTRUCTURANEGOCIOS"
 
         Dim tipo As Type = Type.GetType(request.FileClass)
 
-        Dim hojasDefinidas As List(Of Type) = _excelService.ObtenerTipos(tipo)
-
         Dim valoresErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
 
-        For Each hoja In hojasDefinidas
+        Dim cantidadHojas As Integer = _excelReader.ContarHojas(request.Path)
+
+        Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(tipo)
 
 
-            Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(hoja)
-            Dim atributo = tipo.GetProperties().ToList().FirstOrDefault(Function(p) p.PropertyType.GetGenericArguments()(0) = hoja).GetCustomAttributes(GetType(ExcelSheetAttribute), False).Cast(Of ExcelSheetAttribute)().First()
+        For i As Integer = 0 To cantidadHojas - 1
 
-            Await _repository.LimpiarStaging(atributo.TableName)
+            Await _repository.LimpiarStaging(tableName)
 
             valoresErrores.AddRange(
                         Await _excelReader.CargaAsync(
                             request.Path,
-                            atributo.HeaderRow,
-                            atributo.SheetName,
+                            request.HeaderRow,
+                            i.ToString(),
                             mapeoColumnas,
-                            atributo.TableName
-                        )
+                            tableName)
                     )
         Next
-
         Return valoresErrores
+
+
 
     End Function
 
@@ -75,6 +75,8 @@ Public Class EficienciaEfectividadServices
 ) As String
 
         Dim ruta As String = fila("Ruta").ToString().Trim()
+
+
 
         If Not ruta Then
             Return $"La ruta '{ruta}' no existe."
