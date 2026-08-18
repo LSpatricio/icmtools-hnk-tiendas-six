@@ -1,11 +1,11 @@
 ﻿Imports AjaxControlToolkit
 Imports System.IO
 
-Public Class EficienciaEfectividad
+Public Class EstructuraNegocios
     Inherits System.Web.UI.Page
 
     Private mUser As User
-    Private Const NombrePagina = "EficienciaEfectividad"
+    Private Const NombrePagina = "EstructuraNegocios"
     'Private mLog As Log
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
