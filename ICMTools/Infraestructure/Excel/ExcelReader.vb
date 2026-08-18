@@ -173,11 +173,19 @@ Public Class ExcelReader
                         Dim encabezadoExcel = encabezados.ElementAtOrDefault(mapeo.Value.ColumnIndex)
 
                         If encabezadoExcel IsNot Nothing Then
-                            existe = String.Equals(
+                            Dim nombresEsperados As New List(Of String)
+                            If Not String.IsNullOrWhiteSpace(mapeo.Value.ColumnName) Then
+                                nombresEsperados.Add(mapeo.Value.ColumnName)
+                            End If
+                            If mapeo.Value.ColumnAliases IsNot Nothing AndAlso mapeo.Value.ColumnAliases.Length > 0 Then
+                                nombresEsperados.AddRange(mapeo.Value.ColumnAliases.Where(Function(x) Not String.IsNullOrWhiteSpace(x)))
+                            End If
+
+                            existe = nombresEsperados.Any(Function(nombreEsperado) String.Equals(
                                 NormalizarTextoComparacion(encabezadoExcel),
-                                NormalizarTextoComparacion(mapeo.Value.ColumnName),
+                                NormalizarTextoComparacion(nombreEsperado),
                                 StringComparison.OrdinalIgnoreCase
-                            )
+                            ))
                             mensajeError = $"La columna '{mapeo.Value.ColumnName}' no se encuentra en la hoja <strong>{hoja}</strong> o no está ubicada en la posición esperada (columna {mapeo.Value.ColumnIndex + 1})."
                         End If
 

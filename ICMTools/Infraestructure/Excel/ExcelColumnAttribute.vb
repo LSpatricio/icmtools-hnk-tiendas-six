@@ -7,6 +7,7 @@ Public Class ExcelColumnAttribute
     Public Property Requerido As Boolean
 
     Public Property ValoresIgnorados As String() = {}
+    Public Property ColumnAliases As String() = {}
 
 
     Public Sub New(columnIndex As Integer, Optional columnName As String = Nothing)

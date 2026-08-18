@@ -1,3 +1,4 @@
+Imports System.Data
 Imports System.Globalization
 Imports System.IO
 Imports System.Linq
@@ -31,6 +32,154 @@ Public Class ArqueosExcelReader
         Return errores
     End Function
 
+    Public Function ObtenerDataTableStgArqueos(rutaArchivo As String) As DataTable
+        Dim tabla As DataTable = CrearTablaStgArqueos()
+        Dim tipo As Type = GetType(ArqueosExcelDto)
+        Dim excelService As New ExcelService()
+
+        Dim hojasDefinidas As List(Of Type) = excelService.ObtenerTipos(tipo)
+
+        For Each hoja In hojasDefinidas
+            Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = excelService.CrearMepeoAtributos(hoja)
+            Dim atributo = tipo.GetProperties().
+                ToList().
+                FirstOrDefault(Function(p) p.PropertyType.GetGenericArguments()(0) = hoja).
+                GetCustomAttributes(GetType(ExcelSheetAttribute), False).
+                Cast(Of ExcelSheetAttribute)().
+                First()
+
+            CargarHojaEnTabla(rutaArchivo, atributo.HeaderRow, atributo.SheetName, mapeoColumnas, tabla)
+        Next
+
+        Return tabla
+    End Function
+
+    Private Function CrearTablaStgArqueos() As DataTable
+        Dim tabla As New DataTable()
+
+        tabla.Columns.Add("NumeroSAP", GetType(Long))
+        tabla.Columns.Add("Almacen", GetType(String))
+        tabla.Columns.Add("TipoListado", GetType(String))
+        tabla.Columns.Add("Estatus", GetType(String))
+        tabla.Columns.Add("FechaCreacion", GetType(DateTime))
+        tabla.Columns.Add("Nombre", GetType(String))
+        tabla.Columns.Add("UsuarioCreador", GetType(String))
+        tabla.Columns.Add("UsuarioCreadorPerfil", GetType(String))
+        tabla.Columns.Add("UsuarioAutorizador", GetType(String))
+        tabla.Columns.Add("UsuarioAutorizadorPerfil", GetType(String))
+        tabla.Columns.Add("TipoCierre", GetType(String))
+        tabla.Columns.Add("FechaInicioConteo", GetType(DateTime))
+        tabla.Columns.Add("FechaFinConteo", GetType(DateTime))
+        tabla.Columns.Add("FechaCierreConteo", GetType(DateTime))
+        tabla.Columns.Add("FechaTerminoConteo", GetType(DateTime))
+        tabla.Columns.Add("Subinventario", GetType(String))
+        tabla.Columns.Add("IdProducto", GetType(String))
+        tabla.Columns.Add("CodigoProducto", GetType(Long))
+        tabla.Columns.Add("NombreProducto", GetType(String))
+        tabla.Columns.Add("Unidad", GetType(String))
+        tabla.Columns.Add("CantidadSistema", GetType(Decimal))
+        tabla.Columns.Add("Diferencia", GetType(Decimal))
+        tabla.Columns.Add("Faltante", GetType(Decimal))
+        tabla.Columns.Add("Sobrante", GetType(Decimal))
+        tabla.Columns.Add("FaltantePrecioCons", GetType(Decimal))
+        tabla.Columns.Add("SobrantePrecioCons", GetType(Decimal))
+        tabla.Columns.Add("Comentario", GetType(String))
+
+        Return tabla
+    End Function
+
+    Private Sub CargarHojaEnTabla(
+        rutaArchivo As String,
+        filaEncabezado As Integer,
+        nombreHoja As String,
+        mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute),
+        tabla As DataTable)
+
+        Dim idxCodigoListado = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoListado))
+        Dim idxNumeroSAP = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NumeroSAP))
+        Dim idxAlmacen = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Almacen))
+        Dim idxTipoListado = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoListado))
+        Dim idxEstatus = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Estatus))
+        Dim idxFechaCreacion = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCreacion))
+        Dim idxNombre = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Nombre))
+        Dim idxUsuarioCreador = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreador))
+        Dim idxUsuarioCreadorPerfil = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreadorPerfil))
+        Dim idxUsuarioAutorizador = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizador))
+        Dim idxUsuarioAutorizadorPerfil = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizadorPerfil))
+        Dim idxTipoCierre = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoCierre))
+        Dim idxFechaInicioConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaInicioConteo))
+        Dim idxFechaFinConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaFinConteo))
+        Dim idxFechaCierreConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCierreConteo))
+        Dim idxFechaTerminoConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaTerminoConteo))
+        Dim idxSubinventario = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Subinventario))
+        Dim idxIdProducto = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.IdProducto))
+        Dim idxCodigoProducto = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoProducto))
+        Dim idxNombreProducto = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NombreProducto))
+        Dim idxUnidad = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Unidad))
+        Dim idxCantidadSistema = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CantidadSistema))
+        Dim idxDiferencia = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Diferencia))
+        Dim idxFaltante = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Faltante))
+        Dim idxSobrante = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Sobrante))
+        Dim idxFaltantePrecioCons = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FaltantePrecioCons))
+        Dim idxSobrantePrecioCons = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.SobrantePrecioCons))
+        Dim idxComentario = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Comentario))
+
+        Using stream = File.Open(rutaArchivo, FileMode.Open, FileAccess.Read)
+            Using reader = ExcelReaderFactory.CreateReader(stream)
+                If Not MoverAHoja(reader, nombreHoja) Then
+                    Return
+                End If
+
+                For i As Integer = 1 To filaEncabezado
+                    reader.Read()
+                Next
+
+                If Not reader.Read() Then
+                    Return
+                End If
+
+                Do
+                    If FilaVacia(reader, mapeoColumnas) Then
+                        Exit Do
+                    End If
+
+                    Dim fila As DataRow = tabla.NewRow()
+
+                    Dim _codigoListado = ObtenerTexto(reader.GetValue(idxCodigoListado))
+                    fila("NumeroSAP") = ValorDataTable(ObtenerLong(reader.GetValue(idxNumeroSAP)))
+                    fila("Almacen") = ValorDataTable(ObtenerTexto(reader.GetValue(idxAlmacen)))
+                    fila("TipoListado") = ValorDataTable(ObtenerTexto(reader.GetValue(idxTipoListado)))
+                    fila("Estatus") = ValorDataTable(ObtenerTexto(reader.GetValue(idxEstatus)))
+                    fila("FechaCreacion") = ValorDataTable(ObtenerFecha(reader.GetValue(idxFechaCreacion)))
+                    fila("Nombre") = ValorDataTable(ObtenerTexto(reader.GetValue(idxNombre)))
+                    fila("UsuarioCreador") = ValorDataTable(ObtenerTexto(reader.GetValue(idxUsuarioCreador)))
+                    fila("UsuarioCreadorPerfil") = ValorDataTable(ObtenerTexto(reader.GetValue(idxUsuarioCreadorPerfil)))
+                    fila("UsuarioAutorizador") = ValorCadena(ObtenerTexto(reader.GetValue(idxUsuarioAutorizador)))
+                    fila("UsuarioAutorizadorPerfil") = ValorCadena(ObtenerTexto(reader.GetValue(idxUsuarioAutorizadorPerfil)))
+                    fila("TipoCierre") = If(String.IsNullOrWhiteSpace(ObtenerTexto(reader.GetValue(idxTipoCierre))), "", ObtenerTexto(reader.GetValue(idxTipoCierre)))
+                    fila("FechaInicioConteo") = ValorDataTable(ObtenerFecha(reader.GetValue(idxFechaInicioConteo)))
+                    fila("FechaFinConteo") = ValorDataTable(ObtenerFecha(reader.GetValue(idxFechaFinConteo)))
+                    fila("FechaCierreConteo") = ValorDataTable(ObtenerFecha(reader.GetValue(idxFechaCierreConteo)))
+                    fila("FechaTerminoConteo") = ValorFecha(ObtenerFecha(reader.GetValue(idxFechaTerminoConteo)))
+                    fila("Subinventario") = ValorDataTable(ObtenerTexto(reader.GetValue(idxSubinventario)))
+                    fila("IdProducto") = ValorDataTable(ObtenerTexto(reader.GetValue(idxIdProducto)))
+                    fila("CodigoProducto") = ValorDataTable(ObtenerLong(reader.GetValue(idxCodigoProducto)))
+                    fila("NombreProducto") = ValorDataTable(ObtenerTexto(reader.GetValue(idxNombreProducto)))
+                    fila("Unidad") = ValorDataTable(ObtenerTexto(reader.GetValue(idxUnidad)))
+                    fila("CantidadSistema") = ValorDataTable(ObtenerDecimal(reader.GetValue(idxCantidadSistema)))
+                    fila("Diferencia") = ValorDataTable(ObtenerDecimal(reader.GetValue(idxDiferencia)))
+                    fila("Faltante") = ValorDataTable(ObtenerDecimal(reader.GetValue(idxFaltante)))
+                    fila("Sobrante") = ValorDataTable(ObtenerDecimal(reader.GetValue(idxSobrante)))
+                    fila("FaltantePrecioCons") = ValorDataTable(ObtenerDecimal(reader.GetValue(idxFaltantePrecioCons)))
+                    fila("SobrantePrecioCons") = ValorDataTable(ObtenerDecimal(reader.GetValue(idxSobrantePrecioCons)))
+                    fila("Comentario") = If(String.IsNullOrWhiteSpace(ObtenerTexto(reader.GetValue(idxComentario))), "", ObtenerTexto(reader.GetValue(idxComentario)))
+
+                    tabla.Rows.Add(fila)
+                Loop While reader.Read()
+            End Using
+        End Using
+    End Sub
+
     Private Function ValidacionesReglasArqueos(
         rutaArchivo As String,
         filaEncabezado As Integer,
@@ -39,8 +188,8 @@ Public Class ArqueosExcelReader
 
         Dim errores As New List(Of ExcelValidationError)
 
+        Dim idxNumeroSAP = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NumeroSAP))
         Dim idxCodigoListado = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoListado))
-        Dim idxNoSap = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NoSap))
         Dim idxAlmacen = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Almacen))
         Dim idxTipoListado = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoListado))
         Dim idxEstatus = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Estatus))
@@ -95,7 +244,7 @@ Public Class ArqueosExcelReader
                         nombreHoja,
                         filaActual,
                         idxCodigoListado,
-                        idxNoSap,
+                        idxNumeroSAP,
                         idxAlmacen,
                         idxTipoListado,
                         idxEstatus,
@@ -137,7 +286,7 @@ Public Class ArqueosExcelReader
         nombreHoja As String,
         filaActual As Integer,
         idxCodigoListado As Integer,
-        idxNoSap As Integer,
+        idxNumeroSAP As Integer,
         idxAlmacen As Integer,
         idxTipoListado As Integer,
         idxEstatus As Integer,
@@ -166,7 +315,7 @@ Public Class ArqueosExcelReader
         idxComentario As Integer)
 
         Dim codigoListado = ObtenerTexto(reader.GetValue(idxCodigoListado))
-        Dim noSapTexto = ObtenerTexto(reader.GetValue(idxNoSap))
+        Dim numeroSAP = ObtenerLong(reader.GetValue(idxNumeroSAP))
         Dim almacen = ObtenerTexto(reader.GetValue(idxAlmacen))
         Dim tipoListado = ObtenerTexto(reader.GetValue(idxTipoListado))
         Dim estatus = ObtenerTexto(reader.GetValue(idxEstatus))
@@ -196,6 +345,10 @@ Public Class ArqueosExcelReader
 
         If fechaCreacion.HasValue AndAlso fechaCreacion.Value > DateTime.Now Then
             AgregarError(errores, "La fecha de creación no puede ser posterior a la fecha de carga.", $"Fila {filaActual}. Hoja <strong>{nombreHoja}</strong>.")
+        End If
+
+        If String.IsNullOrWhiteSpace(codigoListado) Then
+            AgregarError(errores, "Código de Listado no admite valores vacíos.", $"Fila {filaActual}. Hoja <strong>{nombreHoja}</strong>.")
         End If
 
         If fechaInicioConteo.HasValue AndAlso fechaFinConteo.HasValue AndAlso fechaInicioConteo.Value > fechaFinConteo.Value Then
@@ -234,10 +387,6 @@ Public Class ArqueosExcelReader
                     AgregarError(errores, "Si la diferencia es cero, Faltante y Sobrante deben ser cero.", $"Fila {filaActual}. Hoja <strong>{nombreHoja}</strong>.")
                 End If
             End If
-        End If
-
-        If Not String.IsNullOrWhiteSpace(codigoListado) AndAlso Not String.IsNullOrWhiteSpace(almacen) Then
-            ' La validación de catálogos se integrará con la fuente autorizada cuando esté disponible.
         End If
 
         If Not String.IsNullOrWhiteSpace(nombreProducto) AndAlso Not String.IsNullOrWhiteSpace(codigoProductoTexto) Then
@@ -301,6 +450,33 @@ Public Class ArqueosExcelReader
         End If
 
         Return valor.ToString().Trim()
+    End Function
+
+    Private Function ObtenerLong(valor As Object) As Nullable(Of Long)
+        If EsVacio(valor) Then
+            Return Nothing
+        End If
+
+        If TypeOf valor Is Long Then
+            Return DirectCast(valor, Long)
+        End If
+
+        If TypeOf valor Is Integer OrElse TypeOf valor Is Short OrElse TypeOf valor Is Decimal OrElse TypeOf valor Is Double OrElse TypeOf valor Is Single Then
+            Return Convert.ToInt64(valor, CultureInfo.InvariantCulture)
+        End If
+
+        Dim texto = valor.ToString().Trim()
+        Dim resultado As Long
+
+        If Long.TryParse(texto, NumberStyles.Any, CultureInfo.CurrentCulture, resultado) Then
+            Return resultado
+        End If
+
+        If Long.TryParse(texto, NumberStyles.Any, CultureInfo.InvariantCulture, resultado) Then
+            Return resultado
+        End If
+
+        Return Nothing
     End Function
 
     Private Function ObtenerDecimal(valor As Object) As Nullable(Of Decimal)
@@ -394,6 +570,30 @@ Public Class ArqueosExcelReader
 
     Private Function EsVacio(valor As Object) As Boolean
         Return valor Is Nothing OrElse valor Is DBNull.Value OrElse String.IsNullOrWhiteSpace(valor.ToString())
+    End Function
+
+    Private Function ValorDataTable(valor As Object) As Object
+        If valor Is Nothing Then
+            Return DBNull.Value
+        End If
+
+        Return valor
+    End Function
+
+    Private Function ValorFecha(valor As Nullable(Of DateTime)) As Object
+        If valor.HasValue Then
+            Return valor.Value
+        End If
+
+        Return DBNull.Value
+    End Function
+
+    Private Function ValorCadena(valor As String) As String
+        If String.IsNullOrWhiteSpace(valor) Then
+            Return ""
+        End If
+
+        Return valor
     End Function
 
     Private Sub AgregarError(errores As List(Of ExcelValidationError), problema As String, detalle As String)

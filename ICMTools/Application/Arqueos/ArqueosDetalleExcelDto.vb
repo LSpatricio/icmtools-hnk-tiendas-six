@@ -3,8 +3,8 @@ Public Class ArqueosDetalleExcelDto
     <ExcelColumn(0, "Código de Listado", Requerido:=True)>
     Public Property CodigoListado As String
 
-    <ExcelColumn(1, "No. SAP", Requerido:=True)>
-    Public Property NoSap As Integer
+    <ExcelColumn(1, "NumeroSAP", Requerido:=True, ColumnAliases:={"No. SAP"})>
+    Public Property NumeroSAP As String
 
     <ExcelColumn(2, "Almacén", Requerido:=True)>
     Public Property Almacen As String
