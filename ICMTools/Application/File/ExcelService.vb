@@ -79,10 +79,56 @@ Public Class ExcelService
             Case GetType(Double)
                 Dim resultado As Double
                 Return Double.TryParse(valor.ToString(), resultado)
-
             Case GetType(DateTime)
+                If TypeOf valor Is DateTime Then
+                    Return True
+                End If
+
                 Dim resultado As DateTime
-                Return DateTime.TryParse(valor.ToString(), resultado)
+                Dim texto = NormalizarTextoFecha(valor.ToString())
+
+                Return DateTime.TryParseExact(
+                    texto,
+                    {
+                        "yyyy-MM-dd HH:mm:ss",
+                        "yyyy-MM-dd HH:mm",
+                        "yyyy-MM-dd",
+                        "dd/MM/yyyy HH:mm:ss",
+                        "dd/MM/yyyy HH:mm",
+                        "dd/MM/yyyy",
+                        "d/MM/yyyy HH:mm:ss",
+                        "d/MM/yyyy HH:mm",
+                        "d/MM/yyyy",
+                        "dd-MM-yyyy HH:mm:ss",
+                        "dd-MM-yyyy HH:mm",
+                        "dd-MM-yyyy",
+                        "d-MM-yyyy HH:mm:ss",
+                        "d-MM-yyyy HH:mm",
+                        "d-MM-yyyy",
+                        "MM/dd/yyyy HH:mm:ss",
+                        "MM/dd/yyyy HH:mm",
+                        "MM/dd/yyyy",
+                        "M/d/yyyy HH:mm:ss",
+                        "M/d/yyyy HH:mm",
+                        "M/d/yyyy"
+                    },
+                    Globalization.CultureInfo.InvariantCulture,
+                    Globalization.DateTimeStyles.AllowWhiteSpaces,
+                    resultado
+                ) OrElse
+                DateTime.TryParse(
+                    texto,
+                    Globalization.CultureInfo.CurrentCulture,
+                    Globalization.DateTimeStyles.AllowWhiteSpaces,
+                    resultado
+                ) OrElse
+                DateTime.TryParse(
+                    texto,
+                    Globalization.CultureInfo.InvariantCulture,
+                    Globalization.DateTimeStyles.AllowWhiteSpaces,
+                    resultado
+                )
+
 
             Case GetType(Boolean)
                 Dim resultado As Boolean
@@ -95,6 +141,22 @@ Public Class ExcelService
 
     End Function
 
+
+    Private Function NormalizarTextoFecha(valor As String) As String
+        If String.IsNullOrWhiteSpace(valor) Then
+            Return String.Empty
+        End If
+
+        Dim texto = valor.Trim()
+        texto = System.Text.RegularExpressions.Regex.Replace(
+            texto,
+            "\s*(a|p)\.?\s*m\.?",
+            String.Empty,
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase
+        )
+
+        Return texto.Trim()
+    End Function
 
     Public Function ObtenerDescripcionTipo(tipo As Type) As String
 
@@ -119,6 +181,29 @@ Public Class ExcelService
                 Return "un valor válido"
 
         End Select
+
+    End Function
+
+    Public Function CrearDataTable(
+    mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute)
+) As DataTable
+
+        Dim dt As New DataTable()
+
+        For Each mapeo In mapeoColumnas
+
+            Dim propiedad As PropertyInfo = mapeo.Key
+            Dim tipo As Type = Nullable.GetUnderlyingType(propiedad.PropertyType)
+
+            If tipo Is Nothing Then
+                tipo = propiedad.PropertyType
+            End If
+
+            dt.Columns.Add(propiedad.Name, tipo)
+
+        Next
+
+        Return dt
 
     End Function
 End Class

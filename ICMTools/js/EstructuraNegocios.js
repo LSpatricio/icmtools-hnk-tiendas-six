@@ -7,7 +7,7 @@ function CargarInformacion(dataRequest) {
   
     $.ajax({
         type: "POST",
-        url: "/api/eficienciaefectividad/cargarinfo",
+        url: "/api/estructuranegocios/cargarinfo",
         contentType: "application/json",
         data: JSON.stringify(dataRequest),
 

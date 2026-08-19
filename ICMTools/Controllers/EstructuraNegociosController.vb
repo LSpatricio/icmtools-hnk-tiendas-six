@@ -6,7 +6,7 @@ Imports Newtonsoft.Json
 Imports Npgsql
 Imports NpgsqlTypes
 
-Public Class EficienciaEfectividadController
+Public Class EstructuraNegociosController
     Inherits ApiController
 
     Private mUser As User
@@ -14,7 +14,7 @@ Public Class EficienciaEfectividadController
     Private ReadOnly _excelService As ExcelService
     Private ReadOnly _repository As Repository
     Private ReadOnly _configuration As IAppConfiguration
-    Private ReadOnly _eficienciaEfectividadServices As EficienciaEfectividadServices
+    Private ReadOnly _estructuraNegociosServices As EstructuraNegociosServices
 
 
     ' Private mLog As Log
@@ -27,7 +27,7 @@ Public Class EficienciaEfectividadController
         _excelService = New ExcelService()
         _configuration = New AppConfiguration()
         _repository = New Repository(_configuration.ConnectionString)
-        _eficienciaEfectividadServices = New EficienciaEfectividadServices()
+        _estructuraNegociosServices = New EstructuraNegociosServices()
 
         '     Me.mLog = New Log
     End Sub
@@ -36,17 +36,14 @@ Public Class EficienciaEfectividadController
     ReadOnly sc As New SharedController
 
     <HttpPost>
-    <Route("api/eficienciaefectividad/cargarinfo")>
+    <Route("api/estructuranegocios/cargarinfo")>
     Public Async Function CargarInfoAsync(<FromBody> request As ValidateFileRequestt) As Task(Of IHttpActionResult)
         Try
             Thread.Sleep(1000)
 
             Dim errorsList As String = Nothing
 
-            Dim valoresErrores = Await _eficienciaEfectividadServices.ProcesarEficienciaEfectividad(request)
-
-
-            ' valoresErrores = Await _eficienciaEfectividadServices.ValidacionesEficiencia(request)
+            Dim valoresErrores = Await _estructuraNegociosServices.ProcesarEstructuraNegocios(request)
 
             If valoresErrores.Count > 0 Then
                 For Each errores In valoresErrores
@@ -70,7 +67,7 @@ Public Class EficienciaEfectividadController
                 respuesta = 1
                 'CargarInformacion()
                 'SendSFTP()
-                rTable = sc.GetMessage("Eficiencia Efectividad", "CargaCompleta")
+                rTable = sc.GetMessage("_estructuraNegociosServices", "CargaCompleta")
 
             End If
 

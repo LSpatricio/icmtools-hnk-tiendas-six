@@ -1,15 +1,15 @@
-﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Master/MasterPage.Master" CodeBehind="RegistrosADC.aspx.vb" Inherits="ICMTools.RegistrosADC" %>
+﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Master/MasterPage.Master" CodeBehind="EstructuraNegocios.aspx.vb" Inherits="ICMTools.EstructuraNegocios" %>
 <%@ MasterType VirtualPath="~/Master/MasterPage.Master" %>
 
 
 <%--Contenedor de botones en TopBar--%>
 <asp:Content ID="TopbarContent" ContentPlaceHolderID="TopbarContent" runat="server">
     <div class="d-flex gap-1">
-        <a href="../Pages/RegistrosADC.aspx" class="btn active btn-sm btn-bar d-flex flex-column align-items-center text-dark">
+        <a href="../Pages/EstructuraNegocios.aspx" class="btn active btn-sm btn-bar d-flex flex-column align-items-center text-dark">
             <i class="fas fa-upload fa-2x"></i>
             <small>Carga</small>
         </a>
-        <a href="../Pages/RegistrosADCDocumentacion.aspx" class="btn btn-sm btn-bar d-flex flex-column align-items-center text-dark">
+        <a href="../Pages/MontoDistribuibleCategoriaDocumentacion.aspx" class="btn btn-sm btn-bar d-flex flex-column align-items-center text-dark">
             <i class="fas fa-book fa-2x"></i>
             <small>Documentación</small>
         </a>
@@ -20,7 +20,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <meta name="description" content="Description" />
     <meta name="author" content="Author" />
-    <title>Eficiencia y Efectividad</title>
+    <title>Estructura Negocios</title>
 <script src="../Scripts/jquery.min.js"></script>
     <script type="text/javascript">
 
@@ -33,19 +33,19 @@ const configuraciones = {
     carga: {
 
         selector: "",
-        fileType: "RegistrosADC",
+        fileType: "EstructuraNegocios",
         extension: ".xlsx",
-        fileClass: "ICMTools.RegistrosADCDetalleExcelDto",
-        headerRow: 1
+        fileClass: "ICMTools.EstructuraNegociosExcelDto",
+        headerRow:1
     },
     logging: {
-        page: "RegistrosADC",
+        page: "EstructuraNegocios",
         type: "Validacion",
-        body: "Inicia validación para carga de RegistrosADC"
+        body: "Inicia validación para carga de EstructuraNegocios"
     },
 
     api: {
-        uploadData: "/api/RegistrosADC/uploaddata"
+        uploadData: "/api/EstructuraNegocios/uploaddata"
     }
 }
             $(document).ready(function () {
@@ -55,7 +55,7 @@ const configuraciones = {
 
             function initializePage() {
 
-                const app = $("#registrosADCApp");
+                const app = $("#montoDistribuibleApp");
 
                 loadServerConfiguration(app);
                 configureEvents();
@@ -89,40 +89,15 @@ const configuraciones = {
 
                 CheckExcelFileMDC();
             }
-
-
-//        const userEmail = "<%= CType(Session.Item("User"), ICMTools.User).Email %>";
-  //      const serverPath = "<%= Page.Server.MapPath("~").Replace("\", "\\") %>";
-   //     const pageConfig = {
-    //        maxFileSize: "<%= ConfigurationManager.AppSettings("maxFileSize")%>",
-     //       fileUploadSelector: "#<%= FileUploader.ClientID %>",
-      //      columns: ["PLAZA", "CR TIENDA", "DESC_TIENDA", "MONTO SIN IMPUESTOS", "MONTO CON IMPUESTOS"],
-       //     types: ["String", "String", "String", "String", "Decimal"],
-        //    LogPage: "Monto Distribuible",
-         //   LogType: "Validacion",
-       //     LogBody: "Inicia validación para carga de Monto Distribuible",
-     //       FileType: "Categoria\\registrosADC",
-    //        Extension: ".xlsx",
-    //        apiUploadData: "/api/registrosADCcategoria/uploaddata"
-   //     };
-    //    $(document).ready(function () {
-
-     //       $('#btnStartImport').on('click', function (e) {
-     //           e.preventDefault();
-      //          CheckExcelFileMDC();
-       //     });
-
-       //     $('#btnStartImport').prop('disabled', true);
-      //  });
     </script>
-    <script src="../js/sharedMejorado.js"></script>
+    <script src="../js/sharedMejorado.js?v=1"></script>
     <q>ws</q>
-    <script src="../js/RegistrosADC.js"></script>
+    <script src="../js/EstructuraNegocios.js?v=1"></script>
 </asp:Content>
 
 <%-- Contenedor principal --%>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div id="registrosADCApp"
+    <div id="montoDistribuibleApp"
      data-user-email="<%= CType(Session.Item("User"), ICMTools.User).Email %>"
      data-server-path="<%= Page.Server.MapPath("~").Replace("\", "\\") %>"
      data-max-file-size="<%= ConfigurationManager.AppSettings("maxFileSize") %>"
@@ -138,7 +113,7 @@ const configuraciones = {
                             <div class="row">
                                 <div class="col-md-7">
                                     <div class="row form-group">
-                                        <label class="control-label col-sm-5 text-right">Periodo</label>
+                                        <label class="control-label col-sm-5 text-right">Sociedad</label>
                                         <div class="col-sm-7">
                                             <select id="SelectSociety" class="form-control form-control-sm" clientidmode="Static">
                                                 <option value="-1">(!)TODAS</option>
@@ -146,7 +121,7 @@ const configuraciones = {
                                         </div>
                                     </div>
                                     <div class="row form-group">
-                                        <label class="control-label col-sm-5 text-right">Región</label>
+                                        <label class="control-label col-sm-5 text-right">División de Personal</label>
                                         <div class="col-sm-7">
                                             <select id="SelectPersonnelDivision" class="form-control form-control-sm" clientidmode="Static">
                                                 <option value="-1">(!)TODAS</option>
@@ -156,7 +131,7 @@ const configuraciones = {
                                 </div>
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        <label class="control-label col-sm-12">Archivo de Registros ADC</label>
+                                        <label class="control-label col-sm-12">Archivo de Monto Distribuible</label>
                                         <div class="col">
                                             <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
                                             <!-- Drop Zone -->
@@ -185,8 +160,8 @@ const configuraciones = {
                                 </div>
                             </div>
                             <div class="col-5">
-                                <button id="btnStartImport" class="btn btn-sm btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Click aquí despues de elegir archivo de Registros ADC"><i class="fas fa-upload fa-fw"></i>Iniciar Importacion</button>
-                                <a href="../TemplateFiles/ICMToolsPlantilla_RegistrosADC.xlsx" class="btn btn-sm btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Descarga de Plantilla Registros ADC para la importación"><i class="fas fa-download fa-fw"></i>Descargar Plantilla</a>
+                                <button id="btnStartImport" class="btn btn-sm btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Click aquí despues de elegir archivo de Monto Distribuible"><i class="fas fa-upload fa-fw"></i>Iniciar Importacion</button>
+                                <a href="../TemplateFiles/ICMToolsPlantilla_MontoDistribuible_CCNOM.xlsx" class="btn btn-sm btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Descarga de Plantilla Monto Distribuible para la importación"><i class="fas fa-download fa-fw"></i>Descargar Plantilla</a>
                             </div>
                         </div>
                     </div>
@@ -209,14 +184,14 @@ const configuraciones = {
                     </div>
                 </div>
                 <div id="successPanel" class="RespuestaPanel card border-success" style="display: none;">
-                    <div class="card-header text-success lead">Confirmación de Carga Exitosa de Registros ADC<span class="badge badge-success float-right"><i class="fas fa-check-circle fa-fw"></i>Listo</span></div>
+                    <div class="card-header text-success lead">Confirmación de Carga Exitosa de Monto Distribuible<span class="badge badge-success float-right"><i class="fas fa-check-circle fa-fw"></i>Listo</span></div>
                     <div class="card-body">
                         <h5 class="card-title"><i class='fas fa-file-excel fa-fw'></i><span id="fileNameSuccess"></span></h5>
                         <div id="formatSuccess" class="pt-3 table-responsive text-default"></div>
                     </div>
                 </div>
                 <div id="WarningPanel" class="RespuestaPanel card border-warning" style="display: none;">
-                    <div class="card-header text-warning lead">Confirmación de carga parcial de Registros ADC<span class="badge badge-warning float-right"><i class="fas fa-exclamation-circle fa-fw"></i>Advertencia</span></div>
+                    <div class="card-header text-warning lead">Confirmación de carga parcial de Monto Distribuible<span class="badge badge-warning float-right"><i class="fas fa-exclamation-circle fa-fw"></i>Advertencia</span></div>
                     <div class="card-body">
                         <h5 class="card-title"><i class='fas fa-file-excel fa-fw'></i><span id="fileNameWarning"></span></h5>
                         <div id="formatWarning" class="pt-3 table-responsive text-default">

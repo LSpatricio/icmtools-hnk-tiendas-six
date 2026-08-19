@@ -1,17 +1,51 @@
 ﻿function CheckExcelFileMDC() {
-    CheckFileExists(configuraciones.carga, ValidarInformacion)
+    CheckFileExists(configuraciones.carga, CargarInformacion)
 }
 
 
-function ValidarInformacion(dataRequest) {
+//function ValidarInformacion(dataRequest) {
 
-    console.log(dataRequest.FileClass);
-    console.log(dataRequest.Path);
+//    console.log(dataRequest.FileClass);
+//    console.log(dataRequest.Path);
 
-   
+
+//    $.ajax({
+//        type: "POST",
+//        url: "/api/RegistrosADC/validarinfo",
+//        contentType: "application/json",
+//        data: JSON.stringify(dataRequest),
+
+//        success: function (response) {
+//            if (response.d === true) {
+//                setFormStatus("processing");
+//                setLoadingBar("Validando datos", 60);
+//                GenerarCSV(response.path);
+
+
+//                $("#MensajeError").text("");
+//            } else {
+//                setFormStatus("error");
+//                $("#formatErrors").html(response.d);
+//                if (typeof activateTable === "function") { activateTable(); }
+//                if (response.m) {
+//                    document.getElementById("MensajeError").textContent = response.m;
+//                }
+//            }
+//        },
+//        error: function (xhr) {
+//            console.log(xhr);
+//            setFormStatus("error");
+//            $("#formatErrors").html("Error de comunicación (ValidarInformacion).");
+//            $("#MensajeError").text("No se pudo cargar el documento por que no existe en la carpeta del servidor, Vuelva a intentar la carga ");
+//        }
+//    });
+//}
+
+function CargarInformacion(dataRequest) {
+
     $.ajax({
         type: "POST",
-        url: "/api/RegistrosADC/validarinfo",
+        url: "/api/registrosadc/cargarinfo",
         contentType: "application/json",
         data: JSON.stringify(dataRequest),
 
@@ -35,8 +69,8 @@ function ValidarInformacion(dataRequest) {
         error: function (xhr) {
             console.log(xhr);
             setFormStatus("error");
-            $("#formatErrors").html("Error de comunicación (ValidarInformacion).");
-            $("#MensajeError").text("No se pudo cargar el documento por que no existe en la carpeta del servidor, Vuelva a intentar la carga ");
+            $("#formatErrors").html("Error en la validación y carga.");
+            $("#MensajeError").text("No se pudo validar y cargar el documento. Revise el documento y vuelva a intentar.");
         }
     });
 }
