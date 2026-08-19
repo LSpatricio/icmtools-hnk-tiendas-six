@@ -15,7 +15,17 @@ function CargarInformacion(dataRequest) {
             if (response.d === true) {
                 setFormStatus("processing");
                 setLoadingBar("Validando datos", 60);
-                GenerarCSV(response.path);
+
+                const requestData = {
+                    PathSalida: dataRequest.path+"/Salida",
+                    IdGui: response.id
+                };
+
+                console.log(requestData)
+                console.log(requestData.PathSalida)
+                console.log(requestData.IdGui)
+
+                GenerarCSV(requestData);
 
 
                 $("#MensajeError").text("");
@@ -39,9 +49,6 @@ function CargarInformacion(dataRequest) {
 
 
 function GenerarCSV(path) {
-
-
-    console.log("JIJIIA")
     var fileName = '';
     var fileCCNomina = '';
 
