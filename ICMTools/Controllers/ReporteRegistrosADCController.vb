@@ -36,28 +36,10 @@ Public Class ReporteRegistrosADCController
 
             Dim errorsList As String = Nothing
 
-            Dim tipo As Type = GetType(RegistrosADCExcelDto)
+            Dim cargaResponse = Await _registrosADCService.ProcesarRegistrosADC(request)
 
-            Dim hojasDefinidas As List(Of Type) = _excelService.ObtenerTipos(tipo)
-
-
-
-            Dim valoresErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
-
-            For Each hoja In hojasDefinidas
-                Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(hoja)
-                Dim atributo = tipo.GetProperties().ToList().FirstOrDefault(Function(p) p.PropertyType.GetGenericArguments()(0) = hoja).GetCustomAttributes(GetType(ExcelSheetAttribute), False).Cast(Of ExcelSheetAttribute)().First()
-
-                valoresErrores.AddRange(_eficienciaEfectividadExcelReader.ValidacionesEficienciaEfectividad(request.Path, atributo.HeaderRow, atributo.SheetName, mapeoColumnas))
-
-
-
-            Next
-
-
-
-            If valoresErrores.Count > 0 Then
-                For Each errores In valoresErrores
+            If cargaResponse.Errores.Any() Then
+                For Each errores In cargaResponse.Errores
                     errorsList += $"<tr><td>{errores.Problema}</td><td>" & String.Join(", ", errores.Detalle) & "</td></tr>"
                 Next
 
