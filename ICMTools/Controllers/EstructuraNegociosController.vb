@@ -70,7 +70,7 @@ Public Class EstructuraNegociosController
 
             End If
 
-            Return Ok(New With {.d = cargaResponse.Exitoso, .id = cargaResponse.IdCarga})
+            Return Ok(New With {.d = True, .f = "RUTAFINAL", .r = rTable})
         Catch ex As Exception
             'mLog.insertLog("MontoDistribuibleCategoriaController", "InsertData", ex.Message)
             Return InternalServerError(ex)

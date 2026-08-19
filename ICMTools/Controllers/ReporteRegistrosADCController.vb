@@ -37,10 +37,10 @@ Public Class ReporteRegistrosADCController
 
             Dim errorsList As String = Nothing
 
-            Dim valoresErrores = Await _registrosADCService.ProcesarRegistrosADCService(request)
+            Dim cargaResponse = Await _registrosADCService.ProcesarRegistrosADC(request)
 
-            If valoresErrores.Count > 0 Then
-                For Each errores In valoresErrores
+            If cargaResponse.Errores.Any() Then
+                For Each errores In cargaResponse.Errores
                     errorsList += $"<tr><td>{errores.Problema}</td><td>" & String.Join(", ", errores.Detalle) & "</td></tr>"
                 Next
 

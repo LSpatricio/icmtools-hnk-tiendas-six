@@ -15,19 +15,50 @@ Public Class RegistrosADCService
 
     End Sub
 
-    Public Async Function ProcesarRegistrosADCService(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    'Public Async Function ProcesarRegistrosADCService(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
 
-        Dim errores = Await ValidacionesRegistrosADCService(request)
+    '    Dim errores = Await ValidacionesRegistrosADCService(request)
+
+    '    If errores.Any() Then
+    '        Return errores
+    '    End If
+
+    '    Await _repository.EjecutarSPAsync(
+    '        "dbo.SP_VALIDATE_REGISTROSADC"
+    '    )
+
+    '    Return errores
+
+    'End Function
+
+    Public Async Function ProcesarRegistrosADC(request As ValidateFileRequestt) As Task(Of CargaResponse)
+
+        Dim idCarga As Guid = Guid.NewGuid()
+
+
+
+        Dim errores = Await ValidacionesRegistrosADCService(
+        request)
 
         If errores.Any() Then
-            Return errores
+            Return New CargaResponse With {
+            .Exitoso = False,
+            .IdCarga = idCarga,
+            .Errores = errores
+        }
         End If
 
         Await _repository.EjecutarSPAsync(
-            "dbo.SP_VALIDATE_REGISTROSADC"
+            "dbo.SP_VALIDATE_REGISTROSADC",
+            idCarga
         )
 
-        Return errores
+
+        Return New CargaResponse With {
+        .Exitoso = True,
+        .IdCarga = idCarga,
+        .Errores = New List(Of ExcelValidationError)()
+    }
 
     End Function
 
