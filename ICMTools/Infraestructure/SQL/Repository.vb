@@ -1,4 +1,5 @@
 ﻿Imports System.Data.SqlClient
+Imports System.IO
 Imports System.Threading.Tasks
 Imports Dapper
 Public Class Repository
@@ -28,12 +29,13 @@ Public Class Repository
 
     End Function
 
-    Public Async Function EjecutarSPAsync(nombreSP As String) As Task
+    Public Async Function EjecutarSPAsync(nombreSP As String, idcarga As Guid) As Task
 
         Using connection As New SqlConnection(_connectionString)
 
             Await connection.ExecuteAsync(
             nombreSP,
+                New With {.IdCarga = idcarga},
             commandType:=CommandType.StoredProcedure
         )
 
@@ -86,6 +88,100 @@ Public Class Repository
             End Using
 
         End Using
+
+    End Function
+
+    Public Async Function GenerarCsvAsync(
+    sql As String,
+    rutaArchivo As String,
+    Optional parametros As Object = Nothing
+) As Task
+
+        Using connection As New SqlConnection(_connectionString)
+
+            Using reader = Await connection.ExecuteReaderAsync(
+                sql,
+                parametros
+            )
+
+                Dim encoding As New UTF8Encoding(True)
+
+                Using writer As New StreamWriter(
+                    rutaArchivo,
+                    append:=False,
+                    encoding:=encoding
+                )
+
+                    ' Encabezados
+                    For i As Integer = 0 To reader.FieldCount - 1
+
+                        If i > 0 Then
+                            Await writer.WriteAsync(",")
+                        End If
+
+                        Await writer.WriteAsync(
+                            EscaparCsv(reader.GetName(i))
+                        )
+
+                    Next
+
+                    Await writer.WriteLineAsync()
+
+                    ' Datos
+                    While Await reader.ReadAsync()
+
+                        For i As Integer = 0 To reader.FieldCount - 1
+
+                            If i > 0 Then
+                                Await writer.WriteAsync(",")
+                            End If
+
+                            If Not reader.IsDBNull(i) Then
+
+                                Dim valor As String =
+                                    reader.GetValue(i).ToString()
+
+                                Await writer.WriteAsync(
+                                    EscaparCsv(valor)
+                                )
+
+                            End If
+
+                        Next
+
+                        Await writer.WriteLineAsync()
+
+                    End While
+
+                End Using
+
+            End Using
+
+        End Using
+
+    End Function
+
+
+
+    Private Function EscaparCsv(valor As String) As String
+
+        If String.IsNullOrEmpty(valor) Then
+            Return ""
+        End If
+
+        If valor.Contains("""") Then
+            valor = valor.Replace("""", """""")
+        End If
+
+        If valor.Contains(",") OrElse
+           valor.Contains(vbCr) OrElse
+           valor.Contains(vbLf) OrElse
+           valor.Contains("""") Then
+
+            Return $"""{valor}"""
+        End If
+
+        Return valor
 
     End Function
 

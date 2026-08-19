@@ -23,13 +23,13 @@ Public Class EficienciaEfectividadServices
             Return errores
         End If
 
-        Await _repository.EjecutarSPAsync(
-        "dbo.SP_VALIDATE_EFECTIVIDAD"
-    )
+        '    Await _repository.EjecutarSPAsync(
+        '    "dbo.SP_VALIDATE_EFECTIVIDAD"
+        ')
 
-        Await _repository.EjecutarSPAsync(
-        "dbo.SP_VALIDATE_EFICIENCIA"
-    )
+        '    Await _repository.EjecutarSPAsync(
+        '    "dbo.SP_VALIDATE_EFICIENCIA"
+        ')
 
         Return errores
 

@@ -209,6 +209,7 @@
     <Import Include="System.Web.UI.HtmlControls" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\DTOs\CargaResponse.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaExcelDto.vb" />
@@ -236,7 +237,7 @@
     <Compile Include="Infraestructure\Configurations\AppConfiguration.vb" />
     <Compile Include="Infraestructure\Excel\ExcelReader.vb" />
     <Compile Include="Infraestructure\Excel\ExcelSheetAttribute.vb" />
-    <Compile Include="Infraestructure\Excel\ExcelValidationError.vb" />
+    <Compile Include="Application\DTOs\ExcelValidationError.vb" />
     <Compile Include="App_Code\Jobs\JobModels.vb" />
     <Compile Include="App_Code\General\MediasAnuales.vb" />
     <Compile Include="App_Start\WebApiConfig.vb" />
