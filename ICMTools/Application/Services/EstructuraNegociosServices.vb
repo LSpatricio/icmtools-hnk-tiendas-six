@@ -15,23 +15,34 @@ Public Class EstructuraNegociosServices
 
     End Sub
 
-    Public Async Function ProcesarEstructuraNegocios(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    Public Async Function ProcesarEstructuraNegocios(request As ValidateFileRequestt) As Task(Of CargaResponse)
 
-        Dim errores = Await ValidacionesEstructuraNegociosServices(request)
+        Dim idCarga As Guid = Guid.NewGuid()
+
+
+
+        Dim errores = Await ValidacionesEstructuraNegociosServices(
+        request)
 
         If errores.Any() Then
-            Return errores
+            Return New CargaResponse With {
+            .Exitoso = False,
+            .IdCarga = idCarga,
+            .Errores = errores
+        }
         End If
 
-        '    Await _repository.EjecutarSPAsync(
-        '    "dbo.SP_VALIDATE_EFECTIVIDAD"
-        ')
+        Await _repository.EjecutarSPAsync(
+            "dbo.SP_VALIDATE_ESTRUCTURANEGOCIOS",
+            idCarga
+        )
 
-        '    Await _repository.EjecutarSPAsync(
-        '    "dbo.SP_VALIDATE_EFICIENCIA"
-        ')
 
-        Return errores
+        Return New CargaResponse With {
+        .Exitoso = True,
+        .IdCarga = idCarga,
+        .Errores = New List(Of ExcelValidationError)()
+    }
 
     End Function
 

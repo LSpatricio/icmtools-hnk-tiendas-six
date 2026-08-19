@@ -75,13 +75,13 @@
     Public Property GZSIX2 As String
 
     <ExcelColumn("Cve JOS2", ValoresIgnorados:={})>
-    Public Property CveJOS2 As String
+    Public Property CveJOSVal As String
 
     <ExcelColumn("Cve Acs Comercial2", ValoresIgnorados:={})>
-    Public Property CveAcsComercial2 As String
+    Public Property CveAcsComercialVal As String
 
     <ExcelColumn("Cve Acs Control2", ValoresIgnorados:={})>
-    Public Property CveAcsControl2 As String
+    Public Property CveAcsControlVal As String
 
     <ExcelColumn("No. Empleado Atraccion", ValoresIgnorados:={})>
     Public Property NumeroEmpleadoAtraccion As String
