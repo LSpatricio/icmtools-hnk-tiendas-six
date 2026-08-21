@@ -131,161 +131,6 @@ Public Class ExcelReader
         End Using
     End Function
 
-    '    Public Async Function ValidacionesInformacionAsync(
-    '    reader As IExcelDataReader,
-    '    filaEncabezado As Integer,
-    '    nombreHoja As String,
-    '    mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute),
-    '    dt As DataTable,
-    '    tablaStaging As String
-    ') As Task(Of List(Of ExcelValidationError))
-    '        Dim listaError As New List(Of ExcelValidationError)
-    '        Dim mensajeError As String = String.Empty
-    '        Dim conteoFilas As Integer = filaEncabezado
-
-    '        nombreHoja = MoverAHoja(reader, nombreHoja)
-
-    '        'moverse al ennabezado
-    '        For i As Integer = 1 To filaEncabezado
-    '            reader.Read()
-    '        Next
-
-    '        Dim encabezados As New Dictionary(Of String, Integer)
-
-    '        For i As Integer = 0 To reader.FieldCount - 1
-
-    '            Dim headerName As String = If(reader.GetValue(i)?.ToString(), "").Trim().Replace(vbCrLf, vbLf)
-
-    '            If String.IsNullOrWhiteSpace(headerName) Then
-    '                headerName = i.ToString()
-    '            End If
-
-    '            encabezados.Add(NormalizarTextoComparacion(headerName), i)
-
-    '        Next
-
-    '        For Each mapeo In mapeoColumnas
-
-    '            If Not String.IsNullOrWhiteSpace(mapeo.Value.ColumnName) Then
-
-    '                Dim indice As Integer
-
-    '                If encabezados.TryGetValue(NormalizarTextoComparacion(mapeo.Value.ColumnName.Trim().Replace(vbCrLf, vbLf)), indice) Then
-    '                    mapeo.Value.ColumnIndex = indice
-    '                End If
-
-    '            End If
-
-    '        Next
-
-    '        'Moverse a la fila despues del encabezado
-    '        reader.Read()
-
-    '        Dim batchSize As Integer = 50000
-
-    '        Do
-    '            conteoFilas += 1
-
-    '            Dim tieneInformacion As Boolean = False
-
-    '            For Each mapeo In mapeoColumnas
-
-    '                Dim indiceColumna As Integer = mapeo.Value.ColumnIndex
-    '                Dim valor = reader.GetValue(indiceColumna)
-
-    '                If valor IsNot Nothing AndAlso
-    '           valor IsNot DBNull.Value AndAlso
-    '           Not String.IsNullOrWhiteSpace(valor.ToString()) Then
-
-    '                    tieneInformacion = True
-    '                    Exit For
-    '                End If
-
-    '            Next
-
-    '            ' Si TODA la fila está vacía, terminamos
-    '            If Not tieneInformacion Then
-    '                Exit Do
-    '            End If
-
-    '            Dim fila As DataRow = dt.NewRow()
-    '            Dim filaValida As Boolean = True
-
-
-    '            For Each mapeo In mapeoColumnas
-
-    '                Dim indiceColumna As Integer = mapeo.Value.ColumnIndex
-
-    '                Dim valor = reader.GetValue(indiceColumna)
-
-    '                If valor IsNot Nothing AndAlso valor IsNot DBNull.Value AndAlso Not String.IsNullOrWhiteSpace(valor.ToString()) Then
-
-    '                    Dim valorIgnorado = mapeo.Value.ValoresIgnorados.Any(Function(x) String.Equals(x, valor.ToString().Trim(), StringComparison.OrdinalIgnoreCase))
-
-    '                    If valorIgnorado Then
-    '                        filaValida = False
-    '                        Exit For
-    '                    End If
-
-    '                    Dim tipoEsperado As Type = mapeo.Key.PropertyType
-    '                    Dim tipoReal As Type = If(Nullable.GetUnderlyingType(tipoEsperado), tipoEsperado)
-
-
-
-    '                    If Not _excelService.EsTipoValido(valor, tipoReal) Then
-    '                        filaValida = False
-    '                        Dim descripcion = _excelService.ObtenerDescripcionTipo(tipoEsperado)
-
-    '                        mensajeError = $"La columna '{mapeo.Value.ColumnName}' requiere {descripcion}."
-
-    '                        listaError.Add(
-    '                                    New ExcelValidationError With {
-    '                                        .Problema = mensajeError,
-    '                                        .Detalle = $"Valor:'{valor}'. Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
-    '                                    })
-    '                    Else
-    '                        fila(mapeo.Key.Name) = valor
-
-    '                    End If
-    '                ElseIf mapeo.Value.Requerido Then
-
-    '                    filaValida = False
-    '                    mensajeError = $"La columna '{mapeo.Value.ColumnName}' no admite valores vacíos."
-    '                    listaError.Add(
-    '                            New ExcelValidationError With {
-    '                                .Problema = mensajeError,
-    '                                .Detalle = $"Columna sin información en la fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
-    '                            })
-
-    '                Else
-
-    '                    fila(mapeo.Key.Name) = DBNull.Value
-
-    '                End If
-
-
-    '            Next
-    '            If filaValida Then
-    '                dt.Rows.Add(fila)
-    '            End If
-
-    '            If dt.Rows.Count >= 50000 Then
-    '                Await _repository.InsertarBatch(tablaStaging, dt)
-    '                dt.Clear()
-    '            End If
-
-    '        Loop While reader.Read()
-
-    '        If dt.Rows.Count > 0 Then
-    '            Await _repository.InsertarBatch(tablaStaging, dt)
-    '            dt.Clear()
-    '        End If
-
-    '        Return listaError
-
-
-    '    End Function
-
     Public Function ContarHojas(rutaArchivo As String) As Integer
         Dim stream = File.Open(
             rutaArchivo,
@@ -325,27 +170,38 @@ Public Class ExcelReader
                     reader.Read()
                 Next
 
-                Dim encabezados As New Dictionary(Of String, Integer)
+                Dim encabezados As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
 
                 For i As Integer = 0 To reader.FieldCount - 1
 
                     Dim headerName As String = If(reader.GetValue(i)?.ToString(), "").Trim().Replace(vbCrLf, vbLf)
+                    Dim nombreNormalizado As String = NormalizarTextoComparacion(headerName)
 
                     If String.IsNullOrWhiteSpace(headerName) Then
                         headerName = i.ToString()
                     End If
 
-                    encabezados.Add(headerName, i)
+                    If Not encabezados.ContainsKey(nombreNormalizado) Then
+                        encabezados.Add(nombreNormalizado, i)
+                    End If
 
                 Next
 
                 For Each mapeo In mapeoColumnas
+                    Dim nombreMapeo As String = NormalizarTextoComparacion(mapeo.Value.ColumnName.Trim().Replace(vbCrLf, vbLf))
+                    If Not String.IsNullOrWhiteSpace(nombreMapeo) Then
+                        If Not encabezados.Keys.Contains(nombreMapeo) Then
+                            Return New List(Of ExcelValidationError)()
+                        End If
+                    End If
 
-                    If Not String.IsNullOrWhiteSpace(mapeo.Value.ColumnName) Then
+
+
+                    If Not String.IsNullOrWhiteSpace(nombreMapeo) Then
 
                         Dim indice As Integer
 
-                        If encabezados.TryGetValue(mapeo.Value.ColumnName.Trim().Replace(vbCrLf, vbLf), indice) Then
+                        If encabezados.TryGetValue(nombreMapeo, indice) Then
                             mapeo.Value.ColumnIndex = indice
                         End If
 
