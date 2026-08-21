@@ -1,4 +1,5 @@
-﻿Imports System.Reflection
+﻿Imports System.IO
+Imports System.Reflection
 Imports System.Threading.Tasks
 
 Public Class EstructuraNegociosServices
@@ -7,11 +8,13 @@ Public Class EstructuraNegociosServices
     Private ReadOnly _excelService As ExcelService
     Private ReadOnly _repository As Repository
     Private ReadOnly _configuration As IAppConfiguration
+    Private ReadOnly _sftpClient As SftpClient
     Public Sub New()
         _excelReader = New ExcelReader()
         _excelService = New ExcelService()
         _configuration = New AppConfiguration()
         _repository = New Repository(_configuration.ConnectionString)
+        _sftpClient = New SftpClient()
 
     End Sub
 
@@ -19,10 +22,7 @@ Public Class EstructuraNegociosServices
 
         Dim idCarga As Guid = Guid.NewGuid()
 
-
-
-        Dim errores = Await ValidacionesEstructuraNegociosServices(
-        request)
+        Dim errores = Await ValidacionesEstructuraNegocios(request)
 
         If errores.Any() Then
             Return New CargaResponse With {
@@ -48,7 +48,8 @@ Public Class EstructuraNegociosServices
 
 
 
-    Public Async Function ValidacionesEstructuraNegociosServices(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    Public Async Function ValidacionesEstructuraNegocios(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+
         Dim errorsList As String = Nothing
         Dim tableName As String = "STG_ESTRUCTURANEGOCIOS"
 
@@ -60,10 +61,10 @@ Public Class EstructuraNegociosServices
 
         Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(tipo)
 
+        Await _repository.LimpiarStaging(tableName)
 
         For i As Integer = 0 To cantidadHojas - 1
 
-            Await _repository.LimpiarStaging(tableName)
 
             valoresErrores.AddRange(
                         Await _excelReader.CargaAsync(
@@ -74,8 +75,72 @@ Public Class EstructuraNegociosServices
                             tableName)
                     )
         Next
+
         Return valoresErrores
 
+
+
+    End Function
+
+    Public Async Function EnvioEstructuraNegocios(request As SendInfoRequest) As Task
+
+        If Not Directory.Exists(request.PathSalida) Then
+            Directory.CreateDirectory(request.PathSalida)
+        End If
+
+        Dim nombreArchivo As String = "BDIESTRUCTURANEGOCIOS.csv"
+
+        Dim rutaArchivo As String = Path.Combine(request.PathSalida, nombreArchivo)
+
+
+        Dim sql As String = "
+                  SELECT
+                 Ceco
+                ,Descripcion
+                ,Region
+                ,GZ
+                ,EstatusTienda
+                ,NumeroComerciante
+                ,NombreComerciante
+                ,FORMAT(FechaIngreso, 'dd/MM/yyyy') AS FechaIngreso
+                ,EstatusSK
+                ,FORMAT(FechaMovimiento, 'dd/MM/yyyy') AS FechaMovimiento
+                ,TelefonoSK
+                ,CorreoSK
+                ,GOS
+                ,CveJOS
+                ,CveAcsComercial
+                ,CveAcsControl
+                ,EmpleadoJOS
+                ,NombreJOS
+                ,NumeroEmpleadoAcsCom
+                ,NombreAcsComercial
+                ,CelularAcsComercial
+                ,CorreoACSComercial
+                ,NumeroEmpleadoAcsControl
+                ,NombreAcsControl
+                ,CelularAcsControl
+                ,CorreoAcsControl
+                ,GZSIX2
+                ,CveJOSVal
+                ,CveAcsComercialVal
+                ,CveAcsControlVal
+                ,NumeroEmpleadoAtraccion
+                ,NombreEmpleadoAtraccion
+                ,CelularRedAtraccion
+                ,NumeroEmpleadoCoordinador
+                ,NombreCoordinador
+                    FROM BDIESTRUCTURANEGOCIOS
+                   WHERE IdCarga = @IdCarga
+                "
+
+        Await _repository.GenerarCsvAsync(
+                                sql,
+                                rutaArchivo,
+                                request.IdGui
+                            )
+
+        Await _sftpClient.SubirArchivoAsync(rutaArchivo)
 
 
     End Function

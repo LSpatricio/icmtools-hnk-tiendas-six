@@ -43,20 +43,27 @@ Public Class FileServices
 
         Else
             Dim cantidadHojas As Integer = _excelReader.ContarHojas(request.Path)
+            Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(tipo)
 
             For i As Integer = 0 To cantidadHojas - 1
+                Dim erroresHoja As List(Of ExcelValidationError) = _excelReader.ValidarEncabezadosExcel(tipo, request.Path, request.HeaderRow, i.ToString(), mapeoColumnas)
 
-                Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(tipo)
-                erroresValidacion.AddRange(_excelReader.ValidarEncabezadosExcel(tipo, request.Path, request.HeaderRow, i.ToString(), mapeoColumnas))
+                If Not erroresHoja.Any() Then
+                    erroresValidacion.Clear()
+                    Return erroresValidacion
+                End If
+
 
             Next
 
 
-        End If
+            erroresValidacion.Add(
+                    New ExcelValidationError With {
+                        .Problema = "Estructura de archivo inválida",
+                        .Detalle = "El archivo no contiene hojas con los encabezados esperados."
+                    }
+                )
 
-
-        If erroresValidacion.Count > 0 Then
-            Return erroresValidacion
         End If
 
         Return erroresValidacion
