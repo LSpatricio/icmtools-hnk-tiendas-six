@@ -22,8 +22,6 @@ Public Class EstructuraNegociosServices
 
         Dim idCarga As Guid = Guid.NewGuid()
 
-
-
         Dim errores = Await ValidacionesEstructuraNegocios(request)
 
         If errores.Any() Then
@@ -51,6 +49,7 @@ Public Class EstructuraNegociosServices
 
 
     Public Async Function ValidacionesEstructuraNegocios(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+
         Dim errorsList As String = Nothing
         Dim tableName As String = "STG_ESTRUCTURANEGOCIOS"
 
@@ -76,6 +75,7 @@ Public Class EstructuraNegociosServices
                             tableName)
                     )
         Next
+
         Return valoresErrores
 
 
@@ -141,6 +141,7 @@ Public Class EstructuraNegociosServices
                             )
 
         Await _sftpClient.SubirArchivoAsync(rutaArchivo)
+
 
     End Function
 

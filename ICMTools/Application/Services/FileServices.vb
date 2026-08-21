@@ -60,7 +60,7 @@ Public Class FileServices
             erroresValidacion.Add(
                     New ExcelValidationError With {
                         .Problema = "Estructura de archivo inválida",
-                        .Detalle = "El archivo no contiene una hoja con los encabezados esperados."
+                        .Detalle = "El archivo no contiene hojas con los encabezados esperados."
                     }
                 )
 

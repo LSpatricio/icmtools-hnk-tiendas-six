@@ -97,43 +97,36 @@ Public Class Repository
                 )
 
                     ' Encabezados
+                    Dim encabezados As New List(Of String)(reader.FieldCount)
+
                     For i As Integer = 0 To reader.FieldCount - 1
-
-                        If i > 0 Then
-                            Await writer.WriteAsync(",")
-                        End If
-
-                        Await writer.WriteAsync(
+                        encabezados.Add(
                             EscaparCsv(reader.GetName(i))
                         )
-
                     Next
 
-                    Await writer.WriteLineAsync()
+                    writer.WriteLine(String.Join(",", encabezados))
 
                     ' Datos
+                    Dim valores As New List(Of String)(reader.FieldCount)
+
                     While Await reader.ReadAsync()
+
+                        valores.Clear()
 
                         For i As Integer = 0 To reader.FieldCount - 1
 
-                            If i > 0 Then
-                                Await writer.WriteAsync(",")
-                            End If
-
-                            If Not reader.IsDBNull(i) Then
-
-                                Dim valor As String =
-                                    reader.GetValue(i).ToString()
-
-                                Await writer.WriteAsync(
-                                    EscaparCsv(valor)
+                            If reader.IsDBNull(i) Then
+                                valores.Add("")
+                            Else
+                                valores.Add(
+                                    EscaparCsv(reader.GetValue(i).ToString())
                                 )
-
                             End If
 
                         Next
 
-                        Await writer.WriteLineAsync()
+                        writer.WriteLine(String.Join(",", valores))
 
                     End While
 
@@ -142,7 +135,6 @@ Public Class Repository
             End Using
 
         End Using
-
     End Function
 
 
