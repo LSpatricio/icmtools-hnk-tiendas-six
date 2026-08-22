@@ -10,24 +10,6 @@ Public Class Repository
         _connectionString = connectionString
     End Sub
 
-    ' Dapper
-    Public Async Function Query(Of T)(
-        sql As String,
-        Optional parametros As Object = Nothing
-    ) As Task(Of IEnumerable(Of T))
-
-        Using connection As New SqlConnection(_connectionString)
-
-            Await connection.OpenAsync()
-
-            Return Await connection.QueryAsync(Of T)(
-                sql,
-                parametros
-            )
-
-        End Using
-
-    End Function
 
     Public Async Function EjecutarSPAsync(nombreSP As String, idcarga As Guid) As Task
 
@@ -36,7 +18,8 @@ Public Class Repository
             Await connection.ExecuteAsync(
             nombreSP,
                 New With {.IdCarga = idcarga},
-            commandType:=CommandType.StoredProcedure
+            commandType:=CommandType.StoredProcedure,
+            commandTimeout:=600
         )
 
         End Using
@@ -73,6 +56,7 @@ Public Class Repository
 
                 bulkCopy.DestinationTableName = nombreTabla
                 bulkCopy.BatchSize = 50000
+                bulkCopy.BulkCopyTimeout = 600
 
                 For Each columna As DataColumn In dataTable.Columns
 
@@ -94,15 +78,15 @@ Public Class Repository
     Public Async Function GenerarCsvAsync(
     sql As String,
     rutaArchivo As String,
-    Optional parametros As Object = Nothing
+   idcarga As Guid
 ) As Task
 
         Using connection As New SqlConnection(_connectionString)
 
             Using reader = Await connection.ExecuteReaderAsync(
                 sql,
-                parametros
-            )
+                New With {.IdCarga = idcarga},
+                commandTimeout:=600)
 
                 Dim encoding As New UTF8Encoding(True)
 
@@ -113,43 +97,36 @@ Public Class Repository
                 )
 
                     ' Encabezados
+                    Dim encabezados As New List(Of String)(reader.FieldCount)
+
                     For i As Integer = 0 To reader.FieldCount - 1
-
-                        If i > 0 Then
-                            Await writer.WriteAsync(",")
-                        End If
-
-                        Await writer.WriteAsync(
+                        encabezados.Add(
                             EscaparCsv(reader.GetName(i))
                         )
-
                     Next
 
-                    Await writer.WriteLineAsync()
+                    writer.WriteLine(String.Join(",", encabezados))
 
                     ' Datos
+                    Dim valores As New List(Of String)(reader.FieldCount)
+
                     While Await reader.ReadAsync()
+
+                        valores.Clear()
 
                         For i As Integer = 0 To reader.FieldCount - 1
 
-                            If i > 0 Then
-                                Await writer.WriteAsync(",")
-                            End If
-
-                            If Not reader.IsDBNull(i) Then
-
-                                Dim valor As String =
-                                    reader.GetValue(i).ToString()
-
-                                Await writer.WriteAsync(
-                                    EscaparCsv(valor)
+                            If reader.IsDBNull(i) Then
+                                valores.Add("")
+                            Else
+                                valores.Add(
+                                    EscaparCsv(reader.GetValue(i).ToString())
                                 )
-
                             End If
 
                         Next
 
-                        Await writer.WriteLineAsync()
+                        writer.WriteLine(String.Join(",", valores))
 
                     End While
 
@@ -158,7 +135,6 @@ Public Class Repository
             End Using
 
         End Using
-
     End Function
 
 

@@ -12,6 +12,8 @@ Public Class ReporteRegistrosADCController
     Private mUser As User
     Private ReadOnly _excelReader As ExcelReader
     Private ReadOnly _excelService As ExcelService
+    Private ReadOnly _repository As Repository
+    Private ReadOnly _configuration As IAppConfiguration
     Private ReadOnly _registrosADCService As RegistrosADCService
     ' Private mLog As Log
 
@@ -21,6 +23,8 @@ Public Class ReporteRegistrosADCController
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
         _excelReader = New ExcelReader()
         _excelService = New ExcelService()
+        _configuration = New AppConfiguration()
+        _repository = New Repository(_configuration.ConnectionString)
         _registrosADCService = New RegistrosADCService()
 
         '     Me.mLog = New Log
@@ -48,24 +52,7 @@ Public Class ReporteRegistrosADCController
 
             End If
 
-
-
-            'Ejecución de SP 
-
-            Dim rTable As String = Nothing
-
-
-            Dim respuesta As Integer
-
-            If True = True Then
-                respuesta = 1
-                'CargarInformacion()
-                'SendSFTP()
-                rTable = sc.GetMessage("_registrosADCService", "CargaCompleta")
-
-            End If
-
-            Return Ok(New With {.d = True, .f = "RUTAFINAL", .r = rTable})
+            Return Ok(New With {.d = cargaResponse.Exitoso, .id = cargaResponse.IdCarga})
         Catch ex As Exception
             'mLog.insertLog("MontoDistribuibleCategoriaController", "InsertData", ex.Message)
             Return InternalServerError(ex)
@@ -129,16 +116,31 @@ Public Class ReporteRegistrosADCController
     '    End Try
     'End Function
 
+    '<HttpPost>
+    '<Route("api/registrosadc/insertdata")>
+    'Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
+    '    Try
+    '        Thread.Sleep(500)
+
+    '        Dim rTable As String = sc.GetMessage("Registros ADC", "CargaCompleta")
+
+    '        Return Ok(New With {.d = True, .r = rTable})
+    '    Catch ex As Exception
+    '        Return InternalServerError(ex)
+    '    End Try
+    'End Function
+
     <HttpPost>
-    <Route("api/registrosadc/insertdata")>
-    Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
+    <Route("api/registrosadc/enviarinformacion")>
+    Public Async Function EnvioEstructuraNegocios(<FromBody> request As SendInfoRequest) As Task(Of IHttpActionResult)
         Try
-            Thread.Sleep(500)
+            Thread.Sleep(1000)
 
-            Dim rTable As String = sc.GetMessage("Registros ADC", "CargaCompleta")
+            Await _registrosADCService.EnvioRegistrosADC(request)
 
-            Return Ok(New With {.d = True, .r = rTable})
+            Return Ok(New With {.d = True})
         Catch ex As Exception
+            'mLog.insertLog("MontoDistribuibleCategoriaController", "InsertData", ex.Message)
             Return InternalServerError(ex)
         End Try
     End Function

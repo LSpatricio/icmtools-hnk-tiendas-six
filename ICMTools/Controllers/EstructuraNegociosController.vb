@@ -54,39 +54,28 @@ Public Class EstructuraNegociosController
 
             End If
 
-
-
-
-            Dim rTable As String = Nothing
-
-
-            Dim respuesta As Integer
-
-            If True = True Then
-                respuesta = 1
-                'CargarInformacion()
-                'SendSFTP()
-                rTable = sc.GetMessage("_estructuraNegociosServices", "CargaCompleta")
-
-            End If
-
-            Return Ok(New With {.d = True, .f = "RUTAFINAL", .r = rTable})
+            Return Ok(New With {.d = cargaResponse.Exitoso, .id = cargaResponse.IdCarga})
         Catch ex As Exception
             'mLog.insertLog("MontoDistribuibleCategoriaController", "InsertData", ex.Message)
             Return InternalServerError(ex)
         End Try
     End Function
 
-
-    Private Sub SendSFTP()
+    <HttpPost>
+    <Route("api/estructuranegocios/enviarinformacion")>
+    Public Async Function EnvioEstructuraNegocios(<FromBody> request As SendInfoRequest) As Task(Of IHttpActionResult)
         Try
-            Dim envio As New EnvioPGPClass
-            envio.Pantalla = EnvioPGPClass.enuPantalla.MontoDistribuible
-            envio.Enviar()
+            Thread.Sleep(1000)
+
+            Await _estructuraNegociosServices.EnvioEstructuraNegocios(request)
+
+            Return Ok(New With {.d = True})
         Catch ex As Exception
-            Throw
+            'mLog.insertLog("MontoDistribuibleCategoriaController", "InsertData", ex.Message)
+            Return InternalServerError(ex)
         End Try
-    End Sub
+    End Function
+
 End Class
 
 

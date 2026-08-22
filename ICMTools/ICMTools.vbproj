@@ -102,6 +102,13 @@
     <Reference Include="RBush, Version=4.0.0.0, Culture=neutral, PublicKeyToken=c77e27b81f4d0187, processorArchitecture=MSIL">
       <HintPath>..\packages\RBush.Signed.4.0.0\lib\net47\RBush.dll</HintPath>
     </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Users\hzermeno\Downloads\ICMToolsHNK\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Renci.SshNet.Async">
+      <HintPath>..\..\..\Users\hzermeno\Downloads\ICMToolsHNK\packages\Renci.SshNet.Async.1.4.0\lib\net40\Renci.SshNet.Async.dll</HintPath>
+    </Reference>
     <Reference Include="SixLabors.Fonts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
       <HintPath>..\packages\SixLabors.Fonts.1.0.0\lib\netstandard2.0\SixLabors.Fonts.dll</HintPath>
     </Reference>
@@ -217,6 +224,7 @@
     <Compile Include="Application\DTOs\EstructuraNegociosExcelDto.vb" />
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
+    <Compile Include="Application\File\SendInfoRequest.vb" />
     <Compile Include="Application\File\ValidateFileRequest.vb" />
     <Compile Include="Application\Services\RegistrosADCService.vb" />
     <Compile Include="Application\Services\EstructuraNegociosServices.vb" />
@@ -249,6 +257,7 @@
     <Compile Include="Global.asax.vb">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infraestructure\SFTP\SFTPClient.vb" />
     <Compile Include="Infraestructure\SQL\Repository.vb" />
     <Compile Include="Modules.vb" />
     <Compile Include="App_Code\General\Security.vb">

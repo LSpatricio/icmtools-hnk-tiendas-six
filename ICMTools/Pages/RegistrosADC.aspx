@@ -33,15 +33,15 @@ const configuraciones = {
     carga: {
 
         selector: "",
-        fileType: "RegistrosADC",
+        fileType: "Registros ADC",
         extension: ".xlsx",
         fileClass: "ICMTools.RegistrosADCDetalleExcelDto",
         headerRow: 1
     },
     logging: {
-        page: "RegistrosADC",
+        page: "Registros ADC",
         type: "Validacion",
-        body: "Inicia validación para carga de RegistrosADC"
+        body: "Inicia validación para carga de Registros ADC"
     },
 
     api: {

@@ -1,4 +1,5 @@
-﻿Imports System.Reflection
+﻿Imports System.IO
+Imports System.Reflection
 Imports System.Threading.Tasks
 
 Public Class RegistrosADCService
@@ -7,11 +8,13 @@ Public Class RegistrosADCService
     Private ReadOnly _excelService As ExcelService
     Private ReadOnly _repository As Repository
     Private ReadOnly _configuration As IAppConfiguration
+    Private ReadOnly _sftpClient As SftpClient
     Public Sub New()
         _excelReader = New ExcelReader()
         _excelService = New ExcelService()
         _configuration = New AppConfiguration()
         _repository = New Repository(_configuration.ConnectionString)
+        _sftpClient = New SftpClient()
 
     End Sub
 
@@ -35,10 +38,7 @@ Public Class RegistrosADCService
 
         Dim idCarga As Guid = Guid.NewGuid()
 
-
-
-        Dim errores = Await ValidacionesRegistrosADCService(
-        request)
+        Dim errores = Await ValidacionesRegistrosADCService(request)
 
         If errores.Any() Then
             Return New CargaResponse With {
@@ -65,6 +65,7 @@ Public Class RegistrosADCService
 
 
     Public Async Function ValidacionesRegistrosADCService(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+
         Dim errorsList As String = Nothing
         Dim tableName As String = "STG_REGISTROSADC"
 
@@ -76,10 +77,10 @@ Public Class RegistrosADCService
 
         Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(tipo)
 
+        Await _repository.LimpiarStaging(tableName)
 
         For i As Integer = 0 To cantidadHojas - 1
 
-            Await _repository.LimpiarStaging(tableName)
 
             valoresErrores.AddRange(
                         Await _excelReader.CargaAsync(
@@ -92,6 +93,46 @@ Public Class RegistrosADCService
         Next
         Return valoresErrores
 
+
+
+    End Function
+
+    Public Async Function EnvioRegistrosADC(request As SendInfoRequest) As Task
+
+        If Not Directory.Exists(request.PathSalida) Then
+            Directory.CreateDirectory(request.PathSalida)
+        End If
+
+        Dim nombreArchivo As String = "BDIREGISTROSADC.csv"
+
+        Dim rutaArchivo As String = Path.Combine(request.PathSalida, nombreArchivo)
+
+
+        Dim sql As String = "
+                  SELECT
+                 ID
+				,ConteoArchivos
+				,Ceco
+				,FechaAprobacion
+				,Accion
+				,Ruta
+				,Region
+				,ComentarioAnalista
+				,NombreTienda
+				,CargadoPor
+				,RevisadoExpins
+				,Estatus
+                    FROM BDIREGISTROSADC
+                   WHERE IdCarga = @IdCarga
+                "
+
+        Await _repository.GenerarCsvAsync(
+                                sql,
+                                rutaArchivo,
+                                request.IdGui
+                            )
+
+        Await _sftpClient.SubirArchivoAsync(rutaArchivo)
 
 
     End Function
