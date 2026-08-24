@@ -73,4 +73,12 @@ Public Class LoggerConfig
 
     End Sub
 
+    Public Enum Proceso
+        CheckExists
+        ValidarArchivo
+        CargarInformacion
+        EnviarInformacion
+
+    End Enum
+
 End Class

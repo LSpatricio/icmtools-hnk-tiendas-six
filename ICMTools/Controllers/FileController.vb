@@ -64,7 +64,7 @@ Public Class FileController
                 .ForContext("Pantalla", request.Screen) _
                 .ForContext("Usuario", mUser.Email) _
                 .ForContext("Periodo", request.Period) _
-                .ForContext("Proceso", "Check Exists")
+                .ForContext("Proceso", LoggerConfig.Proceso.CheckExists.ToString())
         Try
 
             Dim rawFileType As String = If(request?.FileType, String.Empty)
@@ -117,7 +117,7 @@ Public Class FileController
                 .ForContext("Pantalla", request.Screen) _
                 .ForContext("Usuario", mUser.Email) _
                 .ForContext("Periodo", request.Period) _
-                .ForContext("Proceso", "Validate")
+                .ForContext("Proceso", LoggerConfig.Proceso.ValidarArchivo.ToString())
 
         Try
 

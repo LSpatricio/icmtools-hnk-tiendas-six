@@ -35,14 +35,14 @@ Public Class EstructuraNegociosServices
         }
         End If
 
-        Log.Information("No se encontraron errores de validación en el archivo de Estructura de Negocios. Procediendo a ejecutar el procedimiento almacenado para validar la información.")
+        logger.Information("No se encontraron errores de validación en el archivo de Estructura de Negocios. Procediendo a ejecutar el procedimiento almacenado para validar la información.")
 
         Await _repository.EjecutarSPAsync(
             $"dbo.{sp}",
             idCarga
         )
 
-        Log.Information("Procedimiento almacenado {sp} ejecutado correctamente", sp)
+        logger.Information("Procedimiento almacenado {sp} ejecutado correctamente", sp)
 
         Return New CargaResponse With {
         .Exitoso = True,
@@ -146,11 +146,11 @@ Public Class EstructuraNegociosServices
                                 request.IdGui
                             )
 
-        Log.Information("Archivo CSV generado correctamente {rutaArchivo}", rutaArchivo)
+        logger.Information("Archivo CSV generado correctamente {rutaArchivo}", rutaArchivo)
 
         Await _sftpClient.SubirArchivoAsync(rutaArchivo)
 
-        Log.Information("Archivo enviado al SFTP")
+        logger.Information("Archivo enviado al SFTP")
 
     End Function
 

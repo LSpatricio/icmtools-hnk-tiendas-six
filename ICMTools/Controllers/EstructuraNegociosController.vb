@@ -45,7 +45,7 @@ Public Class EstructuraNegociosController
                 .ForContext("Pantalla", request.Screen) _
                 .ForContext("Usuario", mUser.Email) _
                 .ForContext("Periodo", request.Period) _
-                .ForContext("Proceso", "Cargar Información") _
+                .ForContext("Proceso", LoggerConfig.Proceso.CargarInformacion.ToString()) _
                 .ForContext("IdCarga", idCarga)
         Try
             Thread.Sleep(1000)
@@ -91,7 +91,7 @@ Public Class EstructuraNegociosController
                 .ForContext("Pantalla", request.Screen) _
                 .ForContext("Usuario", mUser.Email) _
                 .ForContext("Periodo", request.Period) _
-                .ForContext("Proceso", "Enviar Información") _
+                .ForContext("Proceso", LoggerConfig.Proceso.EnviarInformacion.ToString()) _
                 .ForContext("IdCarga", request.IdGui)
         Try
             Thread.Sleep(1000)
