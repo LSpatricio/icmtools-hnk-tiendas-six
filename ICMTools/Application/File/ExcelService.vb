@@ -23,6 +23,24 @@ Public Class ExcelService
 
     End Function
 
+    Public Function ObtenerPropiedadesListas(tipoClass As Type) As List(Of PropertyInfo)
+
+        Dim propiedadesListas As New List(Of PropertyInfo)
+
+        For Each propiedad In tipoClass.GetProperties()
+
+            If propiedad.PropertyType.IsGenericType AndAlso
+               propiedad.PropertyType.GetGenericTypeDefinition() = GetType(List(Of )) Then
+
+                propiedadesListas.Add(propiedad)
+            End If
+
+        Next
+
+        Return propiedadesListas
+
+    End Function
+
     Public Function CrearMepeoAtributos(tipo As Type) As Dictionary(Of PropertyInfo, ExcelColumnAttribute)
 
         'diccionario regresamos la relación propiedad y atributos..

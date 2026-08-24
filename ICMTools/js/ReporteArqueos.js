@@ -23,7 +23,7 @@ function ValidarInformacionReporteArqueos(dataRequest) {
                 $("#MensajeError").text("");
             } else {
                 setFormStatus("error");
-                $("#formatErrors").html(response.d);
+                $("#formatErrors").html(response.r || response.d);
                 if (typeof activateTable === "function") { activateTable(); }
                 if (response.m) {
                     document.getElementById("MensajeError").textContent = response.m;

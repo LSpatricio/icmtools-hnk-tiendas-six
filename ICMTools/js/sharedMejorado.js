@@ -310,9 +310,40 @@ function ValidateExcelFile(onSuccessCallback, filePath) {
         },
         error: function (xhr) {
             setFormStatus("error");
-            $("#formatErrors").html("Error de comunicación (validate).");
+            const mensaje = obtenerMensajeAjax(xhr, "validate");
+            $("#formatErrors").html(mensaje);
         }
     });
+}
+
+function obtenerMensajeAjax(xhr, contexto) {
+    if (!xhr) {
+        return `Error de comunicación (${contexto}).`;
+    }
+
+    if (xhr.responseJSON) {
+        if (xhr.responseJSON.message) {
+            return xhr.responseJSON.message;
+        }
+
+        if (xhr.responseJSON.Message) {
+            return xhr.responseJSON.Message;
+        }
+
+        if (xhr.responseJSON.r) {
+            return xhr.responseJSON.r;
+        }
+
+        if (xhr.responseJSON.d) {
+            return xhr.responseJSON.d;
+        }
+    }
+
+    if (xhr.responseText) {
+        return xhr.responseText;
+    }
+
+    return `Error de comunicación (${contexto}).`;
 }
 
 

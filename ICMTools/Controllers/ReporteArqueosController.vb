@@ -5,6 +5,7 @@ Imports System.Data.SqlClient
 Imports System.IO
 Imports System.Reflection
 Imports System.Threading
+Imports System.Threading.Tasks
 Imports System.Web.Http
 Imports Newtonsoft.Json
 Imports Npgsql
@@ -18,12 +19,14 @@ Public Class ReporteArqueosController
     Private ReadOnly _excelReader As ExcelReader
     Private ReadOnly _excelService As ExcelService
     Private ReadOnly _arqueosExcelReader As ArqueosExcelReader
+    Private ReadOnly _sftpClient As SftpClient
 
     Public Sub New()
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
         _excelReader = New ExcelReader()
         _excelService = New ExcelService()
         _arqueosExcelReader = New ArqueosExcelReader()
+        _sftpClient = New SftpClient()
     End Sub
 
     ReadOnly sc As New SharedController
@@ -35,16 +38,10 @@ Public Class ReporteArqueosController
             Thread.Sleep(1000)
 
             Dim errorsList As String = Nothing
-            Dim tipo As Type = GetType(ArqueosExcelDto)
-            Dim hojasDefinidas As List(Of Type) = _excelService.ObtenerTipos(tipo)
-            Dim valoresErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
-
-            For Each hoja In hojasDefinidas
-                Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(hoja)
-                Dim atributo = tipo.GetProperties().ToList().FirstOrDefault(Function(p) p.PropertyType.GetGenericArguments()(0) = hoja).GetCustomAttributes(GetType(ExcelSheetAttribute), False).Cast(Of ExcelSheetAttribute)().First()
-
-                valoresErrores.AddRange(_arqueosExcelReader.ValidacionesArqueos(request.Path, atributo.HeaderRow, atributo.SheetName, mapeoColumnas))
-            Next
+            Dim tipoHoja As Type = GetType(ArqueosDetalleExcelDto)
+            Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(tipoHoja)
+            Dim valoresErrores As List(Of ExcelValidationError) =
+                _arqueosExcelReader.ValidacionesArqueosTodasLasHojas(request.Path, 1, mapeoColumnas)
 
             If valoresErrores.Count > 0 Then
                 For Each errores In valoresErrores
@@ -57,7 +54,10 @@ Public Class ReporteArqueosController
             Dim rTable As String = sc.GetMessage("Arqueos", "CargaCompleta")
             Return Ok(New With {.d = True, .path = request.Path, .f = request.Path, .r = rTable})
         Catch ex As Exception
-            Return InternalServerError(ex)
+            Return Ok(New With {
+                .d = False,
+                .r = ex.Message
+            })
         End Try
     End Function
 
@@ -110,14 +110,21 @@ Public Class ReporteArqueosController
                 End Using
             End Using
 
+            Dim idCarga As Guid = Guid.NewGuid()
+
             Using db As New DataBase(connStr)
-                db.ExecuteStoredProcedure("dbo.SP_VALIDATE_ARQUEOS", DataBase.EnumExecutionType.NonQuery)
+                db.ExecuteStoredProcedure(
+                    "dbo.SP_VALIDATE_ARQUEOS",
+                    DataBase.EnumExecutionType.NonQuery,
+                    New SqlParameter("@IdCarga", SqlDbType.UniqueIdentifier) With {.Value = idCarga}
+                )
             End Using
 
             Dim csvPath As String = ExportarBdiArqueosCsv(connStr)
+            EnviarCsvSftpEnSegundoPlano(csvPath)
 
             Dim rTable As String = sc.GetMessage("Arqueos", "CargaCompleta")
-            Return Ok(New With {.d = True, .r = rTable, .rows = tablaStg.Rows.Count, .csv = csvPath})
+            Return Ok(New With {.d = True, .r = rTable, .rows = tablaStg.Rows.Count, .csv = csvPath, .idCarga = idCarga})
         Catch ex As Exception
             Return Ok(New With {
                 .d = False,
@@ -126,11 +133,22 @@ Public Class ReporteArqueosController
         End Try
     End Function
 
+    Private Sub EnviarCsvSftpEnSegundoPlano(rutaCsv As String)
+        Task.Run(
+            Async Function()
+                Try
+                    Await _sftpClient.SubirArchivoAsync(rutaCsv)
+                Catch
+                    ' La generación del CSV no debe quedar bloqueada por una demora del SFTP.
+                End Try
+            End Function)
+    End Sub
+
     Private Function ExportarBdiArqueosCsv(connStr As String) As String
         Dim carpetaSalida As String = "C:\Users\dsuazo\OneDrive - Excelencia en Soluciones Informaticas SA\Escritorio\csv prueba"
         Directory.CreateDirectory(carpetaSalida)
 
-        Dim nombreArchivo As String = $"BDIARQUEOS_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+            Dim nombreArchivo As String = "BDIARQUEOS.csv"
         Dim rutaSalida As String = Path.Combine(carpetaSalida, nombreArchivo)
 
         Using conn As New SqlConnection(connStr)

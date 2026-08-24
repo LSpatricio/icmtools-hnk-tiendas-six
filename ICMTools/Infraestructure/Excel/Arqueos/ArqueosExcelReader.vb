@@ -21,37 +21,219 @@ Public Class ArqueosExcelReader
 
         Dim errores As New List(Of ExcelValidationError)
 
-        Using stream = File.Open(rutaArchivo, FileMode.Open, FileAccess.Read)
+        Using stream = File.Open(rutaArchivo, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
             Using reader = ExcelReaderFactory.CreateReader(stream)
-                errores.AddRange(_excelReader.ValidacionesInformacion(reader, filaEncabezado, nombreHoja, mapeoColumnas))
+                If Not MoverAHoja(reader, nombreHoja) Then
+                    errores.Add(New ExcelValidationError With {
+                        .Problema = $"La hoja <strong>{nombreHoja}</strong> no existe en el archivo Excel.",
+                        .Detalle = $"Hojas encontradas en el archivo Excel: {reader.Name}"
+                    })
+                    Return errores
+                End If
+
+                For i As Integer = 1 To filaEncabezado
+                    If Not reader.Read() Then
+                        Return errores
+                    End If
+                Next
+
+                Dim encabezados As List(Of String) = LeerEncabezados(reader)
+
+                Dim idxCodigoListado = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoListado))
+                Dim idxNumeroSAP = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NumeroSAP))
+                Dim idxAlmacen = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Almacen))
+                Dim idxTipoListado = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoListado))
+                Dim idxEstatus = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Estatus))
+                Dim idxFechaCreacion = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCreacion))
+                Dim idxNombre = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Nombre))
+                Dim idxUsuarioCreador = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreador))
+                Dim idxUsuarioCreadorPerfil = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreadorPerfil))
+                Dim idxUsuarioAutorizador = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizador))
+                Dim idxUsuarioAutorizadorPerfil = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizadorPerfil))
+                Dim idxTipoCierre = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoCierre))
+                Dim idxFechaInicioConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaInicioConteo))
+                Dim idxFechaFinConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaFinConteo))
+                Dim idxFechaCierreConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCierreConteo))
+                Dim idxFechaTerminoConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaTerminoConteo))
+                Dim idxSubinventario = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Subinventario))
+                Dim idxIdProducto = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.IdProducto))
+                Dim idxCodigoProducto = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoProducto))
+                Dim idxNombreProducto = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NombreProducto))
+                Dim idxUnidad = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Unidad))
+                Dim idxCantidadSistema = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CantidadSistema))
+                Dim idxDiferencia = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Diferencia))
+                Dim idxFaltante = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Faltante))
+                Dim idxSobrante = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Sobrante))
+                Dim idxFaltantePrecioCons = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FaltantePrecioCons))
+                Dim idxSobrantePrecioCons = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.SobrantePrecioCons))
+                Dim idxComentario = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Comentario))
+
+                Dim indices As Integer() = {
+                    idxCodigoListado, idxNumeroSAP, idxAlmacen, idxTipoListado, idxEstatus, idxFechaCreacion,
+                    idxNombre, idxUsuarioCreador, idxUsuarioCreadorPerfil, idxUsuarioAutorizador,
+                    idxUsuarioAutorizadorPerfil, idxTipoCierre, idxFechaInicioConteo, idxFechaFinConteo,
+                    idxFechaCierreConteo, idxFechaTerminoConteo, idxSubinventario, idxIdProducto,
+                    idxCodigoProducto, idxNombreProducto, idxUnidad, idxCantidadSistema, idxDiferencia,
+                    idxFaltante, idxSobrante, idxFaltantePrecioCons, idxSobrantePrecioCons, idxComentario
+                }
+
+                Dim headersEncontrados As String = String.Join(", ", encabezados)
+
+                For Each mapeo In mapeoColumnas
+                    Dim indiceEncontrado As Integer = ObtenerIndiceColumna(encabezados, mapeoColumnas, mapeo.Key.Name)
+
+                    If indiceEncontrado < 0 Then
+                        errores.Add(New ExcelValidationError With {
+                            .Problema = $"La columna '{mapeo.Value.ColumnName}' no se encuentra en la hoja <strong>{nombreHoja}</strong>.",
+                            .Detalle = $"Columnas encontradas en el archivo Excel: {headersEncontrados}"
+                        })
+                    End If
+                Next
+
+                If errores.Count > 0 Then
+                    Return errores
+                End If
+
+                Dim mapeoConIndicesReales As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = ClonarMapeoConIndicesReales(
+                    mapeoColumnas,
+                    encabezados)
+
+                Using streamValidacion = File.Open(rutaArchivo, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+                    Using readerValidacion = ExcelReaderFactory.CreateReader(streamValidacion)
+                        errores.AddRange(_excelReader.ValidacionesInformacion(readerValidacion, filaEncabezado, nombreHoja, mapeoConIndicesReales))
+                    End Using
+                End Using
+
+                If errores.Count > 0 Then
+                    Return errores
+                End If
+
+                If Not reader.Read() Then
+                    Return errores
+                End If
+
+                Dim filaActual As Integer = filaEncabezado + 1
+
+                Do
+                    If FilaVaciaPorIndices(reader, indices) Then
+                        Exit Do
+                    End If
+
+                    ValidarFilaArqueos(
+                        errores,
+                        reader,
+                        nombreHoja,
+                        filaActual,
+                        idxCodigoListado,
+                        idxNumeroSAP,
+                        idxAlmacen,
+                        idxTipoListado,
+                        idxEstatus,
+                        idxFechaCreacion,
+                        idxNombre,
+                        idxUsuarioCreador,
+                        idxUsuarioCreadorPerfil,
+                        idxUsuarioAutorizador,
+                        idxUsuarioAutorizadorPerfil,
+                        idxTipoCierre,
+                        idxFechaInicioConteo,
+                        idxFechaFinConteo,
+                        idxFechaCierreConteo,
+                        idxFechaTerminoConteo,
+                        idxSubinventario,
+                        idxIdProducto,
+                        idxCodigoProducto,
+                        idxNombreProducto,
+                        idxUnidad,
+                        idxCantidadSistema,
+                        idxDiferencia,
+                        idxFaltante,
+                        idxSobrante,
+                        idxFaltantePrecioCons,
+                        idxSobrantePrecioCons,
+                        idxComentario)
+
+                    filaActual += 1
+                Loop While reader.Read()
             End Using
         End Using
-
-        errores.AddRange(ValidacionesReglasArqueos(rutaArchivo, filaEncabezado, nombreHoja, mapeoColumnas))
 
         Return errores
     End Function
 
     Public Function ObtenerDataTableStgArqueos(rutaArchivo As String) As DataTable
         Dim tabla As DataTable = CrearTablaStgArqueos()
-        Dim tipo As Type = GetType(ArqueosExcelDto)
         Dim excelService As New ExcelService()
+        Dim tipoHoja As Type = GetType(ArqueosDetalleExcelDto)
+        Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = excelService.CrearMepeoAtributos(tipoHoja)
+        Dim filaEncabezado As Integer = 1
 
-        Dim hojasDefinidas As List(Of Type) = excelService.ObtenerTipos(tipo)
+        Using stream = File.Open(rutaArchivo, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+            Using reader = ExcelReaderFactory.CreateReader(stream)
+                Do
+                    Dim nombreHojaActual As String = reader.Name
 
-        For Each hoja In hojasDefinidas
-            Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = excelService.CrearMepeoAtributos(hoja)
-            Dim atributo = tipo.GetProperties().
-                ToList().
-                FirstOrDefault(Function(p) p.PropertyType.GetGenericArguments()(0) = hoja).
-                GetCustomAttributes(GetType(ExcelSheetAttribute), False).
-                Cast(Of ExcelSheetAttribute)().
-                First()
-
-            CargarHojaEnTabla(rutaArchivo, atributo.HeaderRow, atributo.SheetName, mapeoColumnas, tabla)
-        Next
+                    If HojaTieneEstructura(reader, filaEncabezado, mapeoColumnas) Then
+                        CargarHojaEnTabla(rutaArchivo, filaEncabezado, nombreHojaActual, mapeoColumnas, tabla)
+                    End If
+                Loop While reader.NextResult()
+            End Using
+        End Using
 
         Return tabla
+    End Function
+
+    Public Function ValidacionesArqueosTodasLasHojas(
+        rutaArchivo As String,
+        filaEncabezado As Integer,
+        mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute)) As List(Of ExcelValidationError)
+
+        Dim errores As New List(Of ExcelValidationError)
+        Dim hojasValidas As Integer = 0
+
+        Using stream = File.Open(rutaArchivo, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+            Using reader = ExcelReaderFactory.CreateReader(stream)
+                Do
+                    Dim nombreHojaActual As String = reader.Name
+
+                    If HojaTieneEstructura(reader, filaEncabezado, mapeoColumnas) Then
+                        hojasValidas += 1
+                        errores.AddRange(ValidacionesArqueos(rutaArchivo, filaEncabezado, nombreHojaActual, mapeoColumnas))
+                    End If
+                Loop While reader.NextResult()
+            End Using
+        End Using
+
+        If hojasValidas = 0 Then
+            errores.Add(New ExcelValidationError With {
+                .Problema = "El archivo no contiene ninguna hoja con la estructura esperada para el reporte de Arqueos.",
+                .Detalle = "Se revisaron todas las hojas del archivo y ninguna contiene todos los encabezados requeridos."
+            })
+        End If
+
+        Return errores
+    End Function
+
+    Private Function HojaTieneEstructura(
+        reader As IExcelDataReader,
+        filaEncabezado As Integer,
+        mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute)) As Boolean
+
+        For i As Integer = 1 To filaEncabezado
+            If Not reader.Read() Then
+                Return False
+            End If
+        Next
+
+        Dim encabezados As List(Of String) = LeerEncabezados(reader)
+
+        For Each mapeo In mapeoColumnas
+            If ObtenerIndiceColumna(encabezados, mapeoColumnas, mapeo.Key.Name) < 0 Then
+                Return False
+            End If
+        Next
+
+        Return True
     End Function
 
     Private Function CrearTablaStgArqueos() As DataTable
@@ -95,51 +277,55 @@ Public Class ArqueosExcelReader
         mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute),
         tabla As DataTable)
 
-        Dim idxCodigoListado = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoListado))
-        Dim idxNumeroSAP = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NumeroSAP))
-        Dim idxAlmacen = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Almacen))
-        Dim idxTipoListado = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoListado))
-        Dim idxEstatus = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Estatus))
-        Dim idxFechaCreacion = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCreacion))
-        Dim idxNombre = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Nombre))
-        Dim idxUsuarioCreador = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreador))
-        Dim idxUsuarioCreadorPerfil = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreadorPerfil))
-        Dim idxUsuarioAutorizador = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizador))
-        Dim idxUsuarioAutorizadorPerfil = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizadorPerfil))
-        Dim idxTipoCierre = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoCierre))
-        Dim idxFechaInicioConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaInicioConteo))
-        Dim idxFechaFinConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaFinConteo))
-        Dim idxFechaCierreConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCierreConteo))
-        Dim idxFechaTerminoConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaTerminoConteo))
-        Dim idxSubinventario = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Subinventario))
-        Dim idxIdProducto = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.IdProducto))
-        Dim idxCodigoProducto = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoProducto))
-        Dim idxNombreProducto = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NombreProducto))
-        Dim idxUnidad = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Unidad))
-        Dim idxCantidadSistema = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CantidadSistema))
-        Dim idxDiferencia = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Diferencia))
-        Dim idxFaltante = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Faltante))
-        Dim idxSobrante = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Sobrante))
-        Dim idxFaltantePrecioCons = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FaltantePrecioCons))
-        Dim idxSobrantePrecioCons = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.SobrantePrecioCons))
-        Dim idxComentario = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Comentario))
-
-        Using stream = File.Open(rutaArchivo, FileMode.Open, FileAccess.Read)
+        Using stream = File.Open(rutaArchivo, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
             Using reader = ExcelReaderFactory.CreateReader(stream)
                 If Not MoverAHoja(reader, nombreHoja) Then
                     Return
                 End If
 
                 For i As Integer = 1 To filaEncabezado
-                    reader.Read()
+                    If Not reader.Read() Then
+                        Return
+                    End If
                 Next
+
+                Dim encabezados As List(Of String) = LeerEncabezados(reader)
+
+                Dim idxCodigoListado = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoListado))
+                Dim idxNumeroSAP = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NumeroSAP))
+                Dim idxAlmacen = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Almacen))
+                Dim idxTipoListado = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoListado))
+                Dim idxEstatus = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Estatus))
+                Dim idxFechaCreacion = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCreacion))
+                Dim idxNombre = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Nombre))
+                Dim idxUsuarioCreador = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreador))
+                Dim idxUsuarioCreadorPerfil = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreadorPerfil))
+                Dim idxUsuarioAutorizador = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizador))
+                Dim idxUsuarioAutorizadorPerfil = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizadorPerfil))
+                Dim idxTipoCierre = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoCierre))
+                Dim idxFechaInicioConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaInicioConteo))
+                Dim idxFechaFinConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaFinConteo))
+                Dim idxFechaCierreConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCierreConteo))
+                Dim idxFechaTerminoConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaTerminoConteo))
+                Dim idxSubinventario = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Subinventario))
+                Dim idxIdProducto = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.IdProducto))
+                Dim idxCodigoProducto = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoProducto))
+                Dim idxNombreProducto = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NombreProducto))
+                Dim idxUnidad = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Unidad))
+                Dim idxCantidadSistema = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CantidadSistema))
+                Dim idxDiferencia = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Diferencia))
+                Dim idxFaltante = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Faltante))
+                Dim idxSobrante = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Sobrante))
+                Dim idxFaltantePrecioCons = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FaltantePrecioCons))
+                Dim idxSobrantePrecioCons = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.SobrantePrecioCons))
+                Dim idxComentario = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Comentario))
 
                 If Not reader.Read() Then
                     Return
                 End If
 
                 Do
-                    If FilaVacia(reader, mapeoColumnas) Then
+                    If FilaVaciaPorIndices(reader, {idxCodigoListado, idxNumeroSAP, idxAlmacen, idxTipoListado, idxEstatus, idxFechaCreacion, idxNombre, idxUsuarioCreador, idxUsuarioCreadorPerfil, idxUsuarioAutorizador, idxUsuarioAutorizadorPerfil, idxTipoCierre, idxFechaInicioConteo, idxFechaFinConteo, idxFechaCierreConteo, idxFechaTerminoConteo, idxSubinventario, idxIdProducto, idxCodigoProducto, idxNombreProducto, idxUnidad, idxCantidadSistema, idxDiferencia, idxFaltante, idxSobrante, idxFaltantePrecioCons, idxSobrantePrecioCons, idxComentario}) Then
                         Exit Do
                     End If
 
@@ -188,36 +374,7 @@ Public Class ArqueosExcelReader
 
         Dim errores As New List(Of ExcelValidationError)
 
-        Dim idxNumeroSAP = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NumeroSAP))
-        Dim idxCodigoListado = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoListado))
-        Dim idxAlmacen = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Almacen))
-        Dim idxTipoListado = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoListado))
-        Dim idxEstatus = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Estatus))
-        Dim idxFechaCreacion = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCreacion))
-        Dim idxNombre = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Nombre))
-        Dim idxUsuarioCreador = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreador))
-        Dim idxUsuarioCreadorPerfil = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreadorPerfil))
-        Dim idxUsuarioAutorizador = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizador))
-        Dim idxUsuarioAutorizadorPerfil = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizadorPerfil))
-        Dim idxTipoCierre = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoCierre))
-        Dim idxFechaInicioConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaInicioConteo))
-        Dim idxFechaFinConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaFinConteo))
-        Dim idxFechaCierreConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCierreConteo))
-        Dim idxFechaTerminoConteo = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaTerminoConteo))
-        Dim idxSubinventario = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Subinventario))
-        Dim idxIdProducto = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.IdProducto))
-        Dim idxCodigoProducto = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoProducto))
-        Dim idxNombreProducto = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NombreProducto))
-        Dim idxUnidad = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Unidad))
-        Dim idxCantidadSistema = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CantidadSistema))
-        Dim idxDiferencia = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Diferencia))
-        Dim idxFaltante = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Faltante))
-        Dim idxSobrante = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Sobrante))
-        Dim idxFaltantePrecioCons = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FaltantePrecioCons))
-        Dim idxSobrantePrecioCons = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.SobrantePrecioCons))
-        Dim idxComentario = ObtenerIndiceColumna(mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Comentario))
-
-        Using stream = File.Open(rutaArchivo, FileMode.Open, FileAccess.Read)
+        Using stream = File.Open(rutaArchivo, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
             Using reader = ExcelReaderFactory.CreateReader(stream)
                 If Not MoverAHoja(reader, nombreHoja) Then
                     Return errores
@@ -227,14 +384,52 @@ Public Class ArqueosExcelReader
                     reader.Read()
                 Next
 
+                Dim encabezados As List(Of String) = LeerEncabezados(reader)
+
                 If Not reader.Read() Then
                     Return errores
                 End If
 
+                Dim idxCodigoListado = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoListado))
+                Dim idxNumeroSAP = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NumeroSAP))
+                Dim idxAlmacen = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Almacen))
+                Dim idxTipoListado = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoListado))
+                Dim idxEstatus = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Estatus))
+                Dim idxFechaCreacion = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCreacion))
+                Dim idxNombre = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Nombre))
+                Dim idxUsuarioCreador = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreador))
+                Dim idxUsuarioCreadorPerfil = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioCreadorPerfil))
+                Dim idxUsuarioAutorizador = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizador))
+                Dim idxUsuarioAutorizadorPerfil = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.UsuarioAutorizadorPerfil))
+                Dim idxTipoCierre = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.TipoCierre))
+                Dim idxFechaInicioConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaInicioConteo))
+                Dim idxFechaFinConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaFinConteo))
+                Dim idxFechaCierreConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaCierreConteo))
+                Dim idxFechaTerminoConteo = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FechaTerminoConteo))
+                Dim idxSubinventario = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Subinventario))
+                Dim idxIdProducto = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.IdProducto))
+                Dim idxCodigoProducto = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CodigoProducto))
+                Dim idxNombreProducto = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.NombreProducto))
+                Dim idxUnidad = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Unidad))
+                Dim idxCantidadSistema = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.CantidadSistema))
+                Dim idxDiferencia = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Diferencia))
+                Dim idxFaltante = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Faltante))
+                Dim idxSobrante = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Sobrante))
+                Dim idxFaltantePrecioCons = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.FaltantePrecioCons))
+                Dim idxSobrantePrecioCons = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.SobrantePrecioCons))
+                Dim idxComentario = ObtenerIndiceColumna(encabezados, mapeoColumnas, NameOf(ArqueosDetalleExcelDto.Comentario))
+
                 Dim filaActual As Integer = filaEncabezado + 1
 
                 Do
-                    If FilaVacia(reader, mapeoColumnas) Then
+                    If FilaVaciaPorIndices(reader, {
+                        idxCodigoListado, idxNumeroSAP, idxAlmacen, idxTipoListado, idxEstatus, idxFechaCreacion,
+                        idxNombre, idxUsuarioCreador, idxUsuarioCreadorPerfil, idxUsuarioAutorizador,
+                        idxUsuarioAutorizadorPerfil, idxTipoCierre, idxFechaInicioConteo, idxFechaFinConteo,
+                        idxFechaCierreConteo, idxFechaTerminoConteo, idxSubinventario, idxIdProducto,
+                        idxCodigoProducto, idxNombreProducto, idxUnidad, idxCantidadSistema, idxDiferencia,
+                        idxFaltante, idxSobrante, idxFaltantePrecioCons, idxSobrantePrecioCons, idxComentario
+                    }) Then
                         Exit Do
                     End If
 
@@ -398,25 +593,110 @@ Public Class ArqueosExcelReader
         End If
     End Sub
 
-    Private Function MoverAHoja(reader As IExcelDataReader, nombreHoja As String) As Boolean
-        Dim indiceHoja As Integer
+    Private Function LeerEncabezados(reader As IExcelDataReader) As List(Of String)
+        Dim encabezados As New List(Of String)
 
-        If Integer.TryParse(nombreHoja, indiceHoja) Then
-            Dim indiceActual As Integer = 0
+        For i As Integer = 0 To reader.FieldCount - 1
+            Dim valorEncabezado As String = If(reader.GetValue(i)?.ToString(), String.Empty).Trim()
+            encabezados.Add(valorEncabezado)
+        Next
 
-            Do
-                If indiceActual = indiceHoja Then
-                    Return True
-                End If
-                indiceActual += 1
-            Loop While reader.NextResult()
-        Else
-            Do
-                If String.Equals(reader.Name, nombreHoja, StringComparison.OrdinalIgnoreCase) Then
-                    Return True
-                End If
-            Loop While reader.NextResult()
+        Return encabezados
+    End Function
+
+    Private Function ClonarMapeoConIndicesReales(
+        mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute),
+        encabezados As IList(Of String)) As Dictionary(Of PropertyInfo, ExcelColumnAttribute)
+
+        Dim resultado As New Dictionary(Of PropertyInfo, ExcelColumnAttribute)
+
+        For Each mapeo In mapeoColumnas
+            Dim indiceReal As Integer = ObtenerIndiceColumna(encabezados, mapeoColumnas, mapeo.Key.Name)
+            Dim atributoOriginal = mapeo.Value
+            Dim atributoClonado As New ExcelColumnAttribute(indiceReal, atributoOriginal.ColumnName) With {
+                .Requerido = atributoOriginal.Requerido,
+                .ValoresIgnorados = atributoOriginal.ValoresIgnorados,
+                .ColumnAliases = atributoOriginal.ColumnAliases
+            }
+
+            resultado(mapeo.Key) = atributoClonado
+        Next
+
+        Return resultado
+    End Function
+
+    Private Function ObtenerIndiceColumna(
+        encabezados As IList(Of String),
+        mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute),
+        nombrePropiedad As String) As Integer
+
+        Dim propiedad = mapeoColumnas.Keys.FirstOrDefault(Function(p) String.Equals(p.Name, nombrePropiedad, StringComparison.OrdinalIgnoreCase))
+
+        If propiedad Is Nothing Then
+            Return -1
         End If
+
+        Dim atributo = mapeoColumnas(propiedad)
+        Dim nombresEsperados As New List(Of String)
+
+        If Not String.IsNullOrWhiteSpace(atributo.ColumnName) Then
+            nombresEsperados.Add(atributo.ColumnName)
+        End If
+
+        If atributo.ColumnAliases IsNot Nothing AndAlso atributo.ColumnAliases.Length > 0 Then
+            nombresEsperados.AddRange(atributo.ColumnAliases.Where(Function(x) Not String.IsNullOrWhiteSpace(x)))
+        End If
+
+        nombresEsperados.Add(nombrePropiedad)
+
+        For i As Integer = 0 To encabezados.Count - 1
+            Dim encabezadoActual = NormalizarTextoComparacionArqueos(encabezados(i))
+
+            If nombresEsperados.Any(Function(nombreEsperado) String.Equals(encabezadoActual, NormalizarTextoComparacionArqueos(nombreEsperado), StringComparison.OrdinalIgnoreCase)) Then
+                Return i
+            End If
+        Next
+
+        Return -1
+    End Function
+
+    Private Function NormalizarTextoComparacionArqueos(valor As String) As String
+        If String.IsNullOrWhiteSpace(valor) Then
+            Return String.Empty
+        End If
+
+        Dim textoNormalizado = valor.Trim().Replace(vbCrLf, vbLf).Replace(vbCr, vbLf)
+        textoNormalizado = textoNormalizado.Normalize(System.Text.NormalizationForm.FormD)
+
+        Dim caracteres = textoNormalizado.
+            Where(Function(c) System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) <> System.Globalization.UnicodeCategory.NonSpacingMark).
+            ToArray()
+
+        Return New String(caracteres).Normalize(System.Text.NormalizationForm.FormC).ToLowerInvariant()
+    End Function
+
+    Private Function FilaVaciaPorIndices(reader As IExcelDataReader, indices As IEnumerable(Of Integer)) As Boolean
+        For Each indiceColumna In indices
+            If indiceColumna < 0 Then
+                Continue For
+            End If
+
+            Dim valor = reader.GetValue(indiceColumna)
+
+            If Not EsVacio(valor) Then
+                Return False
+            End If
+        Next
+
+        Return True
+    End Function
+
+    Private Function MoverAHoja(reader As IExcelDataReader, nombreHoja As String) As Boolean
+        Do
+            If String.Equals(reader.Name, nombreHoja, StringComparison.OrdinalIgnoreCase) Then
+                Return True
+            End If
+        Loop While reader.NextResult()
 
         Return False
     End Function
