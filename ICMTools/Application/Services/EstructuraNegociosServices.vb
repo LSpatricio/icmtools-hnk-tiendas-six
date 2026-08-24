@@ -18,7 +18,7 @@ Public Class EstructuraNegociosServices
 
     End Sub
 
-    Public Async Function ProcesarEstructuraNegocios(request As ValidateFileRequestt) As Task(Of CargaResponse)
+    Public Async Function ProcesarEstructuraNegocios(request As ValidateFileRequest) As Task(Of CargaResponse)
 
         Dim idCarga As Guid = Guid.NewGuid()
 
@@ -48,7 +48,7 @@ Public Class EstructuraNegociosServices
 
 
 
-    Public Async Function ValidacionesEstructuraNegocios(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    Public Async Function ValidacionesEstructuraNegocios(request As ValidateFileRequest) As Task(Of List(Of ExcelValidationError))
 
         Dim errorsList As String = Nothing
         Dim tableName As String = "STG_ESTRUCTURANEGOCIOS"

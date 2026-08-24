@@ -37,7 +37,7 @@ Public Class EstructuraNegociosController
 
     <HttpPost>
     <Route("api/estructuranegocios/cargarinfo")>
-    Public Async Function CargarInfoAsync(<FromBody> request As ValidateFileRequestt) As Task(Of IHttpActionResult)
+    Public Async Function CargarInfoAsync(<FromBody> request As ValidateFileRequest) As Task(Of IHttpActionResult)
         Try
             Thread.Sleep(1000)
 

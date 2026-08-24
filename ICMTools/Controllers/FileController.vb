@@ -83,13 +83,13 @@ Public Class FileController
 
             If File.Exists(fullPath) Then
 
-                logger.Information("Archivo encontrado. Ruta: {FileType}. Extension: {Extension}",
+               logger.Information("Archivo encontrado. Ruta: {FileType}. Extension: {Extension}",
                         rawFileType,
                         rawExtension)
 
                 Return Ok(New With {.d = True, .path = fullPath})
             Else
-                logger.Warning("Archivo no encontrado. FileType: {FileType}, Extension: {Extension}",
+                logger.Warning("Archivo no encontrado. Ruta: {FileType}. Extension: {Extension}",
                         rawFileType,
                         rawExtension)
 
@@ -111,11 +111,13 @@ Public Class FileController
     '''<returns>Un Response con un Booleano.</returns>
     <HttpPost>
     <Route("api/files/validate")>
-    Public Function ValidateExcelFile(<FromBody> request As ValidateFileRequestt) As IHttpActionResult
+    Public Function ValidateExcelFile(<FromBody> request As ValidateFileRequest) As IHttpActionResult
 
         Dim logger = Log _
-                .ForContext("Pantalla", request) _
-                .ForContext("Usuario", mUser.Email)
+                .ForContext("Pantalla", request.Screen) _
+                .ForContext("Usuario", mUser.Email) _
+                .ForContext("Periodo", request.Period) _
+                .ForContext("Proceso", "Validate")
 
         Try
 
@@ -139,14 +141,24 @@ Public Class FileController
                     errorsList += $"<tr><td>{errores.Problema}</td><td>" & String.Join(", ", errores.Detalle) & "</td></tr>"
                 Next
 
+                logger.Information("Archivo no paso validaciones. Ruta: {Path}.",
+                        request.Path)
                 Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
 
             End If
 
+            logger.Information("Archivo validado correctamente. Ruta: {Path}.",
+                        request.Path)
+
             Return Ok(New With {.d = True})
 
         Catch ex As Exception
-            'mLog.insertLog("FileController", "ValidateExcelFile", $"Ocurrió un error: " + ex.Message)
+
+            logger.Error(
+                        ex,
+                        "Error al validar el archivo. Ruta: {Path}",
+                        request.Path
+                    )
             Return InternalServerError(ex)
         End Try
     End Function

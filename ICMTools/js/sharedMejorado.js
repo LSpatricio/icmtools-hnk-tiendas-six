@@ -277,11 +277,14 @@ function CheckFileExists(callBack) {
 
 function ValidateExcelFile(onSuccessCallback, filePath) {
     setLoadingBar("Validando formato de Excel", 25);
+
     const requestData = {
         FileClass: configuraciones.carga.fileClass,
         Path: filePath,
         HeaderRow: configuraciones.carga.headerRow,
-    }
+        Screen: configuraciones.page,
+        Period: $(configuraciones.carga.periodSelector).val()
+    };
 
     $.ajax({
         type: "POST",
