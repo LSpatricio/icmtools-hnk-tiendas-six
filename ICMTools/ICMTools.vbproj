@@ -330,6 +330,7 @@
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
     <Compile Include="Controllers\SharedController.vb" />
+    <Compile Include="Infraestructure\Configurations\LoggerConfig.vb" />
     <Compile Include="Infraestructure\Excel\ExcelColumnAttribute.vb" />
     <Compile Include="Application\Authentication\AuthenticationResult.vb" />
     <Compile Include="Application\Authentication\AuthenticationService.vb" />
