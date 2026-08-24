@@ -30,20 +30,15 @@ const configuraciones = {
         serverPath: "",
         maxFileSize: ""
     },
+    page: "EstructuraNegocios",
     carga: {
 
-        selector: "",
+        periodSelector: "#SelectPeriod",
         fileType: "EstructuraNegocios",
         extension: ".xlsx",
         fileClass: "ICMTools.EstructuraNegociosExcelDto",
         headerRow:1
     },
-    logging: {
-        page: "EstructuraNegocios",
-        type: "Validacion",
-        body: "Inicia validación para carga de EstructuraNegocios"
-    },
-
     api: {
         uploadData: "/api/EstructuraNegocios/uploaddata"
     }

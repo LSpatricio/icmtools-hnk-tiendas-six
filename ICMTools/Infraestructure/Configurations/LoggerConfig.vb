@@ -45,6 +45,12 @@ Public Class LoggerConfig
                 .DataLength = 100
             },
             New SqlColumn With {
+                .ColumnName = "Proceso",
+                .PropertyName = "Proceso",
+                .DataType = SqlDbType.VarChar,
+                .DataLength = 100
+            },
+            New SqlColumn With {
                 .ColumnName = "Usuario",
                 .PropertyName = "Usuario",
                 .DataType = SqlDbType.VarChar,
