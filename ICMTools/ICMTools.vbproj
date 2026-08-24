@@ -318,6 +318,7 @@
     <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaExcelDto.vb" />
+    <Compile Include="Application\DTOs\EficienciaEfectividad\Periods.vb" />
     <Compile Include="Application\DTOs\EstructuraNegociosExcelDto.vb" />
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
@@ -326,10 +327,12 @@
     <Compile Include="Application\Services\EstructuraNegociosServices.vb" />
     <Compile Include="Application\Services\EficienciaEfectividadServices.vb" />
     <Compile Include="Application\Services\FileServices.vb" />
+    <Compile Include="Application\Services\PeriodServices.vb" />
     <Compile Include="Controllers\EstructuraNegociosController.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
     <Compile Include="Controllers\SharedController.vb" />
+    <Compile Include="Infraestructure\API\IcmQueryMapper.vb" />
     <Compile Include="Infraestructure\Configurations\LoggerConfig.vb" />
     <Compile Include="Infraestructure\Excel\ExcelColumnAttribute.vb" />
     <Compile Include="Application\Authentication\AuthenticationResult.vb" />

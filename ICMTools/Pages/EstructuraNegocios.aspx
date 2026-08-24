@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Master/MasterPage.Master" CodeBehind="EstructuraNegocios.aspx.vb" Inherits="ICMTools.EstructuraNegocios" %>
+﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/Master/MasterPage.Master" CodeBehind="EstructuraNegocios.aspx.vb" Inherits="ICMTools.EstructuraNegocios" Async="true"%>
 <%@ MasterType VirtualPath="~/Master/MasterPage.Master" %>
 
 
@@ -113,25 +113,21 @@ const configuraciones = {
                             <div class="row">
                                 <div class="col-md-7">
                                     <div class="row form-group">
-                                        <label class="control-label col-sm-5 text-right">Sociedad</label>
+                                        <label class="control-label col-sm-5 text-right">Periodo</label>
                                         <div class="col-sm-7">
-                                            <select id="SelectSociety" class="form-control form-control-sm" clientidmode="Static">
-                                                <option value="-1">(!)TODAS</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row form-group">
-                                        <label class="control-label col-sm-5 text-right">División de Personal</label>
-                                        <div class="col-sm-7">
-                                            <select id="SelectPersonnelDivision" class="form-control form-control-sm" clientidmode="Static">
-                                                <option value="-1">(!)TODAS</option>
-                                            </select>
+                                       <asp:DropDownList
+                                        ID="SelectPeriod"
+                                        runat="server"
+                                        ClientIDMode="Static"
+                                        Enabled="false"
+                                        CssClass="form-control form-control-sm">
+                                    </asp:DropDownList>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        <label class="control-label col-sm-12">Archivo de Monto Distribuible</label>
+                                        <label class="control-label col-sm-12">Archivo de Estructura de Negocios</label>
                                         <div class="col">
                                             <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
                                             <!-- Drop Zone -->
