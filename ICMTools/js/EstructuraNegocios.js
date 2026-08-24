@@ -22,7 +22,9 @@ function CargarInformacion(dataRequest) {
 
                 const requestData = {
                     PathSalida: rutaSalida,
-                    IdGui: response.id
+                    IdGui: response.id,
+                    Screen: dataRequest.Screen,
+                    Period: dataRequest.Period
                 };
 
                 

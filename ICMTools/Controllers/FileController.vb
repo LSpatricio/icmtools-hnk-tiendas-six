@@ -141,8 +141,9 @@ Public Class FileController
                     errorsList += $"<tr><td>{errores.Problema}</td><td>" & String.Join(", ", errores.Detalle) & "</td></tr>"
                 Next
 
-                logger.Information("Archivo no paso validaciones. Ruta: {Path}.",
+                logger.Warning("Archivo no paso validaciones. Ruta: {Path}.",
                         request.Path)
+
                 Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
 
             End If
