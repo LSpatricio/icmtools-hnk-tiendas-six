@@ -233,12 +233,14 @@ function uploadComplete(sender, args) {
 
 }
 
-function CheckFileExists(configuracionesArchivo, callBack) {
+function CheckFileExists(callBack) {
     courseFlag = true;
     setLoadingBar("Verificando archivo...", 10);
     const requestData = {
-        FileType: configuracionesArchivo.fileType,
-        Extension: configuracionesArchivo.extension
+        FileType: configuraciones.carga.fileType,
+        Extension: configuraciones.carga.extension,
+        Screen: configuraciones.page,
+        Period: $(configuraciones.carga.periodSelector).val()
     };
 
     $.ajax({
@@ -275,11 +277,14 @@ function CheckFileExists(configuracionesArchivo, callBack) {
 
 function ValidateExcelFile(onSuccessCallback, filePath) {
     setLoadingBar("Validando formato de Excel", 25);
+
     const requestData = {
         FileClass: configuraciones.carga.fileClass,
         Path: filePath,
         HeaderRow: configuraciones.carga.headerRow,
-    }
+        Screen: configuraciones.page,
+        Period: $(configuraciones.carga.periodSelector).val()
+    };
 
     $.ajax({
         type: "POST",

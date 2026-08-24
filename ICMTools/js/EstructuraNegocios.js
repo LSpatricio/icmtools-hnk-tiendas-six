@@ -1,10 +1,11 @@
 ﻿function CheckExcelFileMDC() {
-    CheckFileExists(configuraciones.carga, CargarInformacion)
+    
+
+    CheckFileExists(CargarInformacion)
 }
 
 
 function CargarInformacion(dataRequest) {
-
     setFormStatus("processing");
     setLoadingBar("Validando datos", 50);
 
@@ -21,7 +22,9 @@ function CargarInformacion(dataRequest) {
 
                 const requestData = {
                     PathSalida: rutaSalida,
-                    IdGui: response.id
+                    IdGui: response.id,
+                    Screen: dataRequest.Screen,
+                    Period: dataRequest.Period
                 };
 
                 

@@ -1,9 +1,11 @@
 ﻿Imports System.IO
 Imports System.Reflection
 Imports System.Threading.Tasks
+Imports Serilog
 
 Public Class EstructuraNegociosServices
 
+    Private mUser As User
     Private ReadOnly _excelReader As ExcelReader
     Private ReadOnly _excelService As ExcelService
     Private ReadOnly _repository As Repository
@@ -15,16 +17,17 @@ Public Class EstructuraNegociosServices
         _configuration = New AppConfiguration()
         _repository = New Repository(_configuration.ConnectionString)
         _sftpClient = New SftpClient()
+        Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
 
     End Sub
 
-    Public Async Function ProcesarEstructuraNegocios(request As ValidateFileRequestt) As Task(Of CargaResponse)
+    Public Async Function ProcesarEstructuraNegocios(request As ValidateFileRequest, idCarga As Guid, logger As ILogger) As Task(Of CargaResponse)
 
-        Dim idCarga As Guid = Guid.NewGuid()
-
+        Dim sp As String = "SP_VALIDATE_ESTRUCTURANEGOCIOS"
         Dim errores = Await ValidacionesEstructuraNegocios(request)
 
         If errores.Any() Then
+
             Return New CargaResponse With {
             .Exitoso = False,
             .IdCarga = idCarga,
@@ -32,11 +35,14 @@ Public Class EstructuraNegociosServices
         }
         End If
 
+        logger.Information("No se encontraron errores de validación en el archivo de Estructura de Negocios. Procediendo a ejecutar el procedimiento almacenado para validar la información.")
+
         Await _repository.EjecutarSPAsync(
-            "dbo.SP_VALIDATE_ESTRUCTURANEGOCIOS",
+            $"dbo.{sp}",
             idCarga
         )
 
+        logger.Information("Procedimiento almacenado {sp} ejecutado correctamente", sp)
 
         Return New CargaResponse With {
         .Exitoso = True,
@@ -48,7 +54,7 @@ Public Class EstructuraNegociosServices
 
 
 
-    Public Async Function ValidacionesEstructuraNegocios(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    Public Async Function ValidacionesEstructuraNegocios(request As ValidateFileRequest) As Task(Of List(Of ExcelValidationError))
 
         Dim errorsList As String = Nothing
         Dim tableName As String = "STG_ESTRUCTURANEGOCIOS"
@@ -82,7 +88,7 @@ Public Class EstructuraNegociosServices
 
     End Function
 
-    Public Async Function EnvioEstructuraNegocios(request As SendInfoRequest) As Task
+    Public Async Function EnvioEstructuraNegocios(request As SendInfoRequest, logger As ILogger) As Task
 
         If Not Directory.Exists(request.PathSalida) Then
             Directory.CreateDirectory(request.PathSalida)
@@ -140,8 +146,11 @@ Public Class EstructuraNegociosServices
                                 request.IdGui
                             )
 
+        logger.Information("Archivo CSV generado correctamente {rutaArchivo}", rutaArchivo)
+
         Await _sftpClient.SubirArchivoAsync(rutaArchivo)
 
+        logger.Information("Archivo enviado al SFTP")
 
     End Function
 

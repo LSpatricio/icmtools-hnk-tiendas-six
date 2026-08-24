@@ -5,6 +5,7 @@ Imports System.Web.Http
 Imports Newtonsoft.Json
 Imports Npgsql
 Imports NpgsqlTypes
+Imports Serilog
 
 Public Class EstructuraNegociosController
     Inherits ApiController
@@ -28,8 +29,7 @@ Public Class EstructuraNegociosController
         _configuration = New AppConfiguration()
         _repository = New Repository(_configuration.ConnectionString)
         _estructuraNegociosServices = New EstructuraNegociosServices()
-
-        '     Me.mLog = New Log
+        Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
     End Sub
 
     ' ReadOnly fc As New FileController
@@ -37,15 +37,35 @@ Public Class EstructuraNegociosController
 
     <HttpPost>
     <Route("api/estructuranegocios/cargarinfo")>
-    Public Async Function CargarInfoAsync(<FromBody> request As ValidateFileRequestt) As Task(Of IHttpActionResult)
+    Public Async Function CargarInfoAsync(<FromBody> request As ValidateFileRequest) As Task(Of IHttpActionResult)
+
+        Dim idCarga As Guid = Guid.NewGuid()
+
+        Dim logger = Log _
+                .ForContext("Pantalla", request.Screen) _
+                .ForContext("Usuario", mUser.Email) _
+                .ForContext("Periodo", request.Period) _
+                .ForContext("Proceso", LoggerConfig.Proceso.CargarInformacion.ToString()) _
+                .ForContext("IdCarga", idCarga)
         Try
             Thread.Sleep(1000)
 
             Dim errorsList As String = Nothing
 
-            Dim cargaResponse = Await _estructuraNegociosServices.ProcesarEstructuraNegocios(request)
+
+            logger.Information("Iniciando proceso de validaciones y carga de información para Estructura de Negocios")
+
+            Dim cargaResponse = Await _estructuraNegociosServices.ProcesarEstructuraNegocios(request, idCarga, logger)
+
+            logger.Information("Fin proceso de validaciones y carga de información para Estructura de Negocios")
 
             If cargaResponse.Errores.Any() Then
+
+                logger.Warning(
+                    "Se encontraron {CantidadErrores} errores de validación.",
+                    cargaResponse.Errores.Count
+                )
+
                 For Each errores In cargaResponse.Errores
                     errorsList += $"<tr><td>{errores.Problema}</td><td>" & String.Join(", ", errores.Detalle) & "</td></tr>"
                 Next
@@ -56,7 +76,10 @@ Public Class EstructuraNegociosController
 
             Return Ok(New With {.d = cargaResponse.Exitoso, .id = cargaResponse.IdCarga})
         Catch ex As Exception
-            'mLog.insertLog("MontoDistribuibleCategoriaController", "InsertData", ex.Message)
+            logger.Error(
+            ex,
+            "Error al validar/cargar información del archivo."
+        )
             Return InternalServerError(ex)
         End Try
     End Function
@@ -64,14 +87,24 @@ Public Class EstructuraNegociosController
     <HttpPost>
     <Route("api/estructuranegocios/enviarinformacion")>
     Public Async Function EnvioEstructuraNegocios(<FromBody> request As SendInfoRequest) As Task(Of IHttpActionResult)
+        Dim logger = Log _
+                .ForContext("Pantalla", request.Screen) _
+                .ForContext("Usuario", mUser.Email) _
+                .ForContext("Periodo", request.Period) _
+                .ForContext("Proceso", LoggerConfig.Proceso.EnviarInformacion.ToString()) _
+                .ForContext("IdCarga", request.IdGui)
         Try
             Thread.Sleep(1000)
-
-            Await _estructuraNegociosServices.EnvioEstructuraNegocios(request)
+            logger.Information("Inicio proceso envio de información")
+            Await _estructuraNegociosServices.EnvioEstructuraNegocios(request, logger)
+            logger.Information("Fin proceso envio de información")
 
             Return Ok(New With {.d = True})
         Catch ex As Exception
-            'mLog.insertLog("MontoDistribuibleCategoriaController", "InsertData", ex.Message)
+            logger.Error(
+            ex,
+            "Error al enviar información."
+        )
             Return InternalServerError(ex)
         End Try
     End Function

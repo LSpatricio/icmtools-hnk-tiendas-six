@@ -16,6 +16,14 @@ Public Class EstructuraNegocios
 
             If Not Session.Item("User") Is Nothing Then
                 mUser = CType(Session.Item("User"), User)
+                If Not IsPostBack Then
+                    RegisterAsyncTask(
+            New PageAsyncTask(
+                Function()
+                    Return CargarControlesAsync(mUser.Model)
+                End Function))
+
+                End If
                 '           mLog = New Log
                 '          mLog.insertLog("Monto Distribuible", "ACCESO", "Acceso a Monto Distribuible")
             Else
@@ -41,4 +49,29 @@ Public Class EstructuraNegocios
             Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
         End If
     End Sub
+
+
+    Private Async Function CargarControlesAsync(modelo As String) As Threading.Tasks.Task
+        Try
+            Dim periodService As New PeriodServices
+
+            Dim periodo = Await periodService.ObtenerPeriodoActual(modelo)
+
+            SelectPeriod.Items.Clear()
+
+            Dim item As New ListItem With {
+    .Text = If(periodo?.IDPeriodString, "Sin periodo"),
+    .Value = If(periodo?.IDPeriodString, "-1")
+}
+
+            SelectPeriod.Items.Add(item)
+
+        Catch ex As Exception
+            Me.Master.MessageBoxShow(
+                "Error en CargarControles",
+                ex.Message,
+                "Fuente:" & ex.InnerException.Source,
+                htmlMessageIcon.IconError)
+        End Try
+    End Function
 End Class
