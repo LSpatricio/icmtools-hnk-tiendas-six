@@ -52,7 +52,42 @@ $(document).ready(function () {
 function initializePage() {
     const app = $("#sa132App");
     loadServerConfiguration(app);
+    loadPeriodosSA132();
     configureEvents();
+}
+
+function loadPeriodosSA132() {
+    const select = $("#SelectSociety");
+    select.prop("disabled", true).html('<option value="">Cargando...</option>');
+
+    $.ajax({
+        type: "GET",
+        url: "/api/reporteingresossix/periodos",
+        contentType: "application/json",
+        success: function (response) {
+            if (!response.d) {
+                const detalle = response.r || "No se pudieron cargar los periodos.";
+                select.html($('<option></option>').val("").text("No disponible").attr("title", detalle));
+                $("#MensajeError").text(detalle);
+                $("#errorPanel").show();
+                console.error("Error cargando períodos:", detalle);
+                return;
+            }
+
+            select.empty();
+            $.each(response.periodos || [], function (index, periodo) {
+                select.append($('<option></option>')
+                    .val(periodo.Value)
+                    .text(periodo.Text)
+                    .prop("selected", index === 0));
+            });
+            select.prop("disabled", false);
+        },
+        error: function (xhr) {
+            console.error("Error cargando períodos:", xhr);
+            select.html($('<option></option>').val("").text("Error al cargar los periodos"));
+        }
+    });
 }
 
 function loadServerConfiguration(app) {
