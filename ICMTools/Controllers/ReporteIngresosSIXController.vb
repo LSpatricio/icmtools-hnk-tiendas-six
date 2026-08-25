@@ -11,9 +11,8 @@ Imports Newtonsoft.Json
 Imports Npgsql
 Imports NpgsqlTypes
 Imports System.Text
-Imports Serilog
 
-Public Class ReporteArqueosController
+Public Class ReporteIngresosSIXController
     Inherits ApiController
 
     Private mUser As User
@@ -33,10 +32,9 @@ Public Class ReporteArqueosController
     ReadOnly sc As New SharedController
 
     <HttpPost>
-    <Route("api/reportearqueos/validarinfo")>
+    <Route("api/reporteingresossix/validarinfo")>
     Public Function ValidarInfo(<FromBody> request As ValidateFileRequestt) As IHttpActionResult
         Try
-            CrearLogger("ValidarArchivo").Information("Inicio de validación del archivo de Arqueos. Ruta: {Ruta}", If(request Is Nothing, Nothing, request.Path))
             Thread.Sleep(1000)
 
             Dim errorsList As String = Nothing
@@ -46,7 +44,6 @@ Public Class ReporteArqueosController
                 _arqueosExcelReader.ValidacionesArqueosTodasLasHojas(request.Path, 1, mapeoColumnas)
 
             If valoresErrores.Count > 0 Then
-                CrearLogger("ValidarArchivo").Warning("El archivo de Arqueos contiene {CantidadErrores} errores de validación", valoresErrores.Count)
                 For Each errores In valoresErrores
                     errorsList += $"<tr><td>{errores.Problema}</td><td>" & String.Join(", ", errores.Detalle) & "</td></tr>"
                 Next
@@ -54,11 +51,9 @@ Public Class ReporteArqueosController
                 Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
             End If
 
-            Dim rTable As String = sc.GetMessage("Arqueos", "CargaCompleta")
-            CrearLogger("ValidarArchivo").Information("Validación del archivo de Arqueos completada correctamente")
+            Dim rTable As String = sc.GetMessage("SA132", "CargaCompleta")
             Return Ok(New With {.d = True, .path = request.Path, .f = request.Path, .r = rTable})
         Catch ex As Exception
-            CrearLogger("ValidarArchivo").Error(ex, "Error durante la validación del archivo de Arqueos")
             Return Ok(New With {
                 .d = False,
                 .r = ex.Message
@@ -66,56 +61,10 @@ Public Class ReporteArqueosController
         End Try
     End Function
 
-    <HttpGet>
-    <Route("api/reportearqueos/periodos")>
-    Public Async Function ObtenerPeriodos() As Task(Of IHttpActionResult)
-        Try
-            Dim modelo As String = If(mUser Is Nothing, Nothing, mUser.Model)
-
-            If String.IsNullOrWhiteSpace(modelo) Then
-                Return Ok(New With {.d = False, .r = "No se encontró el modelo de ICM Cloud para el usuario."})
-            End If
-
-            Dim consulta As String = ConfigurationManager.AppSettings("ICM_PERIOD_QUERY")
-            If String.IsNullOrWhiteSpace(consulta) Then
-                consulta = "SELECT DISTINCT ""IDPeriodString"" FROM ""CfgDateStringPeriods"" ORDER BY ""IDPeriodString"" DESC"
-            End If
-
-            Dim respuesta As IcmQueryResponseDto = Await New IcmApiClient().Query(
-                New IcmQueryRequestDto With {
-                    .QueryString = consulta,
-                    .Offset = 0,
-                    .Limit = 1000
-                }, modelo)
-
-            Dim periodos As New List(Of Object)
-
-            If respuesta IsNot Nothing AndAlso respuesta.Data IsNot Nothing Then
-                For Each fila In respuesta.Data
-                    If fila Is Nothing OrElse fila.Count < 1 Then Continue For
-
-                    Dim periodo As String = Convert.ToString(fila(0), CultureInfo.InvariantCulture).Trim()
-                    If String.IsNullOrWhiteSpace(periodo) Then Continue For
-
-                    periodos.Add(New With {
-                        .Value = periodo,
-                        .Text = periodo
-                    })
-                Next
-            End If
-
-            Return Ok(New With {.d = True, .periodos = periodos})
-        Catch ex As Exception
-            Return Ok(New With {.d = False, .r = ex.Message})
-        End Try
-    End Function
-
     <HttpPost>
-    <Route("api/reportearqueos/insertdata")>
+    <Route("api/reporteingresossix/insertdata")>
     Public Function InsertData(<FromBody> request As ValidateFileRequest) As IHttpActionResult
-        Dim idCarga As Guid = Guid.NewGuid()
         Try
-            CrearLogger("CargarInformacion", idCarga).Information("Inicio de carga de información de Arqueos")
             Thread.Sleep(500)
 
             Dim sqlConnSetting = ConfigurationManager.ConnectionStrings("SQLSERVER_CONNECTION")
@@ -131,7 +80,6 @@ Public Class ReporteArqueosController
             End If
 
             Dim tablaStg As DataTable = _arqueosExcelReader.ObtenerDataTableStgArqueos(rutaArchivo)
-            CrearLogger("CargarInformacion", idCarga).Information("Archivo leído correctamente. Registros preparados: {CantidadRegistros}", tablaStg.Rows.Count)
 
             Using conn As New SqlConnection(connStr)
                 conn.Open()
@@ -162,7 +110,7 @@ Public Class ReporteArqueosController
                 End Using
             End Using
 
-            CrearLogger("CargarInformacion", idCarga).Information("Registros insertados correctamente en STG_ARQUEOS: {CantidadRegistros}", tablaStg.Rows.Count)
+            Dim idCarga As Guid = Guid.NewGuid()
 
             Using db As New DataBase(connStr)
                 db.ExecuteStoredProcedure(
@@ -172,16 +120,12 @@ Public Class ReporteArqueosController
                 )
             End Using
 
-            CrearLogger("EnviarInformacion", idCarga).Information("SP_VALIDATE_ARQUEOS ejecutado correctamente")
-
             Dim csvPath As String = ExportarBdiArqueosCsv(connStr)
-            CrearLogger("EnviarInformacion", idCarga).Information("CSV BDIARQUEOS generado correctamente. Ruta: {RutaCsv}", csvPath)
             EnviarCsvSftpEnSegundoPlano(csvPath)
 
-            Dim rTable As String = sc.GetMessage("Arqueos", "CargaCompleta")
+            Dim rTable As String = sc.GetMessage("SA132", "CargaCompleta")
             Return Ok(New With {.d = True, .r = rTable, .rows = tablaStg.Rows.Count, .csv = csvPath, .idCarga = idCarga})
         Catch ex As Exception
-            CrearLogger("CargarInformacion", idCarga).Error(ex, "Error durante la carga de Arqueos")
             Return Ok(New With {
                 .d = False,
                 .r = ex.Message
@@ -194,9 +138,7 @@ Public Class ReporteArqueosController
             Async Function()
                 Try
                     Await _sftpClient.SubirArchivoAsync(rutaCsv)
-                    CrearLogger("EnviarInformacion").Information("CSV BDIARQUEOS enviado al SFTP correctamente. Ruta: {RutaCsv}", rutaCsv)
-                Catch ex As Exception
-                    CrearLogger("EnviarInformacion").Error(ex, "Error al enviar el CSV BDIARQUEOS al SFTP. Ruta: {RutaCsv}", rutaCsv)
+                Catch
                     ' La generación del CSV no debe quedar bloqueada por una demora del SFTP.
                 End Try
             End Function)
@@ -244,7 +186,7 @@ Public Class ReporteArqueosController
         Dim value As Object = reader.GetValue(index)
 
         If TypeOf value Is DateTime Then
-            Return DirectCast(value, DateTime).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+            Return DirectCast(value, DateTime).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
         End If
 
         If TypeOf value Is Decimal OrElse TypeOf value Is Double OrElse TypeOf value Is Single Then
@@ -270,7 +212,7 @@ Public Class ReporteArqueosController
     End Function
 
     Private Function ObtenerRutaArchivoCarga(request As ValidateFileRequest) As String
-        Dim rawFileType As String = "Arqueos"
+        Dim rawFileType As String = "SA132"
         Dim rawExtension As String = ".xlsx"
 
         If request IsNot Nothing Then
@@ -298,26 +240,5 @@ Public Class ReporteArqueosController
         End If
 
         Return fullPath
-    End Function
-
-    Private Function CrearLogger(proceso As String, Optional idCarga As Nullable(Of Guid) = Nothing) As ILogger
-        Dim logger As ILogger = Log.ForContext("Pantalla", "Arqueos") _
-            .ForContext("Proceso", proceso) _
-            .ForContext("Usuario", ObtenerUsuarioEmail())
-
-        If idCarga.HasValue Then
-            logger = logger.ForContext("IdCarga", idCarga.Value)
-        End If
-
-        Return logger
-    End Function
-
-    Private Function ObtenerUsuarioEmail() As String
-        If HttpContext.Current Is Nothing OrElse HttpContext.Current.Session Is Nothing Then
-            Return Nothing
-        End If
-
-        Dim usuario As User = TryCast(HttpContext.Current.Session.Item("User"), User)
-        Return If(usuario Is Nothing, Nothing, usuario.Email)
     End Function
 End Class

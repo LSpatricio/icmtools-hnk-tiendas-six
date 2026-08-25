@@ -59,7 +59,11 @@ Public Class IcmApiClient
                         HttpCompletionOption.ResponseHeadersRead
                     ).ConfigureAwait(False)
 
-                    response.EnsureSuccessStatusCode()
+                    If Not response.IsSuccessStatusCode Then
+                        Dim detalle As String = Await response.Content.ReadAsStringAsync().ConfigureAwait(False)
+                        Throw New ApplicationException(
+                            $"ICM Cloud respondió {(CInt(response.StatusCode))} ({response.ReasonPhrase}). {detalle}")
+                    End If
 
                     Using stream As Stream =
                         Await response.Content.ReadAsStreamAsync().

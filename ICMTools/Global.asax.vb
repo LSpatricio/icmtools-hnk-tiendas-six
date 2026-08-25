@@ -3,6 +3,7 @@ Imports Serilog
 Imports System.Web.SessionState
 Imports System.Timers
 Imports System.Linq
+Imports Serilog
 
 Public Class Global_asax
     Inherits HttpApplication

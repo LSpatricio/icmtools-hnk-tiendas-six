@@ -1,10 +1,10 @@
-<%@ Page Title="Arqueos" Language="vb" AutoEventWireup="false" MasterPageFile="~/Master/MasterPage.Master" CodeBehind="Arqueos.aspx.vb" Inherits="ICMTools.Arqueos" %>
+<%@ Page Title="SA132" Language="vb" AutoEventWireup="false" MasterPageFile="~/Master/MasterPage.Master" CodeBehind="SA132.aspx.vb" Inherits="ICMTools.SA132" %>
 <%@ MasterType VirtualPath="~/Master/MasterPage.Master" %>
 
 <%-- Contenedor de botones en TopBar --%>
 <asp:Content ID="TopbarContent" ContentPlaceHolderID="TopbarContent" runat="server">
     <div class="d-flex gap-1">
-        <a href="../Pages/Arqueos.aspx" class="btn active btn-sm btn-bar d-flex flex-column align-items-center text-dark">
+        <a href="../Pages/SA132.aspx" class="btn active btn-sm btn-bar d-flex flex-column align-items-center text-dark">
             <i class="fas fa-upload fa-2x"></i>
             <small>Carga</small>
         </a>
@@ -19,7 +19,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <meta name="description" content="Description" />
     <meta name="author" content="Author" />
-    <title>Arqueos</title>
+    <title>SA132</title>
     <script src="../Scripts/jquery.min.js"></script>
     <script type="text/javascript">
 const configuraciones = {
@@ -30,18 +30,18 @@ const configuraciones = {
     },
     carga: {
         selector: "",
-        fileType: "Arqueos",
+        fileType: "SA132",
         extension: ".xlsx",
         fileClass: "ICMTools.ArqueosExcelDto",
         headerRow: 1
     },
     logging: {
-        page: "Arqueos",
+        page: "SA132",
         type: "Validacion",
-        body: "Inicia validacion para carga de Arqueos"
+        body: "Inicia validacion para carga de SA132"
     },
     api: {
-        uploadData: "/api/reportearqueos/validarinfo"
+        uploadData: "/api/reporteingresossix/validarinfo"
     }
 };
 
@@ -50,44 +50,9 @@ $(document).ready(function () {
 });
 
 function initializePage() {
-    const app = $("#arqueosApp");
+    const app = $("#sa132App");
     loadServerConfiguration(app);
-    loadPeriodosArqueos();
     configureEvents();
-}
-
-function loadPeriodosArqueos() {
-    const select = $("#SelectSociety");
-    select.prop("disabled", true).html('<option value="">Cargando...</option>');
-
-    $.ajax({
-        type: "GET",
-        url: "/api/reportearqueos/periodos",
-        contentType: "application/json",
-        success: function (response) {
-            if (!response.d) {
-                const detalle = response.r || "No se pudieron cargar los periodos.";
-                select.html($('<option></option>').val("").text("No disponible").attr("title", detalle));
-                $("#MensajeError").text(detalle);
-                $("#errorPanel").show();
-                console.error("Error cargando períodos:", detalle);
-                return;
-            }
-
-            select.empty();
-            $.each(response.periodos || [], function (index, periodo) {
-                select.append($('<option></option>')
-                    .val(periodo.Value)
-                    .text(periodo.Text)
-                    .prop("selected", index === 0));
-            });
-            select.prop("disabled", false);
-        },
-        error: function (xhr) {
-            console.error("Error cargando períodos:", xhr);
-            select.html($('<option></option>').val("").text("Error al cargar los periodos"));
-        }
-    });
 }
 
 function loadServerConfiguration(app) {
@@ -105,16 +70,16 @@ function configureEvents() {
 
 function handleStartImport(event) {
     event.preventDefault();
-    CheckExcelFileReporteArqueos();
+    CheckExcelFileReporteIngresosSIX();
 }
     </script>
     <script src="../js/sharedMejorado.js?v=2"></script>
-    <script src="../js/ReporteArqueos.js?v=2"></script>
+    <script src="../js/ReporteIngresosSIX.js?v=2"></script>
 </asp:Content>
 
 <%-- Contenedor principal --%>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div id="arqueosApp"
+    <div id="sa132App"
          data-user-email="<%= CType(Session.Item("User"), ICMTools.User).Email %>"
          data-server-path="<%= Page.Server.MapPath("~").Replace("\", "\\") %>"
          data-max-file-size="<%= ConfigurationManager.AppSettings("maxFileSize") %>"
@@ -142,7 +107,7 @@ function handleStartImport(event) {
                                             </div>
                                             <div class="col-lg-6 pl-lg-4">
                                                 <div class="form-group mb-0">
-                                                    <label class="control-label col-sm-12 px-0">Archivo de Arqueos</label>
+                                                    <label class="control-label col-sm-12 px-0">Archivo de SA132</label>
                                                     <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
                                                     <div class="upload-drop-zone" id="drop-zone">
                                                         <ajaxToolkit:AsyncFileUpload ID="FileUploader" runat="server" ThrobberID="myThrobber" OnClientUploadComplete="uploadComplete" OnClientUploadError="uploadError" OnClientUploadStarted="beforeUploadStarts" Width="100%" ErrorBackColor="#FFCCFF" CompleteBackColor="#CCFFCC" ForeColor="Black" />
@@ -168,8 +133,8 @@ function handleStartImport(event) {
                                     </div>
                                 </div>
                                 <div class="col-5">
-                                    <button id="btnStartImport" class="btn btn-sm btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Click aqui despues de elegir archivo de Arqueos"><i class="fas fa-upload fa-fw"></i>Iniciar Importacion</button>
-                                    <a href="../TemplateFiles/ICMToolsPlantilla_MontoDistribuible_CCNOM.xlsx" class="btn btn-sm btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Descarga de Plantilla Arqueos para la importacion"><i class="fas fa-download fa-fw"></i>Descargar Plantilla</a>
+                                    <button id="btnStartImport" class="btn btn-sm btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Click aqui despues de elegir archivo de SA132"><i class="fas fa-upload fa-fw"></i>Iniciar Importacion</button>
+                                    <a href="../TemplateFiles/ICMToolsPlantilla_MontoDistribuible_CCNOM.xlsx" class="btn btn-sm btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Descarga de Plantilla SA132 para la importacion"><i class="fas fa-download fa-fw"></i>Descargar Plantilla</a>
                                 </div>
                             </div>
                         </div>
@@ -190,14 +155,14 @@ function handleStartImport(event) {
                         </div>
                     </div>
                     <div id="successPanel" class="RespuestaPanel card border-success" style="display: none;">
-                        <div class="card-header text-success lead">Confirmacion de Carga Exitosa de Arqueos<span class="badge badge-success float-right"><i class="fas fa-check-circle fa-fw"></i>Listo</span></div>
+                        <div class="card-header text-success lead">Confirmacion de Carga Exitosa de SA132<span class="badge badge-success float-right"><i class="fas fa-check-circle fa-fw"></i>Listo</span></div>
                         <div class="card-body">
                             <h5 class="card-title"><i class="fas fa-file-excel fa-fw"></i><span id="fileNameSuccess"></span></h5>
                             <div id="formatSuccess" class="pt-3 table-responsive text-default"></div>
                         </div>
                     </div>
                     <div id="WarningPanel" class="RespuestaPanel card border-warning" style="display: none;">
-                        <div class="card-header text-warning lead">Confirmacion de carga parcial de Arqueos<span class="badge badge-warning float-right"><i class="fas fa-exclamation-circle fa-fw"></i>Advertencia</span></div>
+                        <div class="card-header text-warning lead">Confirmacion de carga parcial de SA132<span class="badge badge-warning float-right"><i class="fas fa-exclamation-circle fa-fw"></i>Advertencia</span></div>
                         <div class="card-body">
                             <h5 class="card-title"><i class="fas fa-file-excel fa-fw"></i><span id="fileNameWarning"></span></h5>
                             <div id="formatWarning" class="pt-3 table-responsive text-default"></div>

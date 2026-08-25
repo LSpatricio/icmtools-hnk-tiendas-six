@@ -168,6 +168,33 @@
     <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=8.0.0.3, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.8.0.3\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.8.0.0\lib\net462\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog, Version=4.4.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.4.4.0\lib\net462\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.MSSqlServer, Version=10.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.MSSqlServer.10.0.0\lib\net462\Serilog.Sinks.MSSqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.SqlClient, Version=7.0.0.0, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.SqlClient.7.0.1\lib\net462\Microsoft.Data.SqlClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.SqlClient.Extensions.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.SqlClient.Extensions.Abstractions.1.0.0\lib\netstandard2.0\Microsoft.Data.SqlClient.Extensions.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.SqlClient.Internal.Logging, Version=1.0.0.0, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.SqlClient.Internal.Logging.1.0.0\lib\netstandard2.0\Microsoft.Data.SqlClient.Internal.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=8.16.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.8.16.0\lib\net462\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=10.0.0.3, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.10.0.3\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Channels, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Channels.8.0.0\lib\net462\System.Threading.Channels.dll</HintPath>
+    </Reference>
     <Reference Include="Pihrtsoft.Snippets, Version=1.3.3.0, Culture=neutral, PublicKeyToken=47d18de6ae9b6208, processorArchitecture=MSIL">
       <HintPath>..\packages\SnippetManager.1.3.3\lib\net40\Pihrtsoft.Snippets.dll</HintPath>
     </Reference>
@@ -328,6 +355,15 @@
     <Compile Include="Application\DTOs\EstructuraNegociosExcelDto.vb" />
     <Compile Include="Application\DTOs\PeriodsDto.vb" />
     <Compile Include="Application\DTOs\RegionDto.vb" />
+    <Content Include="..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.x64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.x86.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.arm64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Application\Arqueos\ArqueosDetalleExcelDto.vb" />
     <Compile Include="Application\Arqueos\ArqueosExcelDto.vb" />
     <Compile Include="Application\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
@@ -348,6 +384,7 @@
     <Compile Include="Controllers\EstructuraNegociosController.vb" />
     <Compile Include="Controllers\ArqueosController.vb" />
     <Compile Include="Controllers\ReporteArqueosController.vb" />
+    <Compile Include="Controllers\ReporteIngresosSIXController.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
     <Compile Include="Controllers\SharedController.vb" />
@@ -366,6 +403,7 @@
     <Compile Include="Infraestructure\API\Dtos\PayeeResponseDto.vb" />
     <Compile Include="Infraestructure\API\IcmApiClient.vb" />
     <Compile Include="Infraestructure\Configurations\AppConfiguration.vb" />
+    <Compile Include="Infraestructure\Configurations\LoggerConfig.vb" />
     <Compile Include="Infraestructure\SFTP\SFTPClient.vb" />
     <Compile Include="Infraestructure\Excel\ExcelPropertyMap.vb" />
     <Compile Include="Infraestructure\Excel\ExcelReader.vb" />
@@ -411,6 +449,13 @@
     </Compile>
     <Compile Include="Pages\Arqueos.aspx.vb">
       <DependentUpon>Arqueos.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Pages\SA132.aspx.designer.vb">
+      <DependentUpon>SA132.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SA132.aspx.vb">
+      <DependentUpon>SA132.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Pages\EficienciaEfectividad.aspx.designer.vb">
@@ -544,6 +589,7 @@
     <Content Include="js\RegistrosADC.js" />
     <Content Include="js\Arqueos.js" />
     <Content Include="js\ReporteArqueos.js" />
+    <Content Include="js\ReporteIngresosSIX.js" />
     <Content Include="js\EficienciaEfectividad.js" />
     <Content Include="js\onfly.js" />
     <Content Include="js\shared.js" />
@@ -555,6 +601,7 @@
     <Content Include="Pages\RegistrosADC.aspx" />
     <Content Include="Pages\ErrorGeneral.html" />
     <Content Include="Pages\Arqueos.aspx" />
+    <Content Include="Pages\SA132.aspx" />
     <Content Include="Pages\EficienciaEfectividad.aspx" />
     <Content Include="Pages\MontoDistribuibleCategoriaDocumentacion.aspx" />
     <Content Include="Pages\Home.aspx" />

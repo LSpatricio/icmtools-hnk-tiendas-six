@@ -8,6 +8,8 @@
 
     ReadOnly Property BearerToken As String
 
+    ReadOnly Property ConnectionString As String
+
     ReadOnly Property SftpHost As String
 
     ReadOnly Property SftpPort As Integer

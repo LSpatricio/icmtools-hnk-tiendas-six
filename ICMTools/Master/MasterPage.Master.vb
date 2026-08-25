@@ -145,8 +145,8 @@ Public Class MasterPage
     New AppScreen With {
         .IDModel = 1,
         .IDScreen = 2,
-        .ScreenName = "EficienciaEfectividad",
-        .URL = "~/Pages/EficienciaEfectividad.aspx"
+        .ScreenName = "SA132",
+        .URL = "~/Pages/SA132.aspx"
     },
     New AppScreen With {
         .IDModel = 1,
