@@ -23,8 +23,15 @@ Public Class EstructuraNegociosServices
 
     Public Async Function ProcesarEstructuraNegocios(request As ValidateFileRequest, idCarga As Guid, logger As ILogger) As Task(Of CargaResponse)
 
+        Dim tablaStaging As String = "STG_ESTRUCTURANEGOCIOS"
+        Dim tablaDestino As String = "BDIESTRUCTURANEGOCIOS"
         Dim sp As String = "SP_VALIDATE_ESTRUCTURANEGOCIOS"
+
         Dim errores = Await ValidacionesEstructuraNegocios(request)
+
+        errores.AddRange(Await _repository.ValidarDuplicadosAsync(
+                tablaStaging,
+                tablaDestino))
 
         If errores.Any() Then
 
@@ -34,6 +41,8 @@ Public Class EstructuraNegociosServices
             .Errores = errores
         }
         End If
+
+
 
         logger.Information("No se encontraron errores de validación en el archivo de Estructura de Negocios. Procediendo a ejecutar el procedimiento almacenado para validar la información.")
 
