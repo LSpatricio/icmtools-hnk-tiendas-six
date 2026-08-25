@@ -43,6 +43,30 @@ Public Class Repository
 
     End Function
 
+    Public Async Function ValidarDuplicadosAsync(
+    tablaStaging As String,
+    tablaDestino As String
+) As Task(Of List(Of ExcelValidationError))
+
+        Using connection As New SqlConnection(_connectionString)
+
+            Dim parametros = New With {
+            .TablaStaging = tablaStaging,
+            .TablaDestino = tablaDestino
+        }
+
+            Dim errores = Await connection.QueryAsync(Of ExcelValidationError)(
+            "dbo.SP_VALIDAR_DUPLICADOS",
+            parametros,
+            commandType:=CommandType.StoredProcedure
+        )
+
+            Return errores.ToList()
+
+        End Using
+
+    End Function
+
     Public Async Function InsertarBatch(
         nombreTabla As String,
         dataTable As DataTable

@@ -23,8 +23,6 @@ Public Class FileController
     'Private mLog As Log
     Private sc As New SharedController
     'Private sanitize As New FileClass
-    Private ReadOnly _excelService As New ExcelService
-    Private ReadOnly _excelReader As New ExcelReader
     Private ReadOnly _fileService As New FileServices
 
     '   Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
@@ -33,8 +31,6 @@ Public Class FileController
 
 #Region "Clases"
     Public Sub New()
-        _excelService = New ExcelService()
-        _excelReader = New ExcelReader()
         _fileService = New FileServices()
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
 
