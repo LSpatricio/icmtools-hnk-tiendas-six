@@ -9,7 +9,7 @@
             <i class="fas fa-upload fa-2x"></i>
             <small>Carga</small>
         </a>
-        <a href="../Pages/MontoDistribuibleCategoriaDocumentacion.aspx" class="btn btn-sm btn-bar d-flex flex-column align-items-center text-dark">
+        <a href="../Pages/EstructuraNegociosDocumentacion.aspx" class="btn btn-sm btn-bar d-flex flex-column align-items-center text-dark">
             <i class="fas fa-book fa-2x"></i>
             <small>Documentación</small>
         </a>
@@ -38,9 +38,6 @@ const configuraciones = {
         extension: ".xlsx",
         fileClass: "ICMTools.EstructuraNegociosExcelDto",
         headerRow:1
-    },
-    api: {
-        uploadData: "/api/EstructuraNegocios/uploaddata"
     }
 }
             $(document).ready(function () {
@@ -50,7 +47,7 @@ const configuraciones = {
 
             function initializePage() {
 
-                const app = $("#montoDistribuibleApp");
+                const app = $("#estructuraNegociosApp");
 
                 loadServerConfiguration(app);
                 configureEvents();
@@ -92,7 +89,7 @@ const configuraciones = {
 
 <%-- Contenedor principal --%>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div id="montoDistribuibleApp"
+    <div id="estructuraNegociosApp"
      data-user-email="<%= CType(Session.Item("User"), ICMTools.User).Email %>"
      data-server-path="<%= Page.Server.MapPath("~").Replace("\", "\\") %>"
      data-max-file-size="<%= ConfigurationManager.AppSettings("maxFileSize") %>"
@@ -179,14 +176,6 @@ const configuraciones = {
                     <div class="card-body">
                         <h5 class="card-title"><i class='fas fa-file-excel fa-fw'></i><span id="fileNameSuccess"></span></h5>
                         <div id="formatSuccess" class="pt-3 table-responsive text-default"></div>
-                    </div>
-                </div>
-                <div id="WarningPanel" class="RespuestaPanel card border-warning" style="display: none;">
-                    <div class="card-header text-warning lead">Confirmación de carga parcial de Monto Distribuible<span class="badge badge-warning float-right"><i class="fas fa-exclamation-circle fa-fw"></i>Advertencia</span></div>
-                    <div class="card-body">
-                        <h5 class="card-title"><i class='fas fa-file-excel fa-fw'></i><span id="fileNameWarning"></span></h5>
-                        <div id="formatWarning" class="pt-3 table-responsive text-default">
-                        </div>
                     </div>
                 </div>
             </div>
