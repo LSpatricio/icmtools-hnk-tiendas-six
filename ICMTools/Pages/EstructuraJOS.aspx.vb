@@ -5,7 +5,7 @@ Public Class EstructuraJOS
     Inherits System.Web.UI.Page
 
     Private mUser As User
-    Private Const NombrePagina = "SA027 - Estructura JOS"
+    Private Const NombrePagina = "EstructuraJOS"
     'Private mLog As Log
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
