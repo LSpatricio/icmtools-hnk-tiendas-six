@@ -54,15 +54,34 @@ Public Class EstructuraNegocios
     Private Async Function CargarControlesAsync(modelo As String) As Threading.Tasks.Task
         Try
             Dim periodService As New PeriodServices
+            Dim regionService As New RegionServices
 
             Dim periodo = Await periodService.ObtenerPeriodoActual(modelo)
+            Dim regiones = Await regionService.ObtenerRegiones(modelo)
+
 
             SelectPeriod.Items.Clear()
+            SelectRegion.Items.Clear()
 
             Dim item As New ListItem With {
     .Text = If(periodo?.IDPeriodString, "Sin periodo"),
     .Value = If(periodo?.IDPeriodString, "-1")
 }
+
+            Dim hayRegiones = regiones?.Any()
+
+            SelectRegion.Items.Add(New ListItem With {
+    .Text = If(hayRegiones, "Todas (!)", "Sin regiones"),
+    .Value = "Todas"})
+
+            If hayRegiones Then
+                For Each region In regiones
+                    SelectRegion.Items.Add(New ListItem With {
+            .Text = region.Description,
+            .Value = region.Description
+        })
+                Next
+            End If
 
             SelectPeriod.Items.Add(item)
 
