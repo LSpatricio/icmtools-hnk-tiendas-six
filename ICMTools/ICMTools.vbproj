@@ -315,19 +315,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\DTOs\EstructuraJOSExcelDto.vb" />
-    <Compile Include="Application\DTOs\RegistrosADCDetalleExcelDto.vb" />
     <Compile Include="Application\DTOs\CargaResponse.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaExcelDto.vb" />
     <Compile Include="Application\DTOs\EstructuraNegociosExcelDto.vb" />
+    <Compile Include="Application\DTOs\Periods.vb" />
     <Compile Include="Application\DTOs\PeriodsDto.vb" />
     <Compile Include="Application\DTOs\RegionDto.vb" />
-    <Compile Include="Application\RegistrosADC\RegistrosADCExcelDto.vb" />
-    <Compile Include="Application\RegistrosADC\RegistrosADCDetalleExcelDto.vb" />
-    <Compile Include="Application\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
-    <Compile Include="Application\EficienciaEfectividad\EfectividadExcelDto.vb" />
-    <Compile Include="Application\EficienciaEfectividad\EficienciaExcelDto.vb" />
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
     <Compile Include="Application\File\SendInfoRequest.vb" />
@@ -338,14 +333,10 @@
     <Compile Include="Application\Services\FileService.vb" />
     <Compile Include="Application\Services\PeriodService.vb" />
     <Compile Include="Application\Services\EstructuraJOSServices .vb" />
+    <Compile Include="Application\Services\PeriodServices.vb" />
     <Compile Include="Application\Services\RegistrosADCService.vb" />
-    <Compile Include="Application\Services\EstructuraNegociosServices.vb" />
-    <Compile Include="Application\Services\EficienciaEfectividadServices.vb" />
-    <Compile Include="Application\Services\FileServices.vb" />
     <Compile Include="Controllers\EstructuraJOSController.vb" />
-    <Compile Include="Controllers\ReporteRegistrosADCController.vb" />
     <Compile Include="Controllers\EstructuraNegociosController.vb" />
-    <Compile Include="Controllers\ReporteRegistrosADCController.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
     <Compile Include="Controllers\SharedController.vb" />
