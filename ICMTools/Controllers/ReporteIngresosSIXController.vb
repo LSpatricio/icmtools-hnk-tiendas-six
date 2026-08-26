@@ -7,6 +7,7 @@ Imports System.Reflection
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports System.Web.Http
+Imports System.Linq
 Imports Newtonsoft.Json
 Imports Npgsql
 Imports NpgsqlTypes
@@ -44,6 +45,11 @@ Public Class ReporteIngresosSIXController
             Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) = _excelService.CrearMepeoAtributos(tipoHoja)
             Dim valoresErrores As List(Of ExcelValidationError) =
                 _arqueosExcelReader.ValidacionesArqueosTodasLasHojas(request.Path, 1, mapeoColumnas)
+
+            If valoresErrores.Count = 0 Then
+                Dim tablaIngresosSIX As DataTable = _arqueosExcelReader.ObtenerDataTableStgArqueos(request.Path)
+                valoresErrores.AddRange(ValidarDuplicadosSA132(tablaIngresosSIX))
+            End If
 
             If valoresErrores.Count > 0 Then
                 CrearLogger("ValidarArchivo").Warning("El archivo de SA132 contiene {CantidadErrores} errores de validación", valoresErrores.Count)
@@ -319,5 +325,61 @@ Public Class ReporteIngresosSIXController
 
         Dim usuario As User = TryCast(HttpContext.Current.Session.Item("User"), User)
         Return If(usuario Is Nothing, Nothing, usuario.Email)
+    End Function
+
+    Private Function ValidarDuplicadosSA132(tabla As DataTable) As List(Of ExcelValidationError)
+        Dim errores As New List(Of ExcelValidationError)()
+
+        If tabla Is Nothing OrElse tabla.Rows.Count = 0 Then
+            Return errores
+        End If
+
+        Dim columnasLlave As String() = {
+            "NumeroSAP",
+            "Almacen",
+            "TipoListado",
+            "FechaCreacion",
+            "UsuarioCreador",
+            "UsuarioAutorizador",
+            "UsuarioAutorizadorPerfil",
+            "FechaInicioConteo",
+            "CodigoProducto"
+        }
+
+        Dim gruposDuplicados = tabla.AsEnumerable() _
+            .GroupBy(Function(fila) ConstruirLlaveSA132(fila, columnasLlave)) _
+            .Where(Function(grupo) grupo.Count() > 1) _
+            .ToList()
+
+        If gruposDuplicados.Count = 0 Then
+            Return errores
+        End If
+
+        Dim repeticiones As Integer = gruposDuplicados.Sum(Function(grupo) grupo.Count())
+        Dim detalle As String = String.Join("<br/>", gruposDuplicados.Select(
+            Function(grupo) $"Llave repetida ({grupo.Count()} veces): {grupo.Key}"))
+
+        errores.Add(New ExcelValidationError With {
+            .Problema = $"El archivo contiene {repeticiones} registros duplicados según las llaves de SA132.",
+            .Detalle = detalle
+        })
+
+        Return errores
+    End Function
+
+    Private Function ConstruirLlaveSA132(fila As DataRow, columnasLlave As IEnumerable(Of String)) As String
+        Return String.Join(" | ", columnasLlave.Select(Function(columna) NormalizarValorLlave(fila(columna))))
+    End Function
+
+    Private Function NormalizarValorLlave(valor As Object) As String
+        If valor Is Nothing OrElse valor Is DBNull.Value Then
+            Return ""
+        End If
+
+        If TypeOf valor Is DateTime Then
+            Return DirectCast(valor, DateTime).ToString("yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture)
+        End If
+
+        Return Convert.ToString(valor, CultureInfo.InvariantCulture).Trim().ToUpperInvariant()
     End Function
 End Class
