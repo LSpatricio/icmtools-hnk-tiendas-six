@@ -8,7 +8,13 @@
 function CargarInformacion(dataRequest) {
     setFormStatus("processing");
     setLoadingBar("Validando datos", 50);
-
+    const requestData = {
+        FileClass: configuraciones.carga.fileClass,
+        Path: filePath,
+        HeaderRow: configuraciones.carga.headerRow,
+        Screen: configuraciones.page,
+        Period: $(configuraciones.carga.periodSelector).val()
+    };
     $.ajax({
         type: "POST",
         url: "/api/estructuranegocios/cargarinfo",

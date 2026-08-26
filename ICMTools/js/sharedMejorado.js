@@ -286,6 +286,10 @@ function ValidateExcelFile(onSuccessCallback, filePath) {
         Period: $(configuraciones.carga.periodSelector).val()
     };
 
+    if (configuraciones.carga.regionSelector) {
+        requestData.Region = $(configuraciones.carga.regionSelector).val();
+    }
+
     $.ajax({
         type: "POST",
         url: "/api/files/validate",

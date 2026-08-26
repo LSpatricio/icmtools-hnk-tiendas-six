@@ -1,6 +1,6 @@
 ﻿Imports System.Reflection
 
-Public Class FileServices
+Public Class FileService
 
     Private ReadOnly _excelService As ExcelService
     Private ReadOnly _excelReader As ExcelReader

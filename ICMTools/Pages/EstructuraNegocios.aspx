@@ -34,6 +34,7 @@ const configuraciones = {
     carga: {
 
         periodSelector: "#SelectPeriod",
+        regionSelector: "#SelectRegion",
         fileType: "EstructuraNegocios",
         extension: ".xlsx",
         fileClass: "ICMTools.EstructuraNegociosExcelDto",
@@ -116,6 +117,18 @@ const configuraciones = {
                                     </asp:DropDownList>
                                         </div>
                                     </div>
+                                       <div class="row form-group">
+       <label class="control-label col-sm-5 text-right">Región</label>
+       <div class="col-sm-7">
+      <asp:DropDownList
+       ID="SelectRegion"
+       runat="server"
+       ClientIDMode="Static"
+       Enabled="true"
+       CssClass="form-control form-control-sm">
+   </asp:DropDownList>
+       </div>
+   </div>
                                 </div>
                                 <div class="col-md-5">
                                     <div class="form-group">

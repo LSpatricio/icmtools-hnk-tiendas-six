@@ -14,7 +14,7 @@ Public Class EficienciaEfectividadController
     Private ReadOnly _excelService As ExcelService
     Private ReadOnly _repository As Repository
     Private ReadOnly _configuration As IAppConfiguration
-    Private ReadOnly _eficienciaEfectividadServices As EficienciaEfectividadServices
+    Private ReadOnly _eficienciaEfectividadService As EficienciaEfectividadService
 
 
     ' Private mLog As Log
@@ -27,7 +27,7 @@ Public Class EficienciaEfectividadController
         _excelService = New ExcelService()
         _configuration = New AppConfiguration()
         _repository = New Repository(_configuration.ConnectionString)
-        _eficienciaEfectividadServices = New EficienciaEfectividadServices()
+        _eficienciaEfectividadService = New EficienciaEfectividadService()
 
         '     Me.mLog = New Log
     End Sub
@@ -43,10 +43,10 @@ Public Class EficienciaEfectividadController
 
             Dim errorsList As String = Nothing
 
-            Dim valoresErrores = Await _eficienciaEfectividadServices.ProcesarEficienciaEfectividad(request)
+            Dim valoresErrores = Await _eficienciaEfectividadService.ProcesarEficienciaEfectividad(request)
 
 
-            ' valoresErrores = Await _eficienciaEfectividadServices.ValidacionesEficiencia(request)
+            ' valoresErrores = Await _eficienciaEfectividadService.ValidacionesEficiencia(request)
 
             If valoresErrores.Count > 0 Then
                 For Each errores In valoresErrores

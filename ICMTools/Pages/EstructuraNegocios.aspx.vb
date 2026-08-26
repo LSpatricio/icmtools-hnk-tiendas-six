@@ -6,7 +6,6 @@ Public Class EstructuraNegocios
 
     Private mUser As User
     Private Const NombrePagina = "EstructuraNegocios"
-    'Private mLog As Log
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Try
@@ -24,8 +23,7 @@ Public Class EstructuraNegocios
                 End Function))
 
                 End If
-                '           mLog = New Log
-                '          mLog.insertLog("Monto Distribuible", "ACCESO", "Acceso a Monto Distribuible")
+
             Else
                 Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
             End If
@@ -42,9 +40,6 @@ Public Class EstructuraNegocios
             Dim folder As String = $"~\UploadedFiles\{NombrePagina}"
 
             fileClass.SaveUploadedFile(FileUploader, folder)
-
-            '     mLog = New Log
-            '    mLog.insertLog("Monto Distribuible", "ARCHIVO IMPORTADO", $"Archivo de Monto Distribuible importado: {safeFileName}")
         Else
             Response.Redirect(ConfigurationManager.AppSettings("LoginPage"), False)
         End If
@@ -53,16 +48,35 @@ Public Class EstructuraNegocios
 
     Private Async Function CargarControlesAsync(modelo As String) As Threading.Tasks.Task
         Try
-            Dim periodService As New PeriodServices
+            Dim periodService As New PeriodService
+            Dim catalogoService As New CatalogoService
 
             Dim periodo = Await periodService.ObtenerPeriodoActual(modelo)
+            Dim regiones = Await catalogoService.ObtenerRegiones(modelo)
+
 
             SelectPeriod.Items.Clear()
+            SelectRegion.Items.Clear()
 
             Dim item As New ListItem With {
     .Text = If(periodo?.IDPeriodString, "Sin periodo"),
     .Value = If(periodo?.IDPeriodString, "-1")
 }
+
+            Dim hayRegiones = regiones?.Any()
+
+            SelectRegion.Items.Add(New ListItem With {
+    .Text = If(hayRegiones, "Todas (!)", "Sin regiones"),
+    .Value = "Todas"})
+
+            If hayRegiones Then
+                For Each region In regiones
+                    SelectRegion.Items.Add(New ListItem With {
+            .Text = region.Description,
+            .Value = region.Description
+        })
+                Next
+            End If
 
             SelectPeriod.Items.Add(item)
 
