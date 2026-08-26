@@ -322,6 +322,7 @@
     <Compile Include="Application\DTOs\EstructuraNegociosExcelDto.vb" />
     <Compile Include="Application\DTOs\PeriodsDto.vb" />
     <Compile Include="Application\DTOs\RegionDto.vb" />
+    <Compile Include="Application\DTOs\TiendasDesincorporadasExcelDto.vb" />
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
     <Compile Include="Application\File\SendInfoRequest.vb" />
@@ -334,6 +335,8 @@
     <Compile Include="Application\Services\EstructuraJOSServices .vb" />
     <Compile Include="Application\Services\RegistrosADCService.vb" />
     <Compile Include="Controllers\EstructuraJOSController.vb" />
+        <Compile Include="Application\Services\TiendasDesincorporadasServices.vb" />
+    <Compile Include="Controllers\ReporteTiendasDesincorporadasController.vb" />
     <Compile Include="Controllers\EstructuraNegociosController.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
@@ -373,6 +376,13 @@
     </Compile>
     <Compile Include="Pages\EstructuraJOS.aspx.vb">
       <DependentUpon>EstructuraJOS.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Pages\TiendasDesincorporadas.aspx.designer.vb">
+      <DependentUpon>TiendasDesincorporadas.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TiendasDesincorporadas.aspx.vb">
+      <DependentUpon>TiendasDesincorporadas.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Pages\EstructuraNegocios.aspx.designer.vb">
@@ -516,6 +526,7 @@
     <Content Include="index.html" />
     <Content Include="js\EstructuraJOS.js" />
     <Content Include="js\RegistrosADC.js" />
+    <Content Include="js\TiendasDesincorporadas.js" />
     <Content Include="js\EstructuraNegocios.js" />
     <Content Include="js\RegistrosADC.js" />
     <Content Include="js\EficienciaEfectividad.js" />
@@ -525,6 +536,7 @@
     <Content Include="Pages\404.html" />
     <Content Include="Pages\RegistrosADC.aspx" />
     <Content Include="Pages\EstructuraJOS.aspx" />
+    <Content Include="Pages\TiendasDesincorporadas.aspx" />
     <Content Include="Pages\EstructuraNegocios.aspx" />
     <Content Include="Pages\RegistrosADC.aspx" />
     <Content Include="Pages\ErrorGeneral.html" />
