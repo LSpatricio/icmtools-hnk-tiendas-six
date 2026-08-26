@@ -314,6 +314,7 @@
     <Import Include="System.Web.UI.HtmlControls" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\DTOs\EstructuraJOSExcelDto.vb" />
     <Compile Include="Application\DTOs\CargaResponse.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDto.vb" />
@@ -330,6 +331,9 @@
     <Compile Include="Application\Services\EficienciaEfectividadService.vb" />
     <Compile Include="Application\Services\FileService.vb" />
     <Compile Include="Application\Services\PeriodService.vb" />
+    <Compile Include="Application\Services\EstructuraJOSServices .vb" />
+    <Compile Include="Application\Services\RegistrosADCService.vb" />
+    <Compile Include="Controllers\EstructuraJOSController.vb" />
     <Compile Include="Controllers\EstructuraNegociosController.vb" />
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
@@ -364,11 +368,25 @@
     <Compile Include="App_Code\General\Security.vb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="Pages\EstructuraJOS.aspx.designer.vb">
+      <DependentUpon>EstructuraJOS.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\EstructuraJOS.aspx.vb">
+      <DependentUpon>EstructuraJOS.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="Pages\EstructuraNegocios.aspx.designer.vb">
       <DependentUpon>EstructuraNegocios.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\EstructuraNegocios.aspx.vb">
       <DependentUpon>EstructuraNegocios.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Pages\RegistrosADC.aspx.designer.vb">
+      <DependentUpon>RegistrosADC.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\RegistrosADC.aspx.vb">
+      <DependentUpon>RegistrosADC.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Pages\EficienciaEfectividad.aspx.designer.vb">
@@ -496,13 +514,19 @@
     <Content Include="images\Procesos-de-apoyo.jpg" />
     <Content Include="images\single-sign-on.png" />
     <Content Include="index.html" />
+    <Content Include="js\EstructuraJOS.js" />
+    <Content Include="js\RegistrosADC.js" />
     <Content Include="js\EstructuraNegocios.js" />
+    <Content Include="js\RegistrosADC.js" />
     <Content Include="js\EficienciaEfectividad.js" />
     <Content Include="js\onfly.js" />
     <Content Include="js\shared.js" />
     <Content Include="js\sharedMejorado.js" />
     <Content Include="Pages\404.html" />
+    <Content Include="Pages\RegistrosADC.aspx" />
+    <Content Include="Pages\EstructuraJOS.aspx" />
     <Content Include="Pages\EstructuraNegocios.aspx" />
+    <Content Include="Pages\RegistrosADC.aspx" />
     <Content Include="Pages\ErrorGeneral.html" />
     <Content Include="Pages\EficienciaEfectividad.aspx" />
     <Content Include="Pages\MontoDistribuibleCategoriaDocumentacion.aspx" />
