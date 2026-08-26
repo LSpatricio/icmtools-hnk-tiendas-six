@@ -320,7 +320,6 @@
     <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaExcelDto.vb" />
     <Compile Include="Application\DTOs\EstructuraNegociosExcelDto.vb" />
-    <Compile Include="Application\DTOs\Periods.vb" />
     <Compile Include="Application\DTOs\PeriodsDto.vb" />
     <Compile Include="Application\DTOs\RegionDto.vb" />
     <Compile Include="Application\File\CheckFileRequest.vb" />
@@ -333,7 +332,6 @@
     <Compile Include="Application\Services\FileService.vb" />
     <Compile Include="Application\Services\PeriodService.vb" />
     <Compile Include="Application\Services\EstructuraJOSServices .vb" />
-    <Compile Include="Application\Services\PeriodServices.vb" />
     <Compile Include="Application\Services\RegistrosADCService.vb" />
     <Compile Include="Controllers\EstructuraJOSController.vb" />
     <Compile Include="Controllers\EstructuraNegociosController.vb" />

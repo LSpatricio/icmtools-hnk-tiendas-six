@@ -52,7 +52,7 @@ Public Class EstructuraJOS
 
     Private Async Function CargarControlesAsync(modelo As String) As Threading.Tasks.Task
         Try
-            Dim periodService As New PeriodServices
+            Dim periodService As New PeriodService
 
             Dim periodo = Await periodService.ObtenerPeriodoActual(modelo)
 
