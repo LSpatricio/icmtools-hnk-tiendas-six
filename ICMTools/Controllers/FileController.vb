@@ -23,7 +23,7 @@ Public Class FileController
     'Private mLog As Log
     Private sc As New SharedController
     'Private sanitize As New FileClass
-    Private ReadOnly _fileService As New FileServices
+    Private ReadOnly _fileService As New FileService
 
     '   Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
 
@@ -31,7 +31,7 @@ Public Class FileController
 
 #Region "Clases"
     Public Sub New()
-        _fileService = New FileServices()
+        _fileService = New FileService()
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
 
     End Sub

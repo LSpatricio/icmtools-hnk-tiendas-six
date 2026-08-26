@@ -1,4 +1,4 @@
-﻿Public Class PeriodServices
+﻿Public Class PeriodService
 
     Private ReadOnly _icmApiClient As IcmApiClient
 
@@ -6,7 +6,7 @@
         _icmApiClient = New IcmApiClient()
     End Sub
 
-    Public Async Function ObtenerPeriodoActual(model As String) As Threading.Tasks.Task(Of Periods)
+    Public Async Function ObtenerPeriodoActual(model As String) As Threading.Tasks.Task(Of PeriodsDto)
 
         Dim year = Date.Now.Year.ToString()
         Dim mes As String = Today.ToString("MM")
@@ -18,7 +18,7 @@
             .Limit = 1
         }, model)
 
-        Return IcmQueryMapper.MapResponse(Of Periods)(query).FirstOrDefault
+        Return IcmQueryMapper.MapResponse(Of PeriodsDto)(query).FirstOrDefault
 
     End Function
 

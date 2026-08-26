@@ -1,7 +1,7 @@
 ﻿Imports System.Reflection
 Imports System.Threading.Tasks
 
-Public Class EficienciaEfectividadServices
+Public Class EficienciaEfectividadService
 
     Private ReadOnly _excelReader As ExcelReader
     Private ReadOnly _excelService As ExcelService

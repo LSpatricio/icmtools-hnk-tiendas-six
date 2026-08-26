@@ -13,12 +13,16 @@ Public Class ExcelReader
     Public ReadOnly _excelService As ExcelService
     Public ReadOnly _repository As Repository
     Private ReadOnly _configuration As IAppConfiguration
+    Private ReadOnly _catalogoService As CatalogoService
+    Private mUser As User
 
 
     Public Sub New()
+        Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
         _excelService = New ExcelService()
         _configuration = New AppConfiguration()
         _repository = New Repository(_configuration.ConnectionString)
+        _catalogoService = New CatalogoService()
 
     End Sub
 
@@ -149,7 +153,8 @@ Public Class ExcelReader
     nombreHoja As String,
     mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute),
     tablaStaging As String,
-    Optional validacionEspecifica As Func(Of DataRow, String) = Nothing) As Task(Of List(Of ExcelValidationError))
+    Optional regionSelector As String = Nothing,
+    Optional validacionEspecifica As Func(Of DataRow, String, Task(Of String)) = Nothing) As Task(Of List(Of ExcelValidationError))
         'DataRow, lo que mandamos, string lo que regresamos
         Dim dt As DataTable = _excelService.CrearDataTable(mapeoColumnas)
         Using stream = File.Open(
@@ -224,10 +229,7 @@ Public Class ExcelReader
                         Dim indiceColumna As Integer = mapeo.Value.ColumnIndex
                         Dim valor = reader.GetValue(indiceColumna)
 
-                        If valor IsNot Nothing AndAlso
-           valor IsNot DBNull.Value AndAlso
-           Not String.IsNullOrWhiteSpace(valor.ToString()) Then
-
+                        If valor IsNot Nothing AndAlso valor IsNot DBNull.Value AndAlso Not String.IsNullOrWhiteSpace(valor.ToString()) Then
                             tieneInformacion = True
                             Exit For
                         End If
@@ -261,8 +263,6 @@ Public Class ExcelReader
                             Dim tipoEsperado As Type = mapeo.Key.PropertyType
                             Dim tipoReal As Type = If(Nullable.GetUnderlyingType(tipoEsperado), tipoEsperado)
 
-
-
                             If Not _excelService.EsTipoValido(valor, tipoReal) Then
                                 filaValida = False
                                 Dim descripcion = _excelService.ObtenerDescripcionTipo(tipoEsperado)
@@ -278,6 +278,9 @@ Public Class ExcelReader
                                 fila(mapeo.Key.Name) = valor
 
                             End If
+
+
+
                         ElseIf mapeo.Value.Requerido Then
 
                             filaValida = False
@@ -298,7 +301,7 @@ Public Class ExcelReader
                     Next
                     If filaValida AndAlso validacionEspecifica IsNot Nothing Then
 
-                        mensajeError = validacionEspecifica(fila)
+                        mensajeError = Await validacionEspecifica(fila, regionSelector)
 
                         If Not String.IsNullOrWhiteSpace(mensajeError) Then
 

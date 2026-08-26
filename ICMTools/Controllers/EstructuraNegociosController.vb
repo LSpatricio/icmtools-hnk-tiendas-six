@@ -12,12 +12,12 @@ Public Class EstructuraNegociosController
 
     Private mUser As User
     Private ReadOnly _configuration As IAppConfiguration
-    Private ReadOnly _estructuraNegociosServices As EstructuraNegociosServices
+    Private ReadOnly _estructuraNegociosService As EstructuraNegociosService
 
     Public Sub New()
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
         _configuration = New AppConfiguration()
-        _estructuraNegociosServices = New EstructuraNegociosServices()
+        _estructuraNegociosService = New EstructuraNegociosService()
     End Sub
 
     ' ReadOnly fc As New FileController
@@ -43,7 +43,7 @@ Public Class EstructuraNegociosController
 
             logger.Information("Iniciando proceso de validaciones y carga de información para Estructura de Negocios")
 
-            Dim cargaResponse = Await _estructuraNegociosServices.ProcesarEstructuraNegocios(request, idCarga, logger)
+            Dim cargaResponse = Await _estructuraNegociosService.ProcesarEstructuraNegocios(request, idCarga, logger)
 
             logger.Information("Fin proceso de validaciones y carga de información para Estructura de Negocios")
 
@@ -84,7 +84,7 @@ Public Class EstructuraNegociosController
         Try
             Thread.Sleep(1000)
             logger.Information("Inicio proceso envio de información")
-            Await _estructuraNegociosServices.EnvioEstructuraNegocios(request, logger)
+            Await _estructuraNegociosService.EnvioEstructuraNegocios(request, logger)
             logger.Information("Fin proceso envio de información")
 
             Return Ok(New With {.d = True})

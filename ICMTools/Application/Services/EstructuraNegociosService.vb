@@ -3,7 +3,7 @@ Imports System.Reflection
 Imports System.Threading.Tasks
 Imports Serilog
 
-Public Class EstructuraNegociosServices
+Public Class EstructuraNegociosService
 
     Private mUser As User
     Private ReadOnly _excelReader As ExcelReader
@@ -11,13 +11,16 @@ Public Class EstructuraNegociosServices
     Private ReadOnly _repository As Repository
     Private ReadOnly _configuration As IAppConfiguration
     Private ReadOnly _sftpClient As SftpClient
+    Private ReadOnly _catalogoService As CatalogoService
     Public Sub New()
         _excelReader = New ExcelReader()
         _excelService = New ExcelService()
         _configuration = New AppConfiguration()
         _repository = New Repository(_configuration.ConnectionString)
         _sftpClient = New SftpClient()
+        _catalogoService = New CatalogoService()
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
+
 
     End Sub
 
@@ -78,6 +81,9 @@ Public Class EstructuraNegociosServices
 
         Await _repository.LimpiarStaging(tableName)
 
+        Dim regionesCatalogo As List(Of RegionDto) = Await _catalogoService.ObtenerRegiones(mUser.Model)
+        Dim regionesValidas As New HashSet(Of String)((Await _catalogoService.ObtenerRegiones(mUser.Model)).Select(Function(r) r.Description), StringComparer.OrdinalIgnoreCase)
+
         For i As Integer = 0 To cantidadHojas - 1
 
 
@@ -87,8 +93,9 @@ Public Class EstructuraNegociosServices
                             request.HeaderRow,
                             i.ToString(),
                             mapeoColumnas,
-                            tableName)
-                    )
+                            tableName,
+                            request.Region,
+                            AddressOf ValidarFiltroEstructuraNegociosAsync))
         Next
 
         Return valoresErrores
@@ -163,17 +170,34 @@ Public Class EstructuraNegociosServices
 
     End Function
 
-    'AddressOf ValidarEficienciaEfectividad
-    Private Function ValidarEficienciaEfectividad(
-    fila As DataRow
-) As String
-
-        Dim ruta As String = fila("Ruta").ToString().Trim()
+    Public Async Function ValidarFiltroEstructuraNegociosAsync(fila As DataRow, Optional regionSelector As String = Nothing) As Task(Of String)
 
 
+        If regionSelector IsNot Nothing Then
 
-        If Not ruta Then
-            Return $"La ruta '{ruta}' no existe."
+            If Not String.Equals(regionSelector, "Todas", StringComparison.OrdinalIgnoreCase) Then
+
+                Dim regionFila As String = fila.Field(Of String)("Region")
+
+                If Not String.Equals(regionFila, regionSelector, StringComparison.OrdinalIgnoreCase) Then
+                    Return $"El registro no corresponde a la región seleccionada: {regionSelector}."
+                End If
+
+            Else
+                Dim regionesCatalogo As List(Of RegionDto) = Await _catalogoService.ObtenerRegiones(mUser.Model)
+
+                Dim regionValida As Boolean = regionesCatalogo.Any(
+                                                    Function(r) String.Equals(
+                                                        r.Description,
+                                                        fila.Field(Of String)("Region"),
+                                                        StringComparison.OrdinalIgnoreCase
+                                                    )
+                                                )
+                If Not regionValida Then
+                    Return $"La región {fila.Field(Of String)("Region")} no pertenece al catálogo de regiones válido."
+                End If
+
+            End If
         End If
 
         Return Nothing
