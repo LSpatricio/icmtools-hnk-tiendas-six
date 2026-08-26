@@ -29,8 +29,8 @@ Public Class ReporteRegistrosADCController
     ReadOnly sc As New SharedController
 
     <HttpPost>
-    <Route("api/registrosadc/validarinfo")>
-    Public Function ValidarInfo(<FromBody> request As ValidateFileRequestt) As IHttpActionResult
+    <Route("api/registrosadc/cargarinfo")>
+    Public Async Function CargarInfoAsync(<FromBody> request As ValidateFileRequest) As Task(Of IHttpActionResult)
         Try
             Thread.Sleep(1000)
 
@@ -69,8 +69,8 @@ Public Class ReporteRegistrosADCController
 
 
     '<HttpPost>
-    '<Route("api/eficienciaefectividad/validarinfo")>
-    'Public Function ValidarInfo(<FromBody> request As ValidateFileRequestt) As IHttpActionResult
+    '<Route("api/registrosadc/validarinfo")>
+    'Public Function ValidarInfo(<FromBody> request As ValidateFileRequest) As IHttpActionResult
     '    Try
     '        Thread.Sleep(1000)
 

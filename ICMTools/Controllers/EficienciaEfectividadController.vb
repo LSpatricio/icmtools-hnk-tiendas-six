@@ -84,7 +84,7 @@ Public Class EficienciaEfectividadController
 
     '<HttpPost>
     '<Route("api/eficienciaefectividad/validarinfo")>
-    'Public Function ValidarInfo(<FromBody> request As ValidateFileRequestt) As IHttpActionResult
+    'Public Function ValidarInfo(<FromBody> request As ValidateFileRequest) As IHttpActionResult
     '    Try
     '        Thread.Sleep(1000)
 
