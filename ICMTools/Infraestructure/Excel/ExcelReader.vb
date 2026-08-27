@@ -154,7 +154,8 @@ Public Class ExcelReader
     mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute),
     tablaStaging As String,
     Optional regionSelector As String = Nothing,
-    Optional validacionEspecifica As Func(Of DataRow, String, Task(Of String)) = Nothing) As Task(Of List(Of ExcelValidationError))
+    Optional catalogos As CatalogosDto = Nothing,
+    Optional validacionEspecifica As Func(Of DataRow, String, CatalogosDto, String) = Nothing) As Task(Of List(Of ExcelValidationError))
         'DataRow, lo que mandamos, string lo que regresamos
         Dim dt As DataTable = _excelService.CrearDataTable(mapeoColumnas)
         Using stream = File.Open(
@@ -301,7 +302,7 @@ Public Class ExcelReader
                     Next
                     If filaValida AndAlso validacionEspecifica IsNot Nothing Then
 
-                        mensajeError = Await validacionEspecifica(fila, regionSelector)
+                        mensajeError = validacionEspecifica(fila, regionSelector, catalogos)
 
                         If Not String.IsNullOrWhiteSpace(mensajeError) Then
 
