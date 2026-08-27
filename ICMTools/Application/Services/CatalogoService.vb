@@ -13,24 +13,37 @@ Public Class CatalogoService
         Dim query As IcmQueryResponseDto = Await _icmApiClient.Query(New IcmQueryRequestDto With {
             .QueryString = $"SELECT ""IDRegion"", ""Description"" FROM ""CatRegionSix"" ORDER BY ""Description"" ASC",
             .Offset = 0,
-            .Limit = 100
+            .Limit = 1000
         }, model)
 
         Return IcmQueryMapper.MapResponse(Of RegionDto)(query)
 
     End Function
 
-    Public Async Function ObtenerCatalogoRegiones(model As String) As Task(Of HashSet(Of String))
 
-        Dim regiones = Await ObtenerRegiones(model)
+    Public Async Function ObtenerGZSix(model As String) As Threading.Tasks.Task(Of List(Of GZSixDto))
 
-        Return New HashSet(Of String)(
-            regiones.Select(Function(r) r.Description),
-            StringComparer.OrdinalIgnoreCase
-        )
+        Dim query As IcmQueryResponseDto = Await _icmApiClient.Query(New IcmQueryRequestDto With {
+            .QueryString = $"SELECT ""IDGZ"", ""Description"" FROM ""CatGZSix""",
+            .Offset = 0,
+            .Limit = 1000
+        }, model)
+
+        Return IcmQueryMapper.MapResponse(Of GZSixDto)(query)
 
     End Function
 
+    Public Async Function ObtenerEstatusTienda(model As String) As Threading.Tasks.Task(Of List(Of EstatusTiendaDto))
+
+        Dim query As IcmQueryResponseDto = Await _icmApiClient.Query(New IcmQueryRequestDto With {
+            .QueryString = $"SELECT ""IDStoreStatus"", ""Description"" FROM ""CatStoreStatusSix""",
+            .Offset = 0,
+            .Limit = 1000
+        }, model)
+
+        Return IcmQueryMapper.MapResponse(Of EstatusTiendaDto)(query)
+
+    End Function
 
 
 End Class
