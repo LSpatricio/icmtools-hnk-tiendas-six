@@ -172,7 +172,7 @@ const configuraciones = {
                     </div>
                 </div>
                 <div id="successPanel" class="RespuestaPanel card border-success" style="display: none;">
-                    <div class="card-header text-success lead">Confirmación de Carga Exitosa de Estructura de Negocios<span class="badge badge-success float-right"><i class="fas fa-check-circle fa-fw"></i>Listo</span></div>
+                    <div class="card-header text-success lead">Confirmación de Carga Exitosa de Tiendas Desincorporadas<span class="badge badge-success float-right"><i class="fas fa-check-circle fa-fw"></i>Listo</span></div>
                     <div class="card-body">
                         <h5 class="card-title"><i class='fas fa-file-excel fa-fw'></i><span id="fileNameSuccess"></span></h5>
                         <div id="formatSuccess" class="pt-3 table-responsive text-default"></div>
