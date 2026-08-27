@@ -3,7 +3,7 @@ Imports System.Reflection
 Imports System.Threading.Tasks
 Imports Serilog
 
-Public Class TiendasDesincorporadasServices
+Public Class TiendasDesincorporadasService
     Private mUser As User
     Private ReadOnly _excelReader As ExcelReader
     Private ReadOnly _excelService As ExcelService

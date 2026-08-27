@@ -12,12 +12,12 @@ Public Class ReporteTiendasDesincorporadasController
 
     Private mUser As User
     Private ReadOnly _configuration As IAppConfiguration
-    Private ReadOnly _tiendasDesincorporadasServices As TiendasDesincorporadasServices
+    Private ReadOnly _tiendasDesincorporadasService As TiendasDesincorporadasService
 
     Public Sub New()
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
         _configuration = New AppConfiguration()
-        _tiendasDesincorporadasServices = New TiendasDesincorporadasServices()
+        _tiendasDesincorporadasService = New TiendasDesincorporadasService()
     End Sub
 
     ' ReadOnly fc As New FileController
@@ -43,7 +43,7 @@ Public Class ReporteTiendasDesincorporadasController
 
             logger.Information("Iniciando proceso de validaciones y carga de información para Tiendas Desincorporadas")
 
-            Dim cargaResponse = Await _tiendasDesincorporadasServices.ProcesarTiendasDesincorporadas(request, idCarga, logger)
+            Dim cargaResponse = Await _tiendasDesincorporadasService.ProcesarTiendasDesincorporadas(request, idCarga, logger)
 
             logger.Information("Fin proceso de validaciones y carga de información para Tiendas Desincorporadas")
 
@@ -84,7 +84,7 @@ Public Class ReporteTiendasDesincorporadasController
         Try
             Thread.Sleep(1000)
             logger.Information("Inicio proceso envio de información")
-            Await _tiendasDesincorporadasServices.EnvioTiendasDesincorporadas(request, logger)
+            Await _tiendasDesincorporadasService.EnvioTiendasDesincorporadas(request, logger)
             logger.Information("Fin proceso envio de información")
 
             Return Ok(New With {.d = True})
