@@ -37,7 +37,7 @@ const configuraciones = {
         fileType: "Eficiencia",
         extension: ".xlsx",
         fileClass: "ICMTools.EficienciaExcelDto",
-        headerRow:1
+        headerRow:3
     }
 }
             $(document).ready(function () {
