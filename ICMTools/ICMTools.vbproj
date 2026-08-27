@@ -316,11 +316,11 @@
   <ItemGroup>
     <Compile Include="Application\DTOs\Catalogos\CatalogosDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\EstatusTiendaDto.vb" />
+    <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDtoTest.vb" />
+    <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaExcelDtoTest.vb" />
     <Compile Include="Application\DTOs\EstructuraJOSExcelDto.vb" />
     <Compile Include="Application\DTOs\CargaResponse.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaEfectividadExcelDto.vb" />
-    <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDto.vb" />
-    <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaExcelDto.vb" />
     <Compile Include="Application\DTOs\EstructuraNegociosExcelDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\GZSixDto.vb" />
     <Compile Include="Application\DTOs\PeriodsDto.vb" />
