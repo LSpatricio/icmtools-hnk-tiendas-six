@@ -81,8 +81,9 @@ Public Class EstructuraNegociosService
 
         Await _repository.LimpiarStaging(tableName)
 
-        Dim regionesCatalogo As List(Of RegionDto) = Await _catalogoService.ObtenerRegiones(mUser.Model)
-        Dim regionesValidas As New HashSet(Of String)((Await _catalogoService.ObtenerRegiones(mUser.Model)).Select(Function(r) r.Description), StringComparer.OrdinalIgnoreCase)
+        Dim catalogos = Await ObtenerCatalogos(mUser.Model)
+
+        ' Dim regionesValidas As New HashSet(Of String)((Await _catalogoService.ObtenerRegiones(mUser.Model)).Select(Function(r) r.Description), StringComparer.OrdinalIgnoreCase)
 
         For i As Integer = 0 To cantidadHojas - 1
 
@@ -95,6 +96,7 @@ Public Class EstructuraNegociosService
                             mapeoColumnas,
                             tableName,
                             request.Region,
+                            catalogos,
                             AddressOf ValidarFiltroEstructuraNegociosAsync))
         Next
 
@@ -170,8 +172,7 @@ Public Class EstructuraNegociosService
 
     End Function
 
-    Public Async Function ValidarFiltroEstructuraNegociosAsync(fila As DataRow, Optional regionSelector As String = Nothing) As Task(Of String)
-
+    Public Function ValidarFiltroEstructuraNegociosAsync(fila As DataRow, Optional regionSelector As String = Nothing, Optional catalogos As CatalogosDto = Nothing) As String
 
         If regionSelector IsNot Nothing Then
 
@@ -184,18 +185,12 @@ Public Class EstructuraNegociosService
                 End If
 
             Else
-                Dim regionesCatalogo As List(Of RegionDto) = Await _catalogoService.ObtenerRegiones(mUser.Model)
+                Dim regionFila As String = fila.Field(Of String)("Region")
 
-                Dim regionValida As Boolean = regionesCatalogo.Any(
-                                                    Function(r) String.Equals(
-                                                        r.Description,
-                                                        fila.Field(Of String)("Region"),
-                                                        StringComparison.OrdinalIgnoreCase
-                                                    )
-                                                )
-                If Not regionValida Then
-                    Return $"La región {fila.Field(Of String)("Region")} no pertenece al catálogo de regiones válido."
+                If Not catalogos.Regiones.Contains(regionFila) Then
+                    Return $"La región {regionFila} no pertenece al catálogo de regiones válido."
                 End If
+
 
             End If
         End If
@@ -204,6 +199,27 @@ Public Class EstructuraNegociosService
 
     End Function
 
+    Private Async Function ObtenerCatalogos(modelo As String) As Task(Of CatalogosDto)
 
+        Dim regiones = Await _catalogoService.ObtenerRegiones(modelo)
+        Dim gzSix = Await _catalogoService.ObtenerGZSix(modelo)
+        Dim estatusTienda = Await _catalogoService.ObtenerEstatusTienda(modelo)
+
+        Return New CatalogosDto With {
+        .Regiones = New HashSet(Of String)(
+            regiones.Select(Function(r) r.Description),
+            StringComparer.OrdinalIgnoreCase
+        ),
+        .GZSix = New HashSet(Of String)(
+            gzSix.Select(Function(g) g.Description),
+            StringComparer.OrdinalIgnoreCase
+        ),
+        .EstatusTienda = New HashSet(Of String)(
+            estatusTienda.Select(Function(e) e.Description),
+            StringComparer.OrdinalIgnoreCase
+        )
+    }
+
+    End Function
 
 End Class
