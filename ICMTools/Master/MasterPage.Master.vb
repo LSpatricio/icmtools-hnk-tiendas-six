@@ -131,38 +131,26 @@ Public Class MasterPage
     New AppScreen With {
         .IDModel = 1,
         .IDScreen = 1,
-        .ScreenName = "Inicio",
-        .URL = "~/Pages/Home.aspx"
+        .ScreenName = "Eficiencia",
+        .URL = "Eficiencia.aspx"
     },
     New AppScreen With {
         .IDModel = 1,
         .IDScreen = 2,
-        .ScreenName = "EficienciaEfectividad",
-        .URL = "~/Pages/EficienciaEfectividad.aspx"
+        .ScreenName = "Estructura Negocios",
+        .URL = "EstructuraNegocios.aspx"
     },
     New AppScreen With {
         .IDModel = 1,
         .IDScreen = 3,
-        .ScreenName = "Configuración",
-        .URL = "~/Pages/EmpleadosActivos.aspx"
+        .ScreenName = "Tiendas Desincorporadas",
+        .URL = "TiendasDesincorporadas.aspx"
     },
     New AppScreen With {
         .IDModel = 1,
         .IDScreen = 4,
-        .ScreenName = "Carga de archivos",
-        .URL = "~/Pages/ExceptionsUpload.aspx"
-    },
-    New AppScreen With {
-        .IDModel = 2,
-        .IDScreen = 1,
-        .ScreenName = "Inicio",
-        .URL = "~/Pages/Home.aspx"
-    },
-    New AppScreen With {
-        .IDModel = 2,
-        .IDScreen = 5,
-        .ScreenName = "Reportes",
-        .URL = "~/Pages/ExceptionsReportHistory.aspx"
+        .ScreenName = "Estructura JOS",
+        .URL = "EstructuraJOS.aspx"
     }
 }
             If menu IsNot Nothing Then
