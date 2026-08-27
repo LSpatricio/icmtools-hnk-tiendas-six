@@ -314,6 +314,7 @@
     <Import Include="System.Web.UI.HtmlControls" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\DTOs\ArqueosExcelDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\CatalogosDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\EstatusTiendaDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDtoTest.vb" />
@@ -331,6 +332,7 @@
     <Compile Include="Application\File\ExcelService.vb" />
     <Compile Include="Application\File\SendInfoRequest.vb" />
     <Compile Include="Application\File\ValidateFileRequest.vb" />
+    <Compile Include="Application\Services\ArqueosService.vb" />
     <Compile Include="Application\Services\CatalogoService.vb" />
     <Compile Include="Application\Services\EficienciaService.vb" />
     <Compile Include="Application\Services\EstructuraNegociosService.vb" />
@@ -340,6 +342,7 @@
     <Compile Include="Application\Services\EstructuraJOSServices .vb" />
     <Compile Include="Application\Services\RegistrosADCService.vb" />
     <Compile Include="Application\Services\TiendasDesincorporadasService.vb" />
+    <Compile Include="Controllers\ArqueosController.vb" />
     <Compile Include="Controllers\EstructuraJOSController.vb" />
     <Compile Include="Controllers\EficienciaController.vb" />
     <Compile Include="Controllers\ReporteTiendasDesincorporadasController.vb" />
@@ -349,6 +352,7 @@
     <Compile Include="Controllers\SharedController.vb" />
     <Compile Include="Infraestructure\API\IcmQueryMapper.vb" />
     <Compile Include="Infraestructure\Configurations\LoggerConfig.vb" />
+    <Compile Include="Infraestructure\Excel\ArqueosExcelReader.vb" />
     <Compile Include="Infraestructure\Excel\ExcelColumnAttribute.vb" />
     <Compile Include="Application\Authentication\AuthenticationResult.vb" />
     <Compile Include="Application\Authentication\AuthenticationService.vb" />
@@ -389,6 +393,13 @@
     </Compile>
     <Compile Include="Pages\Eficiencia.aspx.vb">
       <DependentUpon>Eficiencia.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Arqueos.aspx.designer.vb">
+      <DependentUpon>Arqueos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Arqueos.aspx.vb">
+      <DependentUpon>Arqueos.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Pages\TiendasDesincorporadas.aspx.designer.vb">
@@ -537,6 +548,7 @@
     <Content Include="images\Procesos-de-apoyo.jpg" />
     <Content Include="images\single-sign-on.png" />
     <Content Include="index.html" />
+    <Content Include="js\Arqueos.js" />
     <Content Include="js\EstructuraJOS.js" />
     <Content Include="js\Eficiencia.js" />
     <Content Include="js\RegistrosADC.js" />
@@ -548,6 +560,7 @@
     <Content Include="js\shared.js" />
     <Content Include="js\sharedMejorado.js" />
     <Content Include="Pages\404.html" />
+    <Content Include="Pages\Arqueos.aspx" />
     <Content Include="Pages\Eficiencia.aspx" />
     <Content Include="Pages\RegistrosADC.aspx" />
     <Content Include="Pages\EstructuraJOS.aspx" />

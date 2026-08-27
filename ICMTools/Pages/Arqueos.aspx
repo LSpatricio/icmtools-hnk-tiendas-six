@@ -1,0 +1,165 @@
+<%@ Page Title="Arqueos" Language="vb" AutoEventWireup="false" MasterPageFile="~/Master/MasterPage.Master" CodeBehind="Arqueos.aspx.vb" Inherits="ICMTools.Arqueos" Async="true" %>
+<%@ MasterType VirtualPath="~/Master/MasterPage.Master" %>
+
+<asp:Content ID="TopbarContent" ContentPlaceHolderID="TopbarContent" runat="server">
+    <div class="d-flex gap-1">
+        <a href="../Pages/Arqueos.aspx" class="btn active btn-sm btn-bar d-flex flex-column align-items-center text-dark">
+            <i class="fas fa-upload fa-2x"></i>
+            <small>Carga</small>
+        </a>
+    </div>
+</asp:Content>
+
+<asp:Content ID="HeadContent" ContentPlaceHolderID="head" runat="server">
+    <meta name="description" content="Carga de Arqueos" />
+    <title>Arqueos</title>
+    <script src="../Scripts/jquery.min.js"></script>
+    <script type="text/javascript">
+        const configuraciones = {
+            servidor: {
+                userEmail: "",
+                serverPath: "",
+                maxFileSize: ""
+            },
+            page: "Arqueos",
+            carga: {
+                periodSelector: "#SelectPeriod",
+                fileType: "Arqueos",
+                extension: ".xlsx",
+                fileClass: "ICMTools.ArqueosExcelDto",
+                headerRow: 1
+            }
+        };
+
+        $(document).ready(function () {
+            initializePage();
+        });
+
+        function initializePage() {
+            const app = $("#arqueosApp");
+            loadServerConfiguration(app);
+            configureEvents();
+        }
+
+        function loadServerConfiguration(app) {
+            configuraciones.servidor.userEmail = app.data("user-email");
+            configuraciones.servidor.serverPath = app.data("server-path");
+            configuraciones.servidor.maxFileSize = app.data("max-file-size");
+            configuraciones.carga.selector = app.data("upload-selector");
+        }
+
+        function configureEvents() {
+            const button = $("#btnStartImport");
+            button.prop("disabled", true);
+            button.on("click", handleStartImport);
+        }
+
+        function handleStartImport(event) {
+            event.preventDefault();
+            CheckExcelFileArqueos();
+        }
+    </script>
+    <script src="../js/sharedMejorado.js?v=1"></script>
+    <script src="../js/Arqueos.js?v=1"></script>
+</asp:Content>
+
+<asp:Content ID="MainContent" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div id="arqueosApp"
+         data-user-email="<%= CType(Session.Item("User"), ICMTools.User).Email %>"
+         data-server-path="<%= Page.Server.MapPath("~").Replace("\", "\\") %>"
+         data-max-file-size="<%= ConfigurationManager.AppSettings("maxFileSize") %>"
+         data-upload-selector="#<%= FileUploader.ClientID %>">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card bg-light card-danger">
+                        <div class="card-header lead">Seleccione periodo y archivo a cargar</div>
+                        <div class="card-body">
+                            <form id="myForm" runat="server">
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        <div class="row form-group">
+                                            <label class="control-label col-sm-5 text-right">Periodo</label>
+                                            <div class="col-sm-7">
+                                                <asp:DropDownList ID="SelectPeriod" runat="server" ClientIDMode="Static" Enabled="false" CssClass="form-control form-control-sm" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-12">Archivo de Arqueos</label>
+                                            <div class="col">
+                                                <asp:ScriptManager ID="ScriptManager1" runat="server" />
+                                                <div class="upload-drop-zone" id="drop-zone">
+                                                    <ajaxToolkit:AsyncFileUpload ID="FileUploader" runat="server"
+                                                        ThrobberID="myThrobber"
+                                                        OnClientUploadComplete="uploadComplete"
+                                                        OnClientUploadError="uploadError"
+                                                        OnClientUploadStarted="beforeUploadStarts"
+                                                        Width="100%" ErrorBackColor="#FFCCFF"
+                                                        CompleteBackColor="#CCFFCC" ForeColor="Black" />
+                                                </div>
+                                                <asp:Label runat="server" ID="myThrobber" Style="display: none;">
+                                                    <i class="fas fa-sync-alt fa-spin fa-fw"></i>Cargando archivo...
+                                                </asp:Label>
+                                                <div class="table-responsive">
+                                                    <table id="statusUploadTable" class="table table-bordered table-sm"></table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col">
+                                    <div id="progressDiv" class="progress" style="display: none; height: 31px;">
+                                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                                             role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                                            <span class="sr-only">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-5">
+                                    <button id="btnStartImport" class="btn btn-sm btn-primary float-right" title="Iniciar importacion de Arqueos">
+                                        <i class="fas fa-upload fa-fw"></i>Iniciar Importacion
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-2">
+                    <div id="statusAlert" class="alert alert-warning fade" role="alert">
+                        <i class="fas fa-exclamation-triangle fa-fw"></i><strong>Importante:</strong> Espere por favor, no actualice la pagina.
+                    </div>
+                </div>
+
+                <div class="col-12" style="margin-top: -8px;">
+                    <div id="errorPanel" class="RespuestaPanel card border-danger" style="display: none;">
+                        <div class="card-header text-danger lead">Detalle de problemas<span class="badge badge-danger float-right"><i class="fas fa-exclamation-circle fa-fw"></i>Problema</span></div>
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-file-excel fa-fw"></i><span id="fileNameError"></span></h5>
+                            <p class="card-text" id="MensajeError">Ajuste el archivo de acuerdo con los problemas detectados y vuelva a intentar.</p>
+                            <div id="formatErrors" class="pt-3 table-responsive text-default"></div>
+                        </div>
+                    </div>
+
+                    <div id="successPanel" class="RespuestaPanel card border-success" style="display: none;">
+                        <div class="card-header text-success lead">Carga exitosa de Arqueos<span class="badge badge-success float-right"><i class="fas fa-check-circle fa-fw"></i>Listo</span></div>
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-file-excel fa-fw"></i><span id="fileNameSuccess"></span></h5>
+                            <div id="formatSuccess" class="pt-3 table-responsive text-default"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../vendor/bootstrap-4.1.0/dist/js/bootstrap.min.js"></script>
+    <script src="../vendor/bootstrap-filestyle-2.1.0/src/bootstrap-filestyle.min.js"></script>
+</asp:Content>
