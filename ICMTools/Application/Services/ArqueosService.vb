@@ -4,9 +4,9 @@ Imports System.Globalization
 Imports System.IO
 Imports System.Linq
 Imports System.Reflection
-Imports System.Text
 Imports System.Threading.Tasks
 Imports Serilog
+Imports Dapper
 
 Public Class ArqueosService
     Private ReadOnly _excelReader As ExcelReader
@@ -28,7 +28,15 @@ Public Class ArqueosService
         idCarga As Guid,
         logger As ILogger) As Task(Of CargaResponse)
 
+        Const sp As String = "SP_VALIDATE_ARQUEOS"
+
         Dim errores = Await ValidacionesArqueos(request)
+
+        ' SP_VALIDAR_DUPLICADOS es compartido por el resto de las pantallas y
+        ' concatena directamente las columnas de la PK. En Arqueos la PK mezcla
+        ' bigint, date y texto, por lo que la validacion se realiza localmente
+        ' sobre STG_ARQUEOS sin modificar el SP compartido.
+        errores.AddRange(Await ValidarDuplicadosArqueosAsync())
 
         If errores.Any() Then
             Return New CargaResponse With {
@@ -39,8 +47,8 @@ Public Class ArqueosService
         End If
 
         logger.Information("No se encontraron errores de validacion en el archivo de Arqueos")
-        Await _repository.EjecutarSPAsync("dbo.SP_VALIDATE_ARQUEOS", idCarga)
-        logger.Information("Procedimiento almacenado SP_VALIDATE_ARQUEOS ejecutado correctamente")
+        Await _repository.EjecutarSPAsync($"dbo.{sp}", idCarga)
+        logger.Information("Procedimiento almacenado {sp} ejecutado correctamente", sp)
 
         Return New CargaResponse With {
             .Exitoso = True,
@@ -50,43 +58,45 @@ Public Class ArqueosService
     End Function
 
     Public Async Function ValidacionesArqueos(request As ValidateFileRequest) As Task(Of List(Of ExcelValidationError))
-        Const tablaStaging As String = "STG_ARQUEOS"
 
-        Dim valoresErrores As New List(Of ExcelValidationError)()
+        Dim errorsList As String = Nothing
+        Dim tableName As String = "STG_ARQUEOS"
+
+        Dim tipo As Type = Type.GetType(request.FileClass)
+
+        Dim valoresErrores As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
+
         Dim cantidadHojas As Integer = _excelReader.ContarHojas(request.Path)
 
-        ' Se usa el mismo mecanismo compartido que el resto de las pantallas.
         Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) =
-            _excelService.CrearMepeoAtributos(GetType(ArqueosExcelDto))
+            _excelService.CrearMepeoAtributos(tipo)
 
-        ' Codigo de Listado se valida en la etapa /api/files/validate mediante
-        ' ArqueosExcelDto, pero no forma parte de STG_ARQUEOS. Por eso no se
-        ' incluye en el mapeo utilizado para la carga a staging.
+        ' Codigo de Listado se valida como parte de la estructura del archivo,
+        ' pero no existe como columna en STG_ARQUEOS. Por eso se excluye
+        ' unicamente del mapeo que se envia al staging.
         Dim mapeoCarga As Dictionary(Of PropertyInfo, ExcelColumnAttribute) =
             mapeoColumnas _
                 .Where(Function(x) x.Key.Name <> NameOf(ArqueosExcelDto.CodigoListado)) _
                 .ToDictionary(Function(x) x.Key, Function(x) x.Value)
 
-        Await _repository.LimpiarStaging(tablaStaging)
+        Await _repository.LimpiarStaging(tableName)
 
         For i As Integer = 0 To cantidadHojas - 1
+
             valoresErrores.AddRange(
                 Await _excelReader.CargaAsync(
                     request.Path,
                     request.HeaderRow,
                     i.ToString(),
                     mapeoCarga,
-                    tablaStaging,
+                    tableName,
                     Nothing,
                     Nothing,
                     AddressOf ValidarFilaArqueos))
         Next
 
-        If Not valoresErrores.Any() Then
-            valoresErrores.AddRange(Await ValidarDuplicadosStagingAsync(tablaStaging))
-        End If
-
         Return valoresErrores
+
     End Function
 
     Private Function ValidarFilaArqueos(
@@ -180,6 +190,42 @@ Public Class ArqueosService
         Return String.Join("<br/>", errores)
     End Function
 
+    Private Async Function ValidarDuplicadosArqueosAsync() As Task(Of List(Of ExcelValidationError))
+        Const sql As String = "
+            SELECT
+                'Registro duplicado' AS Problema,
+                CONCAT(
+                    'Valores duplicados: ',
+                    CONVERT(nvarchar(max), NumeroSAP), ' | ',
+                    COALESCE(Almacen, ''), ' | ',
+                    COALESCE(TipoListado, ''), ' | ',
+                    CONVERT(nvarchar(30), FechaCreacion, 23), ' | ',
+                    COALESCE(UsuarioCreador, ''), ' | ',
+                    COALESCE(UsuarioAutorizador, ''), ' | ',
+                    COALESCE(UsuarioAutorizadorPerfil, ''), ' | ',
+                    CONVERT(nvarchar(30), FechaInicioConteo, 23), ' | ',
+                    CONVERT(nvarchar(max), CodigoProducto),
+                    ' | Cantidad: ', COUNT(*)
+                ) AS Detalle
+            FROM dbo.STG_ARQUEOS
+            GROUP BY
+                NumeroSAP,
+                Almacen,
+                TipoListado,
+                FechaCreacion,
+                UsuarioCreador,
+                UsuarioAutorizador,
+                UsuarioAutorizadorPerfil,
+                FechaInicioConteo,
+                CodigoProducto
+            HAVING COUNT(*) > 1;"
+
+        Using connection As New SqlConnection(_configuration.ConnectionString)
+            Dim errores = Await connection.QueryAsync(Of ExcelValidationError)(sql)
+            Return errores.ToList()
+        End Using
+    End Function
+
     Private Sub NormalizarTextoOpcionalParaStaging(fila As DataRow, columna As String)
         If fila.IsNull(columna) Then
             fila(columna) = String.Empty
@@ -247,111 +293,58 @@ Public Class ArqueosService
                 fecha)
     End Function
 
-    Private Async Function ValidarDuplicadosStagingAsync(tablaStaging As String) As Task(Of List(Of ExcelValidationError))
-        Dim errores As New List(Of ExcelValidationError)()
-
-        Dim sql As String = $"
-            SELECT
-                NumeroSAP,
-                Almacen,
-                TipoListado,
-                FechaCreacion,
-                UsuarioCreador,
-                UsuarioAutorizador,
-                UsuarioAutorizadorPerfil,
-                FechaInicioConteo,
-                CodigoProducto,
-                COUNT(*) AS Cantidad
-            FROM {tablaStaging}
-            GROUP BY
-                NumeroSAP,
-                Almacen,
-                TipoListado,
-                FechaCreacion,
-                UsuarioCreador,
-                UsuarioAutorizador,
-                UsuarioAutorizadorPerfil,
-                FechaInicioConteo,
-                CodigoProducto
-            HAVING COUNT(*) > 1"
-
-        Using connection As New SqlConnection(_configuration.ConnectionString)
-            Await connection.OpenAsync()
-
-            Using command As New SqlCommand(sql, connection)
-                command.CommandTimeout = 600
-
-                Using reader = Await command.ExecuteReaderAsync()
-                    While Await reader.ReadAsync()
-                        errores.Add(New ExcelValidationError With {
-                            .Problema = "El archivo contiene registros duplicados segun las llaves de Arqueos.",
-                            .Detalle = $"Llave repetida ({reader("Cantidad")} veces): " &
-                                $"{reader("NumeroSAP")} | {reader("Almacen")} | {reader("TipoListado")} | " &
-                                $"{reader("FechaCreacion")} | {reader("UsuarioCreador")} | " &
-                                $"{reader("UsuarioAutorizador")} | {reader("UsuarioAutorizadorPerfil")} | " &
-                                $"{reader("FechaInicioConteo")} | {reader("CodigoProducto")}"
-                        })
-                    End While
-                End Using
-            End Using
-        End Using
-
-        Return errores
-    End Function
-
     Public Async Function EnvioArqueos(request As SendInfoRequest, logger As ILogger) As Task
-        If Not Directory.Exists(request.PathSalida) Then Directory.CreateDirectory(request.PathSalida)
-
-        Dim rutaArchivo = Path.Combine(request.PathSalida, "BDIARQUEOS.csv")
-        Dim consulta = "SELECT * FROM dbo.BDIARQUEOS ORDER BY NumeroSAP, Almacen, TipoListado, FechaCreacion, CodigoProducto"
-
-        Await GenerarCsvArqueosAsync(consulta, rutaArchivo)
-        logger.Information("Archivo CSV de Arqueos generado: {RutaArchivo}", rutaArchivo)
-
-        Await _sftpClient.SubirArchivoAsync(rutaArchivo)
-        logger.Information("Archivo CSV de Arqueos enviado al SFTP")
-    End Function
-
-    Private Async Function GenerarCsvArqueosAsync(consulta As String, rutaArchivo As String) As Task
-        Using connection As New SqlConnection(_configuration.ConnectionString)
-            Await connection.OpenAsync()
-
-            Using command As New SqlCommand(consulta, connection)
-                command.CommandTimeout = 600
-
-                Using reader = Await command.ExecuteReaderAsync()
-                    Using writer As New StreamWriter(rutaArchivo, False, New UTF8Encoding(True))
-                        Dim encabezados = Enumerable.Range(0, reader.FieldCount) _
-                            .Select(Function(indice) EscaparCsv(reader.GetName(indice)))
-                        Await writer.WriteLineAsync(String.Join(";", encabezados))
-
-                        While Await reader.ReadAsync()
-                            Dim valores = Enumerable.Range(0, reader.FieldCount) _
-                                .Select(Function(indice) EscaparCsv(ObtenerValorCsv(reader, indice)))
-                            Await writer.WriteLineAsync(String.Join(";", valores))
-                        End While
-                    End Using
-                End Using
-            End Using
-        End Using
-    End Function
-
-    Private Function ObtenerValorCsv(reader As SqlDataReader, indice As Integer) As String
-        If reader.IsDBNull(indice) Then Return ""
-
-        Dim valor = reader.GetValue(indice)
-        If TypeOf valor Is DateTime Then
-            Return DirectCast(valor, DateTime).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+        If Not Directory.Exists(request.PathSalida) Then
+            Directory.CreateDirectory(request.PathSalida)
         End If
 
-        Return Convert.ToString(valor, CultureInfo.InvariantCulture)
-    End Function
+        Dim nombreArchivo As String = "BDIARQUEOS.csv"
+        Dim rutaArchivo As String = Path.Combine(request.PathSalida, nombreArchivo)
 
-    Private Function EscaparCsv(valor As String) As String
-        If valor Is Nothing Then Return ""
+        Dim sql As String = "
+            SELECT
+                 NumeroSAP
+                ,Almacen
+                ,TipoListado
+                ,Estatus
+                ,FORMAT(FechaCreacion, 'yyyy-MM-dd') AS FechaCreacion
+                ,Nombre
+                ,UsuarioCreador
+                ,UsuarioCreadorPerfil
+                ,UsuarioAutorizador
+                ,UsuarioAutorizadorPerfil
+                ,TipoCierre
+                ,FORMAT(FechaInicioConteo, 'yyyy-MM-dd') AS FechaInicioConteo
+                ,FORMAT(FechaFinConteo, 'yyyy-MM-dd') AS FechaFinConteo
+                ,FORMAT(FechaCierreConteo, 'yyyy-MM-dd') AS FechaCierreConteo
+                ,FORMAT(FechaTerminoConteo, 'yyyy-MM-dd') AS FechaTerminoConteo
+                ,Subinventario
+                ,IdProducto
+                ,CodigoProducto
+                ,NombreProducto
+                ,Unidad
+                ,CantidadSistema
+                ,Diferencia
+                ,Faltante
+                ,Sobrante
+                ,FaltantePrecioCons
+                ,SobrantePrecioCons
+                ,Comentario
+            FROM dbo.BDIARQUEOS
+            WHERE IdCarga = @IdCarga
+            ORDER BY NumeroSAP, Almacen, TipoListado, FechaCreacion, CodigoProducto
+        "
 
-        Dim requiereComillas = valor.Contains(";") OrElse valor.Contains("""") OrElse valor.Contains(vbCr) OrElse valor.Contains(vbLf)
-        Dim resultado = valor.Replace("""", """""")
-        Return If(requiereComillas, $"""{resultado}""", resultado)
+        Await _repository.GenerarCsvAsync(
+            sql,
+            rutaArchivo,
+            request.IdGui
+        )
+
+        logger.Information("Archivo CSV de Arqueos generado correctamente {rutaArchivo}", rutaArchivo)
+
+        Await _sftpClient.SubirArchivoAsync(rutaArchivo)
+
+        logger.Information("Archivo CSV de Arqueos enviado al SFTP")
     End Function
 End Class
