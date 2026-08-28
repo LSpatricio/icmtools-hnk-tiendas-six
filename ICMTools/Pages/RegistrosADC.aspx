@@ -20,7 +20,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <meta name="description" content="Description" />
     <meta name="author" content="Author" />
-    <title>Eficiencia y Efectividad</title>
+    <title>Registros ADC</title>
 <script src="../Scripts/jquery.min.js"></script>
     <script type="text/javascript">
 
