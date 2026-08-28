@@ -124,8 +124,8 @@ function ValidateFileInitialName($input) {
 
     if (fileNameWithoutExt.toLowerCase().indexOf("inicial_") != 0) {
         var mensaje = "El archivo inicial <b>" + fileName + "</b> no tiene un nombre válido." +
-        "<br/>Recuerda que el nombre debe iniciar con <b>Inicial_</b>." +
-        "<br/>Ejemplo: <b>Inicial_NombreArchivo.xlsx<b/>";
+            "<br/>Recuerda que el nombre debe iniciar con <b>Inicial_</b>." +
+            "<br/>Ejemplo: <b>Inicial_NombreArchivo.xlsx<b/>";
 
         setFormStatus("error");
         $("#formatErrors").html(mensaje);
@@ -171,7 +171,8 @@ function beforeUploadStarts(sender, args) {
                 try {
                     var input = document.getElementById(sender._inputFile.id);
                     if (input) input.value = "";
-                } catch (e) {s
+                } catch (e) {
+                    s
                     console.log(e);
                 }
             }, 50);
@@ -233,12 +234,14 @@ function uploadComplete(sender, args) {
 
 }
 
-function CheckFileExists(configuracionesArchivo, callBack) {
+function CheckFileExists(callBack) {
     courseFlag = true;
     setLoadingBar("Verificando archivo...", 10);
     const requestData = {
-        FileType: configuracionesArchivo.fileType,
-        Extension: configuracionesArchivo.extension
+        FileType: configuraciones.carga.fileType,
+        Extension: configuraciones.carga.extension,
+        Screen: configuraciones.page,
+        Period: $(configuraciones.carga.periodSelector).val()
     };
 
     $.ajax({
@@ -275,10 +278,17 @@ function CheckFileExists(configuracionesArchivo, callBack) {
 
 function ValidateExcelFile(onSuccessCallback, filePath) {
     setLoadingBar("Validando formato de Excel", 25);
+
     const requestData = {
         FileClass: configuraciones.carga.fileClass,
         Path: filePath,
         HeaderRow: configuraciones.carga.headerRow,
+        Screen: configuraciones.page,
+        Period: $(configuraciones.carga.periodSelector).val()
+    };
+
+    if (configuraciones.carga.regionSelector) {
+        requestData.Region = $(configuraciones.carga.regionSelector).val();
     }
 
     $.ajax({
@@ -483,9 +493,9 @@ function setFormStatus(status, selectors = 0) {
         case 'error':
             $("#errorPanel").fadeIn("slow");
             $("#statusUploadTable").html("");
-           
+
             $(configuraciones.carga.selector).find('input[type=file]').val("").css("background-color", "#fff");
-            
+
             File = "-1";
             $("#statusAlert").removeClass("show");
             $("#progressBar").removeClass("progress-bar-animated").removeClass("bg-success").addClass("bg-danger");
@@ -494,9 +504,9 @@ function setFormStatus(status, selectors = 0) {
             $(".bootstrap-filestyle").find("input[type=text]").val("").attr("disabled", true);
             break;
         case 'fail':
-            $("#statusUploadTable").html("");            
+            $("#statusUploadTable").html("");
             $(configuraciones.carga.selector).find('input[type=file]').val("").css("background-color", "#fff");
-            
+
             File = "-1";
             $(".bootstrap-filestyle").find("input[type=text]").val("").attr("disabled", true);
             $('#btnStartImport').prop('disabled', true).html('<i class="fas fa-play fa-fw"></i> Reintentar');
@@ -505,7 +515,7 @@ function setFormStatus(status, selectors = 0) {
             $("#successPanel").fadeIn("slow");
             $("#statusUploadTable").html("");
             $(configuraciones.carga.selector).find('input[type=file]').val("").css("background-color", "#fff");
-            
+
             File = "-1";
 
             $("#statusAlert").removeClass("show");
@@ -518,7 +528,7 @@ function setFormStatus(status, selectors = 0) {
             $("#WarningPanel").fadeIn("slow");
             $("#statusUploadTable").html("");
             $(configuraciones.carga.selector).find('input[type=file]').val("").css("background-color", "#fff");
-         
+
             File = "-1";
 
             $("#statusAlert").removeClass("show");
@@ -528,14 +538,14 @@ function setFormStatus(status, selectors = 0) {
             $(".bootstrap-filestyle").find("input[type=text]").val("").attr("disabled", true);
             break;
         default:
-           // alert('default');
+        // alert('default');
     }
 }
 function activateTable() {
-    if ($.fn.dataTable.isDataTable('#Table')) {        
+    if ($.fn.dataTable.isDataTable('#Table')) {
         $('#Table').DataTable().destroy();
     }
-    $('#Table').DataTable({        
+    $('#Table').DataTable({
         "lengthMenu": [[10, 20, 30, -1], [10, 20, 30, "Todos"]],
         responsive: true,
         dom: 'Bfrtip',
@@ -572,22 +582,22 @@ function activateTable() {
         ],
         language: {
             "decimal": "",
-            "emptyTable": "No hay información disponible", 
-            "info": "Mostrando de _START_ a _END_ de _TOTAL_ registros", 
-            "infoEmpty": "Mostrando 0 a 0 de 0 registros", 
-            "infoFiltered": "(filto de _MAX_ registros)", 
+            "emptyTable": "No hay información disponible",
+            "info": "Mostrando de _START_ a _END_ de _TOTAL_ registros",
+            "infoEmpty": "Mostrando 0 a 0 de 0 registros",
+            "infoFiltered": "(filto de _MAX_ registros)",
             "infoPostFix": "",
             "thousands": ",",
-            "lengthMenu": "Mostrar _MENU_ registros", 
-            "loadingRecords": "Cargando...", 
-            "processing": "Procesando...", 
-            "search": "Buscar", 
-            "zeroRecords": "No se encontraron coincidencias", 
+            "lengthMenu": "Mostrar _MENU_ registros",
+            "loadingRecords": "Cargando...",
+            "processing": "Procesando...",
+            "search": "Buscar",
+            "zeroRecords": "No se encontraron coincidencias",
             "paginate": {
-                "first": "Primera", 
-                "last": "Ultima", 
-                "next": "Siguiente", 
-                "previous": "Anterior", 
+                "first": "Primera",
+                "last": "Ultima",
+                "next": "Siguiente",
+                "previous": "Anterior",
             },
             "aria": {
                 "sortAscending": ": activate to sort column ascending",
@@ -598,15 +608,15 @@ function activateTable() {
 };
 
 function activateSuccess() {
-    if ($.fn.dataTable.isDataTable('#Table')) {        
+    if ($.fn.dataTable.isDataTable('#Table')) {
         $('#Table').DataTable().destroy();
     }
 
-    $('#Table').DataTable({        
+    $('#Table').DataTable({
         "lengthMenu": [[10, 20, 30, -1], [10, 20, 30, "Todos"]],
         responsive: true,
         dom: 'Bfrtip',
-        buttons: [            
+        buttons: [
             [
                 {
                     extend: 'copy',
@@ -639,22 +649,22 @@ function activateSuccess() {
         ],
         language: {
             "decimal": "",
-            "emptyTable": "No hay información disponible", 
-            "info": "Mostrando de _START_ a _END_ de _TOTAL_ registros", 
-            "infoEmpty": "Mostrando 0 a 0 de 0 registros", 
-            "infoFiltered": "(filto de _MAX_ registros)", 
+            "emptyTable": "No hay información disponible",
+            "info": "Mostrando de _START_ a _END_ de _TOTAL_ registros",
+            "infoEmpty": "Mostrando 0 a 0 de 0 registros",
+            "infoFiltered": "(filto de _MAX_ registros)",
             "infoPostFix": "",
             "thousands": ",",
-            "lengthMenu": "Mostrar _MENU_ registros", 
-            "loadingRecords": "Cargando...", 
-            "processing": "Procesando...", 
-            "search": "Buscar", 
-            "zeroRecords": "No se encontraron coincidencias", 
+            "lengthMenu": "Mostrar _MENU_ registros",
+            "loadingRecords": "Cargando...",
+            "processing": "Procesando...",
+            "search": "Buscar",
+            "zeroRecords": "No se encontraron coincidencias",
             "paginate": {
-                "first": "Primera", 
-                "last": "Ultima", 
-                "next": "Siguiente", 
-                "previous": "Anterior", 
+                "first": "Primera",
+                "last": "Ultima",
+                "next": "Siguiente",
+                "previous": "Anterior",
             },
             "aria": {
                 "sortAscending": ": activate to sort column ascending",
@@ -753,6 +763,6 @@ async function downloadAndDeleteFile(serverFilePath) {
 function mostrarModalBloqueo(mensajePersonalizado = null) {
     if (mensajePersonalizado) {
         $("#mensajeBloqueoGlobal").html(mensajePersonalizado);
-    } 
+    }
     $("#modalGlobalBloqueo").modal("show");
 }

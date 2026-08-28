@@ -1,7 +1,7 @@
 ﻿Imports System.Reflection
 Imports System.Threading.Tasks
 
-Public Class EficienciaEfectividadServices
+Public Class EficienciaEfectividadService
 
     Private ReadOnly _excelReader As ExcelReader
     Private ReadOnly _excelService As ExcelService
@@ -15,7 +15,7 @@ Public Class EficienciaEfectividadServices
 
     End Sub
 
-    Public Async Function ProcesarEficienciaEfectividad(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    Public Async Function ProcesarEficienciaEfectividad(request As ValidateFileRequest) As Task(Of List(Of ExcelValidationError))
 
         Dim errores = Await ValidacionesEficienciaEfectividad(request)
 
@@ -37,7 +37,7 @@ Public Class EficienciaEfectividadServices
 
 
 
-    Public Async Function ValidacionesEficienciaEfectividad(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    Public Async Function ValidacionesEficienciaEfectividad(request As ValidateFileRequest) As Task(Of List(Of ExcelValidationError))
         Dim errorsList As String = Nothing
 
         Dim tipo As Type = Type.GetType(request.FileClass)

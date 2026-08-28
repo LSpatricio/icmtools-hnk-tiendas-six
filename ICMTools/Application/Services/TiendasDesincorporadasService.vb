@@ -1,9 +1,10 @@
 ﻿Imports System.IO
 Imports System.Reflection
 Imports System.Threading.Tasks
+Imports Serilog
 
-Public Class EstructuraNegociosServices
-
+Public Class TiendasDesincorporadasService
+    Private mUser As User
     Private ReadOnly _excelReader As ExcelReader
     Private ReadOnly _excelService As ExcelService
     Private ReadOnly _repository As Repository
@@ -15,16 +16,24 @@ Public Class EstructuraNegociosServices
         _configuration = New AppConfiguration()
         _repository = New Repository(_configuration.ConnectionString)
         _sftpClient = New SftpClient()
+        Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
 
     End Sub
 
-    Public Async Function ProcesarEstructuraNegocios(request As ValidateFileRequestt) As Task(Of CargaResponse)
+    Public Async Function ProcesarTiendasDesincorporadas(request As ValidateFileRequest, idCarga As Guid, logger As ILogger) As Task(Of CargaResponse)
 
-        Dim idCarga As Guid = Guid.NewGuid()
+        Dim tablaStaging As String = "STG_TIENDASDESINCORPORADAS"
+        Dim tablaDestino As String = "BDITIENDASDESINCORPORADAS"
+        Dim sp As String = "SP_VALIDATE_TIENDASDESINCORPORADAS"
 
-        Dim errores = Await ValidacionesEstructuraNegocios(request)
+        Dim errores = Await ValidacionesTiendasDesincorporadas(request)
+
+        errores.AddRange(Await _repository.ValidarDuplicadosAsync(
+                tablaStaging,
+                tablaDestino))
 
         If errores.Any() Then
+
             Return New CargaResponse With {
             .Exitoso = False,
             .IdCarga = idCarga,
@@ -32,11 +41,16 @@ Public Class EstructuraNegociosServices
         }
         End If
 
+
+
+        logger.Information("No se encontraron errores de validación en el archivo de Tiendas Desincorporadas . Procediendo a ejecutar el procedimiento almacenado para validar la información.")
+
         Await _repository.EjecutarSPAsync(
-            "dbo.SP_VALIDATE_ESTRUCTURANEGOCIOS",
+            $"dbo.{sp}",
             idCarga
         )
 
+        logger.Information("Procedimiento almacenado {sp} ejecutado correctamente", sp)
 
         Return New CargaResponse With {
         .Exitoso = True,
@@ -48,10 +62,10 @@ Public Class EstructuraNegociosServices
 
 
 
-    Public Async Function ValidacionesEstructuraNegocios(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    Public Async Function ValidacionesTiendasDesincorporadas(request As ValidateFileRequest) As Task(Of List(Of ExcelValidationError))
 
         Dim errorsList As String = Nothing
-        Dim tableName As String = "STG_ESTRUCTURANEGOCIOS"
+        Dim tableName As String = "STG_TIENDASDESINCORPORADAS"
 
         Dim tipo As Type = Type.GetType(request.FileClass)
 
@@ -82,56 +96,32 @@ Public Class EstructuraNegociosServices
 
     End Function
 
-    Public Async Function EnvioEstructuraNegocios(request As SendInfoRequest) As Task
+    Public Async Function EnvioTiendasDesincorporadas(request As SendInfoRequest, logger As ILogger) As Task
 
         If Not Directory.Exists(request.PathSalida) Then
             Directory.CreateDirectory(request.PathSalida)
         End If
 
-        Dim nombreArchivo As String = "BDIESTRUCTURANEGOCIOS.csv"
+        Dim nombreArchivo As String = "BDITIENDASDESINCORPORADAS.csv"
 
         Dim rutaArchivo As String = Path.Combine(request.PathSalida, nombreArchivo)
 
 
         Dim sql As String = "
                   SELECT
-                 Ceco
-                ,Descripcion
-                ,Region
-                ,GZ
-                ,EstatusTienda
-                ,NumeroComerciante
-                ,NombreComerciante
-                ,FORMAT(FechaIngreso, 'dd/MM/yyyy') AS FechaIngreso
-                ,EstatusSK
-                ,FORMAT(FechaMovimiento, 'dd/MM/yyyy') AS FechaMovimiento
-                ,TelefonoSK
-                ,CorreoSK
-                ,GOS
-                ,CveJOS
-                ,CveAcsComercial
-                ,CveAcsControl
-                ,EmpleadoJOS
-                ,NombreJOS
-                ,NumeroEmpleadoAcsCom
-                ,NombreAcsComercial
-                ,CelularAcsComercial
-                ,CorreoACSComercial
-                ,NumeroEmpleadoAcsControl
-                ,NombreAcsControl
-                ,CelularAcsControl
-                ,CorreoAcsControl
-                ,GZSIX2
-                ,CveJOSVal
-                ,CveAcsComercialVal
-                ,CveAcsControlVal
-                ,NumeroEmpleadoAtraccion
-                ,NombreEmpleadoAtraccion
-                ,CelularRedAtraccion
-                ,NumeroEmpleadoCoordinador
-                ,NombreCoordinador
-                    FROM BDIESTRUCTURANEGOCIOS
-                   WHERE IdCarga = @IdCarga
+                 Ceco,
+                Descripcion,
+                Region,
+                GZ,
+                DescJOS,
+                DescACS,
+                Madura,
+                TipoCierre,
+                Status,
+                MesBaja,
+                TipoBaja
+            FROM BDITIENDASDESINCORPORADAS
+            WHERE IdCarga = @IdCarga
                 "
 
         Await _repository.GenerarCsvAsync(
@@ -140,8 +130,11 @@ Public Class EstructuraNegociosServices
                                 request.IdGui
                             )
 
+        logger.Information("Archivo CSV generado correctamente {rutaArchivo}", rutaArchivo)
+
         Await _sftpClient.SubirArchivoAsync(rutaArchivo)
 
+        logger.Information("Archivo enviado al SFTP")
 
     End Function
 
@@ -161,7 +154,6 @@ Public Class EstructuraNegociosServices
         Return Nothing
 
     End Function
-
 
 
 End Class

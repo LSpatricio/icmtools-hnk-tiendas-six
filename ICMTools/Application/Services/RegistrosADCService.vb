@@ -18,7 +18,7 @@ Public Class RegistrosADCService
 
     End Sub
 
-    'Public Async Function ProcesarRegistrosADCService(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    'Public Async Function ProcesarRegistrosADCService(request As ValidateFileRequest) As Task(Of List(Of ExcelValidationError))
 
     '    Dim errores = Await ValidacionesRegistrosADCService(request)
 
@@ -34,7 +34,7 @@ Public Class RegistrosADCService
 
     'End Function
 
-    Public Async Function ProcesarRegistrosADC(request As ValidateFileRequestt) As Task(Of CargaResponse)
+    Public Async Function ProcesarRegistrosADC(request As ValidateFileRequest) As Task(Of CargaResponse)
 
         Dim idCarga As Guid = Guid.NewGuid()
 
@@ -64,7 +64,7 @@ Public Class RegistrosADCService
 
 
 
-    Public Async Function ValidacionesRegistrosADCService(request As ValidateFileRequestt) As Task(Of List(Of ExcelValidationError))
+    Public Async Function ValidacionesRegistrosADCService(request As ValidateFileRequest) As Task(Of List(Of ExcelValidationError))
 
         Dim errorsList As String = Nothing
         Dim tableName As String = "STG_REGISTROSADC"

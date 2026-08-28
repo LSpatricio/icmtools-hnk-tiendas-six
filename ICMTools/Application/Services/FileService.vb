@@ -1,6 +1,6 @@
 ﻿Imports System.Reflection
 
-Public Class FileServices
+Public Class FileService
 
     Private ReadOnly _excelService As ExcelService
     Private ReadOnly _excelReader As ExcelReader
@@ -9,7 +9,7 @@ Public Class FileServices
         _excelReader = New ExcelReader()
     End Sub
 
-    Public Function ValidarExcel(request As ValidateFileRequestt) As List(Of ExcelValidationError)
+    Public Function ValidarExcel(request As ValidateFileRequest) As List(Of ExcelValidationError)
 
         Dim erroresValidacion As List(Of ExcelValidationError) = New List(Of ExcelValidationError)()
         Dim tipo As Type = Type.GetType(request.FileClass)

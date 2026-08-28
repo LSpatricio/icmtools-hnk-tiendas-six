@@ -11,8 +11,9 @@ Imports System.Web.Http
 Imports ClosedXML.Excel
 Imports DocumentFormat.OpenXml.Spreadsheet
 Imports Microsoft.SqlServer.Server
-Imports Microsoft.VisualBasic.Logging
 Imports SixLabors.Fonts.Tables.General
+Imports Serilog
+Imports Serilog.Context
 
 Public Class FileController
     Inherits ApiController
@@ -22,9 +23,7 @@ Public Class FileController
     'Private mLog As Log
     Private sc As New SharedController
     'Private sanitize As New FileClass
-    Private ReadOnly _excelService As New ExcelService
-    Private ReadOnly _excelReader As New ExcelReader
-    Private ReadOnly _fileService As New FileServices
+    Private ReadOnly _fileService As New FileService
 
     '   Private ReadOnly NpgSQL As String = ConfigurationManager.ConnectionStrings("PGSQL_CONNECTION").ConnectionString
 
@@ -32,9 +31,8 @@ Public Class FileController
 
 #Region "Clases"
     Public Sub New()
-        _excelService = New ExcelService()
-        _excelReader = New ExcelReader()
-        _fileService = New FileServices()
+        _fileService = New FileService()
+        Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
 
     End Sub
 
@@ -55,9 +53,15 @@ Public Class FileController
     <HttpPost>
     <Route("api/files/checkexists")>
     Public Function CheckFileExists(<FromBody> request As CheckFileRequest) As IHttpActionResult
+
+        If HttpContext.Current.Session.Item("User") Is Nothing Then Return Unauthorized()
+
+        Dim logger = Log _
+                .ForContext("Pantalla", request.Screen) _
+                .ForContext("Usuario", mUser.Email) _
+                .ForContext("Periodo", request.Period) _
+                .ForContext("Proceso", LoggerConfig.Proceso.CheckExists.ToString())
         Try
-            If HttpContext.Current.Session.Item("User") Is Nothing Then Return Unauthorized()
-            'mLog = New Log()
 
             Dim rawFileType As String = If(request?.FileType, String.Empty)
             Dim rawExtension As String = If(request?.Extension, String.Empty)
@@ -75,12 +79,23 @@ Public Class FileController
 
             If File.Exists(fullPath) Then
 
+               logger.Information("Archivo encontrado. Ruta: {FileType}. Extension: {Extension}",
+                        rawFileType,
+                        rawExtension)
+
                 Return Ok(New With {.d = True, .path = fullPath})
             Else
+                logger.Warning("Archivo no encontrado. Ruta: {FileType}. Extension: {Extension}",
+                        rawFileType,
+                        rawExtension)
+
                 Return Ok(New With {.d = False, .m = "No se pudo cargar el documento porque no existe en la carpeta del servidor, vuelva a intentar la carga."})
             End If
         Catch ex As Exception
-            'mLog.insertLog("FileController", "CheckFileExists", $"Ocurrió un error al revisar el archivo " + ex.Message)
+            logger.Error(
+            ex,
+            "Error al verificar la existencia del archivo."
+        )
             Return InternalServerError(ex)
         End Try
     End Function
@@ -92,8 +107,14 @@ Public Class FileController
     '''<returns>Un Response con un Booleano.</returns>
     <HttpPost>
     <Route("api/files/validate")>
-    Public Function ValidateExcelFile(<FromBody> request As ValidateFileRequestt) As IHttpActionResult
-        ' mLog = New Log
+    Public Function ValidateExcelFile(<FromBody> request As ValidateFileRequest) As IHttpActionResult
+
+        Dim logger = Log _
+                .ForContext("Pantalla", request.Screen) _
+                .ForContext("Usuario", mUser.Email) _
+                .ForContext("Periodo", request.Period) _
+                .ForContext("Proceso", LoggerConfig.Proceso.ValidarArchivo.ToString())
+
         Try
 
             Thread.Sleep(1000)
@@ -116,14 +137,25 @@ Public Class FileController
                     errorsList += $"<tr><td>{errores.Problema}</td><td>" & String.Join(", ", errores.Detalle) & "</td></tr>"
                 Next
 
+                logger.Warning("Archivo no paso validaciones. Ruta: {Path}.",
+                        request.Path)
+
                 Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
 
             End If
 
+            logger.Information("Archivo validado correctamente. Ruta: {Path}.",
+                        request.Path)
+
             Return Ok(New With {.d = True})
 
         Catch ex As Exception
-            'mLog.insertLog("FileController", "ValidateExcelFile", $"Ocurrió un error: " + ex.Message)
+
+            logger.Error(
+                        ex,
+                        "Error al validar el archivo. Ruta: {Path}",
+                        request.Path
+                    )
             Return InternalServerError(ex)
         End Try
     End Function

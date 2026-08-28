@@ -1,4 +1,4 @@
-﻿Public Class EficienciaExcelDto
+﻿Public Class EficienciaExcelDtoTest
 
     <ExcelColumn("Mes / Año", Requerido:=True, ValoresIgnorados:={"Resultado total"})>
     Public Property Mes As String
