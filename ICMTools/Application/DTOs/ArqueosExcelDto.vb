@@ -1,7 +1,4 @@
 Public Class ArqueosExcelDto
-    <ExcelColumn("Codigo de Listado", Requerido:=True, ValoresIgnorados:={})>
-    Public Property CodigoListado As String
-
     ' El Excel compartido no maneja aliases. El archivo real de Arqueos usa "No. SAP".
     ' Se usa Decimal para que sea compatible con ExcelService.EsTipoValido sin modificar
     ' la infraestructura compartida. La regla de entero se valida en ArqueosService.

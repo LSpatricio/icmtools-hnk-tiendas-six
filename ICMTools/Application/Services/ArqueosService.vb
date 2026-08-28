@@ -5,8 +5,8 @@ Imports System.IO
 Imports System.Linq
 Imports System.Reflection
 Imports System.Threading.Tasks
-Imports Serilog
 Imports Dapper
+Imports Serilog
 
 Public Class ArqueosService
     Private ReadOnly _excelReader As ExcelReader
@@ -28,15 +28,16 @@ Public Class ArqueosService
         idCarga As Guid,
         logger As ILogger) As Task(Of CargaResponse)
 
+        Const tablaStaging As String = "STG_ARQUEOS"
+        Const tablaDestino As String = "BDIARQUEOS"
         Const sp As String = "SP_VALIDATE_ARQUEOS"
 
         Dim errores = Await ValidacionesArqueos(request)
 
-        ' SP_VALIDAR_DUPLICADOS es compartido por el resto de las pantallas y
-        ' concatena directamente las columnas de la PK. En Arqueos la PK mezcla
-        ' bigint, date y texto, por lo que la validacion se realiza localmente
-        ' sobre STG_ARQUEOS sin modificar el SP compartido.
-        errores.AddRange(Await ValidarDuplicadosArqueosAsync())
+        errores.AddRange(Await ValidarDuplicadosArqueosAsync(
+            tablaStaging,
+            tablaDestino,
+            logger))
 
         If errores.Any() Then
             Return New CargaResponse With {
@@ -71,14 +72,6 @@ Public Class ArqueosService
         Dim mapeoColumnas As Dictionary(Of PropertyInfo, ExcelColumnAttribute) =
             _excelService.CrearMepeoAtributos(tipo)
 
-        ' Codigo de Listado se valida como parte de la estructura del archivo,
-        ' pero no existe como columna en STG_ARQUEOS. Por eso se excluye
-        ' unicamente del mapeo que se envia al staging.
-        Dim mapeoCarga As Dictionary(Of PropertyInfo, ExcelColumnAttribute) =
-            mapeoColumnas _
-                .Where(Function(x) x.Key.Name <> NameOf(ArqueosExcelDto.CodigoListado)) _
-                .ToDictionary(Function(x) x.Key, Function(x) x.Value)
-
         Await _repository.LimpiarStaging(tableName)
 
         For i As Integer = 0 To cantidadHojas - 1
@@ -88,7 +81,7 @@ Public Class ArqueosService
                     request.Path,
                     request.HeaderRow,
                     i.ToString(),
-                    mapeoCarga,
+                    mapeoColumnas,
                     tableName,
                     Nothing,
                     Nothing,
@@ -190,7 +183,36 @@ Public Class ArqueosService
         Return String.Join("<br/>", errores)
     End Function
 
-    Private Async Function ValidarDuplicadosArqueosAsync() As Task(Of List(Of ExcelValidationError))
+    Private Sub NormalizarTextoOpcionalParaStaging(fila As DataRow, columna As String)
+        If fila.IsNull(columna) Then
+            fila(columna) = String.Empty
+        End If
+    End Sub
+
+    Private Async Function ValidarDuplicadosArqueosAsync(
+        tablaStaging As String,
+        tablaDestino As String,
+        logger As ILogger) As Task(Of List(Of ExcelValidationError))
+
+        Dim requiereValidacionCompatible As Boolean = False
+
+        Try
+            Return Await _repository.ValidarDuplicadosAsync(tablaStaging, tablaDestino)
+        Catch ex As SqlException When ex.Number = 206
+            requiereValidacionCompatible = True
+            logger.Warning(
+                ex,
+                "SP_VALIDAR_DUPLICADOS no admite los tipos mixtos de la PK de Arqueos; se aplicara la validacion compatible")
+        End Try
+
+        If requiereValidacionCompatible Then
+            Return Await ValidarDuplicadosPkMixtaAsync()
+        End If
+
+        Return New List(Of ExcelValidationError)()
+    End Function
+
+    Private Async Function ValidarDuplicadosPkMixtaAsync() As Task(Of List(Of ExcelValidationError))
         Const sql As String = "
             SELECT
                 'Registro duplicado' AS Problema,
@@ -225,12 +247,6 @@ Public Class ArqueosService
             Return errores.ToList()
         End Using
     End Function
-
-    Private Sub NormalizarTextoOpcionalParaStaging(fila As DataRow, columna As String)
-        If fila.IsNull(columna) Then
-            fila(columna) = String.Empty
-        End If
-    End Sub
 
     Private Function TryParseFechaArqueos(valor As Object, ByRef fecha As DateTime) As Boolean
         If valor Is Nothing OrElse valor Is DBNull.Value Then Return False
