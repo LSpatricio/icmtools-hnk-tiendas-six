@@ -315,6 +315,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\DTOs\ArqueosExcelDto.vb" />
+    <Compile Include="Application\DTOs\SA132ExcelDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\CatalogosDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\EstatusTiendaDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDtoTest.vb" />
@@ -333,6 +334,7 @@
     <Compile Include="Application\File\SendInfoRequest.vb" />
     <Compile Include="Application\File\ValidateFileRequest.vb" />
     <Compile Include="Application\Services\ArqueosService.vb" />
+    <Compile Include="Application\Services\SA132Service.vb" />
     <Compile Include="Application\Services\CatalogoService.vb" />
     <Compile Include="Application\Services\EficienciaService.vb" />
     <Compile Include="Application\Services\EstructuraNegociosService.vb" />
@@ -343,6 +345,7 @@
     <Compile Include="Application\Services\RegistrosADCService.vb" />
     <Compile Include="Application\Services\TiendasDesincorporadasService.vb" />
     <Compile Include="Controllers\ArqueosController.vb" />
+    <Compile Include="Controllers\SA132Controller.vb" />
     <Compile Include="Controllers\EstructuraJOSController.vb" />
     <Compile Include="Controllers\EficienciaController.vb" />
     <Compile Include="Controllers\ReporteTiendasDesincorporadasController.vb" />
@@ -392,6 +395,13 @@
     </Compile>
     <Compile Include="Pages\Eficiencia.aspx.vb">
       <DependentUpon>Eficiencia.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Pages\SA132.aspx.designer.vb">
+      <DependentUpon>SA132.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SA132.aspx.vb">
+      <DependentUpon>SA132.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Pages\Arqueos.aspx.designer.vb">
