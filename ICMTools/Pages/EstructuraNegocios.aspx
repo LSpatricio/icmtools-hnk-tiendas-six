@@ -184,6 +184,23 @@ const configuraciones = {
                         <div id="formatErrors" class="pt-3 table-responsive text-default"></div>
                     </div>
                 </div>
+                <div id="warningPanel" class="RespuestaPanel card border-warning" style="display: none;">
+    <div class="card-header text-warning lead">
+        Avisos
+        <span class="badge badge-warning float-right">
+            <i class="fas fa-exclamation-triangle fa-fw"></i>Aviso
+        </span>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">
+            <i class='fas fa-file-excel fa-fw'></i><span id="fileNameWarning"></span>
+        </h5>
+        <p class="card-text" id="MensajeWarning">
+            La carga se realizó correctamente, pero se detectaron algunos avisos.
+        </p>
+        <div id="formatWarnings" class="pt-3 table-responsive text-default"></div>
+    </div>
+</div>
                 <div id="successPanel" class="RespuestaPanel card border-success" style="display: none;">
                     <div class="card-header text-success lead">Confirmación de Carga Exitosa de Estructura de Negocios<span class="badge badge-success float-right"><i class="fas fa-check-circle fa-fw"></i>Listo</span></div>
                     <div class="card-body">

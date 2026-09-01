@@ -386,8 +386,8 @@ function ID_OnSuccess(response, selectors) {
                 $("#formatSuccess").html(response.r);
                 if (typeof activateSuccess === "function") { activateSuccess(); }
             } else if (response.d == 2) {
-                setLoadingBar("¡Carga parcial completada!", 100);
-                setFormStatus("partial", selectors);
+                setLoadingBar("¡Carga completada!", 100);
+                setFormStatus("waning", selectors);
                 $("#formatWarning").html(response.r);
                 if (typeof activateSuccess === "function") { activateSuccess(); }
                 await downloadAndDeleteFile(response.f);

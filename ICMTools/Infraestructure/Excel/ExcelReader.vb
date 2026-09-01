@@ -155,7 +155,7 @@ Public Class ExcelReader
     tablaStaging As String,
     Optional regionSelector As String = Nothing,
     Optional catalogos As CatalogosDto = Nothing,
-    Optional validacionEspecifica As Func(Of DataRow, String, CatalogosDto, String) = Nothing) As Task(Of List(Of ExcelValidationError))
+    Optional validacionEspecifica As Func(Of DataRow, String, CatalogosDto, ExcelValidationError) = Nothing) As Task(Of List(Of ExcelValidationError))
         'DataRow, lo que mandamos, string lo que regresamos
         Dim dt As DataTable = _excelService.CrearDataTable(mapeoColumnas)
         Using stream = File.Open(
@@ -302,19 +302,16 @@ Public Class ExcelReader
                     Next
                     If filaValida AndAlso validacionEspecifica IsNot Nothing Then
 
-                        mensajeError = validacionEspecifica(fila, regionSelector, catalogos)
+                        Dim resultadoValidacion = validacionEspecifica(fila, regionSelector, catalogos)
 
-                        If Not String.IsNullOrWhiteSpace(mensajeError) Then
+                        If resultadoValidacion IsNot Nothing Then
 
-                            filaValida = False
+                            If Not resultadoValidacion.Advertencia Then
+                                filaValida = False
+                            End If
+                            resultadoValidacion.Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
 
-                            listaError.Add(
-                                New ExcelValidationError With {
-                                    .Problema = mensajeError,
-                                    .Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
-                                }
-                            )
-
+                            listaError.Add(resultadoValidacion)
                         End If
 
                     End If

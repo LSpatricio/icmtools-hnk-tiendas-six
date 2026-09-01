@@ -353,8 +353,8 @@ function ID_OnSuccess(response, selectors) {
                 $("#formatSuccess").html(response.r);
                 if (typeof activateSuccess === "function") { activateSuccess(); }
             } else if (response.d == 2) {
-                setLoadingBar("¡Carga parcial completada!", 100);
-                setFormStatus("partial", selectors);
+                setLoadingBar("¡Carga completada!", 100);
+                setFormStatus("warning", selectors);
                 $("#formatWarning").html(response.r);
                 if (typeof activateSuccess === "function") { activateSuccess(); }
                 await downloadAndDeleteFile(response.f);
@@ -470,7 +470,7 @@ function setButtonProcess($button) {
 }
 
 function setFormStatus(status, selectors = 0) {
-    $("#errorPanel, #successPanel, #WarningPanel").fadeOut("fast")
+    $("#errorPanel, #successPanel, #warningPanel").fadeOut("fast")
     switch (status) {
         case 'newfile':
             $("#progressDiv").fadeOut("fast");
@@ -513,6 +513,19 @@ function setFormStatus(status, selectors = 0) {
             break;
         case 'success':
             $("#successPanel").fadeIn("slow");
+            $("#statusUploadTable").html("");
+            $(configuraciones.carga.selector).find('input[type=file]').val("").css("background-color", "#fff");
+
+            File = "-1";
+
+            $("#statusAlert").removeClass("show");
+            $("#progressBar").removeClass("progress-bar-animated")
+            $('#myForm').find('input, file, button, select').attr('disabled', false);
+            $('#btnStartImport').prop('disabled', true).html('<i class="fas fa-play fa-fw"></i> Iniciar Importación');
+            $(".bootstrap-filestyle").find("input[type=text]").val("").attr("disabled", true);
+            break;
+        case 'warning':
+            $("#warningPanel").fadeIn("slow");
             $("#statusUploadTable").html("");
             $(configuraciones.carga.selector).find('input[type=file]').val("").css("background-color", "#fff");
 
