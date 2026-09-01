@@ -308,17 +308,10 @@ Public Class ExcelReader
 
                             If Not resultadoValidacion.Advertencia Then
                                 filaValida = False
-                                If erroresAgrupables.ContainsKey(resultadoValidacion.Problema) Then
-                                    erroresAgrupables(resultadoValidacion.Problema) += 1
-                                Else
-                                    erroresAgrupables.Add(resultadoValidacion.Problema, 1)
-                                End If
-                            Else
-                                resultadoValidacion.Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
-
-                                listaError.Add(resultadoValidacion)
                             End If
+                            resultadoValidacion.Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
 
+                            listaError.Add(resultadoValidacion)
                         End If
 
                     End If

@@ -183,7 +183,7 @@ Public Class EstructuraNegociosService
                 If Not String.Equals(regionFila, regionSelector, StringComparison.OrdinalIgnoreCase) Then
 
                     Return New ExcelValidationError With {
-        .Problema = $"El registro no corresponde a la región seleccionada: {regionSelector}.", .Agrupado = True}
+        .Problema = $"El registro no corresponde a la región seleccionada: {regionSelector}."}
 
                 End If
 
