@@ -45,5 +45,17 @@ Public Class CatalogoService
 
     End Function
 
+    Public Async Function ObtenerTipoMovimientoSix(model As String) As Threading.Tasks.Task(Of List(Of TipoMovimientoSixDto))
+
+        Dim query As IcmQueryResponseDto = Await _icmApiClient.Query(New IcmQueryRequestDto With {
+            .QueryString = $"SELECT ""IDTypeMovement"", ""Description"" FROM ""CatMovementTypeSix""",
+            .Offset = 0,
+            .Limit = 1000
+        }, model)
+
+        Return IcmQueryMapper.MapResponse(Of TipoMovimientoSixDto)(query)
+
+    End Function
+
 
 End Class
