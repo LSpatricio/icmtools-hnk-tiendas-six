@@ -57,5 +57,16 @@ Public Class CatalogoService
 
     End Function
 
+    Public Async Function ObtenerTipoGarantia(model As String) As Threading.Tasks.Task(Of List(Of TipoGarantiaSixDto))
+
+        Dim query As IcmQueryResponseDto = Await _icmApiClient.Query(New IcmQueryRequestDto With {
+            .QueryString = $"SELECT ""IDTypeGuarantee"", ""Description"" FROM ""CatGuaranteeTypeSix""",
+            .Offset = 0,
+            .Limit = 1000
+        }, model)
+
+        Return IcmQueryMapper.MapResponse(Of TipoGarantiaSixDto)(query)
+
+    End Function
 
 End Class

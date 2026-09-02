@@ -316,6 +316,8 @@
   <ItemGroup>
     <Compile Include="Application\DTOs\Catalogos\CatalogosDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\EstatusTiendaDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\TipoGarantiaSixDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\TipoMovimientoSixDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDtoTest.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaExcelDtoTest.vb" />
     <Compile Include="Application\DTOs\EficienciaExcelDto.vb" />
