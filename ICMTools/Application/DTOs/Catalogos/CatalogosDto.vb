@@ -9,4 +9,5 @@
     Public Property CategoriaSix As HashSet(Of String)
     Public Property CeBeSix As HashSet(Of String)
     Public Property ProductSix As HashSet(Of String)
+    Public Property TipoRenta As HashSet(Of String)
 End Class
