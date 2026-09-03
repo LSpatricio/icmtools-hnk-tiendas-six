@@ -124,5 +124,16 @@ Public Class CatalogoService
         Return IcmQueryMapper.MapResponse(Of TipoRentaDto)(query)
 
     End Function
+    Public Async Function ObtenerTipoWage(model As String) As Threading.Tasks.Task(Of List(Of TipoWageDto))
+
+        Dim query As IcmQueryResponseDto = Await _icmApiClient.Query(New IcmQueryRequestDto With {
+            .QueryString = $"SELECT ""IDWageType"", ""Description"" FROM ""CatWageTypeSix""",
+            .Offset = 0,
+            .Limit = 1000
+        }, model)
+
+        Return IcmQueryMapper.MapResponse(Of TipoWageDto)(query)
+
+    End Function
 
 End Class
