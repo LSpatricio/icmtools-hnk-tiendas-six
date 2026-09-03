@@ -102,5 +102,16 @@ Public Class CatalogoService
         Return IcmQueryMapper.MapResponse(Of CeBeSIxDto)(query)
 
     End Function
+    Public Async Function ObtenerProductSix(model As String) As Threading.Tasks.Task(Of List(Of ProductSixDto))
+
+        Dim query As IcmQueryResponseDto = Await _icmApiClient.Query(New IcmQueryRequestDto With {
+            .QueryString = $"SELECT ""IDProduct"", ""Description"" FROM ""CatProductSix""",
+            .Offset = 0,
+            .Limit = 1000
+        }, model)
+
+        Return IcmQueryMapper.MapResponse(Of ProductSixDto)(query)
+
+    End Function
 
 End Class
