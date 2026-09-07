@@ -3,6 +3,17 @@
     Public Property Regiones As HashSet(Of String)
     Public Property GZSix As HashSet(Of String)
     Public Property EstatusTienda As HashSet(Of String)
-
-
+    Public Property TipoMovimientoSix As HashSet(Of String)
+    Public Property TipoGarantiaSix As HashSet(Of String)
+    Public Property EstatusSKSix As HashSet(Of String)
+    Public Property CategoriaSix As HashSet(Of String)
+    Public Property CeBeSix As HashSet(Of String)
+    Public Property ProductSix As HashSet(Of String)
+    Public Property TipoRenta As HashSet(Of String)
+    Public Property TipoWage As HashSet(Of String)
+    Public Property PosicionSix As HashSet(Of String)
+    Public Property EstatusSix As HashSet(Of String)
+    Public Property CalculationSix As HashSet(Of String)
+    Public Property RutaSix As HashSet(Of String)
+    Public Property SubDivisionPersonal As HashSet(Of String)
 End Class
