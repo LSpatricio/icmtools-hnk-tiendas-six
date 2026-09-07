@@ -15,4 +15,5 @@
     Public Property EstatusSix As HashSet(Of String)
     Public Property CalculationSix As HashSet(Of String)
     Public Property RutaSix As HashSet(Of String)
+    Public Property SubDivisionPersonal As HashSet(Of String)
 End Class

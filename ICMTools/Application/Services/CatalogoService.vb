@@ -179,5 +179,15 @@ Public Class CatalogoService
         Return IcmQueryMapper.MapResponse(Of RutaSixDto)(query)
 
     End Function
+    Public Async Function ObtenerSubDivisionPersonal(model As String) As Threading.Tasks.Task(Of List(Of SubDivisionPersonalDto))
 
+        Dim query As IcmQueryResponseDto = Await _icmApiClient.Query(New IcmQueryRequestDto With {
+            .QueryString = $"SELECT ""IDPersonalSubdivision"", ""Description"" FROM ""CatPersonalSubdivision""",
+            .Offset = 0,
+            .Limit = 1000
+        }, model)
+
+        Return IcmQueryMapper.MapResponse(Of SubDivisionPersonalDto)(query)
+
+    End Function
 End Class
