@@ -219,7 +219,7 @@ Public Class ExcelReader
                 reader.Read()
 
                 Dim batchSize As Integer = 50000
-
+                Dim erroresAgrupables As New Dictionary(Of String, Integer)()
                 Do
                     conteoFilas += 1
 
@@ -308,10 +308,17 @@ Public Class ExcelReader
 
                             If Not resultadoValidacion.Advertencia Then
                                 filaValida = False
-                            End If
-                            resultadoValidacion.Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
+                                If erroresAgrupables.ContainsKey(resultadoValidacion.Problema) Then
+                                    erroresAgrupables(resultadoValidacion.Problema) += 1
+                                Else
+                                    erroresAgrupables.Add(resultadoValidacion.Problema, 1)
+                                End If
+                            Else
+                                resultadoValidacion.Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
 
-                            listaError.Add(resultadoValidacion)
+                                listaError.Add(resultadoValidacion)
+                            End If
+
                         End If
 
                     End If
@@ -330,6 +337,14 @@ Public Class ExcelReader
                     Await _repository.InsertarBatch(tablaStaging, dt)
                     dt.Clear()
                 End If
+                For Each errorAgrupado In erroresAgrupables
+
+                    listaError.Add(New ExcelValidationError With {
+                        .Problema = errorAgrupado.Key,
+                        .Detalle = $"{errorAgrupado.Value} registros presentan este problema."
+                    })
+
+                Next
 
                 Return listaError
 
