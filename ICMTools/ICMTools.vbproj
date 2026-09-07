@@ -315,10 +315,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\DTOs\ArqueosExcelDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\CalculatioSixDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\CatalogosDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\CategoriaSixDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\CeBeSIxDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\EstatusSixDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\EstatusSKSixDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\EstatusTiendaDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\PosicionDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\ProductSixDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\RutaSixDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\SubDivisionPersonalDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\TipoGarantiaSixDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\TipoMovimientoSixDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\TipoRentaDto.vb" />
+    <Compile Include="Application\DTOs\Catalogos\TipoWageDto.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EfectividadExcelDtoTest.vb" />
     <Compile Include="Application\DTOs\EficienciaEfectividad\EficienciaExcelDtoTest.vb" />
     <Compile Include="Application\DTOs\EficienciaExcelDto.vb" />

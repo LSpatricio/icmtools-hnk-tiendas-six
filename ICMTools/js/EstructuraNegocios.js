@@ -17,7 +17,7 @@ function CargarInformacion(dataRequest) {
         data: JSON.stringify(dataRequest),
 
         success: function (response) {
-            if (response.d === true) {
+            if (response.d === true || response.warning ===true) {
                
                 const rutaSalida = dataRequest.Path.replace(/[^\\]+$/, "Salida");
 
@@ -30,7 +30,7 @@ function CargarInformacion(dataRequest) {
 
                 
 
-                EnviarInformacion(requestData);
+                EnviarInformacion(requestData, response.warning, response.d );
 
 
                 $("#MensajeError").text("");
@@ -53,7 +53,7 @@ function CargarInformacion(dataRequest) {
 }
 
 
-function EnviarInformacion(dataRequest) {
+function EnviarInformacion(dataRequest, warning, tabla) {
     setFormStatus("processing");
     setLoadingBar("Cargando información", 85);
 
@@ -67,9 +67,19 @@ function EnviarInformacion(dataRequest) {
             if (response.d === true) {
                
                 setLoadingBar("Carga Completa!", 100);
-                setFormStatus("success");
+                if (warning === true)
+                {
+                    setFormStatus("warning");
+                    $("#formatWarnings").html(tabla);
+                    if (typeof activateTable === "function") { activateTable(); }
+                }
+                else
+                {
+                    setFormStatus("success");
 
-                $("#formatSuccess").html("Archivo enviado.");
+                    $("#formatSuccess").html("Archivo enviado.");
+                }
+             
 
                 $("#MensajeError").text("");
             } 

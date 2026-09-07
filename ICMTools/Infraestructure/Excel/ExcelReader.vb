@@ -155,7 +155,7 @@ Public Class ExcelReader
     tablaStaging As String,
     Optional regionSelector As String = Nothing,
     Optional catalogos As CatalogosDto = Nothing,
-    Optional validacionEspecifica As Func(Of DataRow, String, CatalogosDto, String) = Nothing) As Task(Of List(Of ExcelValidationError))
+    Optional validacionEspecifica As Func(Of DataRow, String, CatalogosDto, ExcelValidationError) = Nothing) As Task(Of List(Of ExcelValidationError))
         'DataRow, lo que mandamos, string lo que regresamos
         Dim dt As DataTable = _excelService.CrearDataTable(mapeoColumnas)
         Using stream = File.Open(
@@ -219,7 +219,7 @@ Public Class ExcelReader
                 reader.Read()
 
                 Dim batchSize As Integer = 50000
-
+                Dim erroresAgrupables As New Dictionary(Of String, Integer)()
                 Do
                     conteoFilas += 1
 
@@ -302,18 +302,22 @@ Public Class ExcelReader
                     Next
                     If filaValida AndAlso validacionEspecifica IsNot Nothing Then
 
-                        mensajeError = validacionEspecifica(fila, regionSelector, catalogos)
+                        Dim resultadoValidacion = validacionEspecifica(fila, regionSelector, catalogos)
 
-                        If Not String.IsNullOrWhiteSpace(mensajeError) Then
+                        If resultadoValidacion IsNot Nothing Then
 
-                            filaValida = False
+                            If Not resultadoValidacion.Advertencia Then
+                                filaValida = False
+                                If erroresAgrupables.ContainsKey(resultadoValidacion.Problema) Then
+                                    erroresAgrupables(resultadoValidacion.Problema) += 1
+                                Else
+                                    erroresAgrupables.Add(resultadoValidacion.Problema, 1)
+                                End If
+                            Else
+                                resultadoValidacion.Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
 
-                            listaError.Add(
-                                New ExcelValidationError With {
-                                    .Problema = mensajeError,
-                                    .Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
-                                }
-                            )
+                                listaError.Add(resultadoValidacion)
+                            End If
 
                         End If
 
@@ -333,6 +337,14 @@ Public Class ExcelReader
                     Await _repository.InsertarBatch(tablaStaging, dt)
                     dt.Clear()
                 End If
+                For Each errorAgrupado In erroresAgrupables
+
+                    listaError.Add(New ExcelValidationError With {
+                        .Problema = errorAgrupado.Key,
+                        .Detalle = $"{errorAgrupado.Value} registros presentan este problema."
+                    })
+
+                Next
 
                 Return listaError
 
