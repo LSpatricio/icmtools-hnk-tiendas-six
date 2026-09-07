@@ -13,4 +13,5 @@
     Public Property TipoWage As HashSet(Of String)
     Public Property PosicionSix As HashSet(Of String)
     Public Property EstatusSix As HashSet(Of String)
+    Public Property CalculationSix As HashSet(Of String)
 End Class
