@@ -1,0 +1,23 @@
+name: CI icmtools
+
+on:
+    pull_request: 
+        branches: 
+            -main
+
+jobs:
+    build:
+        runs-on: windows-latest
+
+        steps:
+            - name: checkout
+              uses: actions/checkout@v4
+
+            - name: Setup MSBuild
+              uses: microsoft/setup-msbuild@v2
+
+            - name: Restore NuGet packages
+              run: nuget restore ICMTools.sln
+
+            - name: Build
+              run: msbuild ICMTools.sln /p:Configuration=Release
