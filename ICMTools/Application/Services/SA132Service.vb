@@ -79,8 +79,8 @@ Public Class SA132Service
                     mapeoColumnas,
                     tableName,
                     Nothing,
-                    Nothing,
-                    AddressOf ValidarFilaSA132))
+                    Nothing))
+            'AddressOf ValidarFilaSA132))
         Next
 
         Return valoresErrores

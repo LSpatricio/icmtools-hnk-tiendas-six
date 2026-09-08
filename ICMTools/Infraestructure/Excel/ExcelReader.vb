@@ -155,7 +155,7 @@ Public Class ExcelReader
     tablaStaging As String,
     Optional regionSelector As String = Nothing,
     Optional catalogos As CatalogosDto = Nothing,
-    Optional validacionEspecifica As Func(Of DataRow, String, CatalogosDto, String) = Nothing) As Task(Of List(Of ExcelValidationError))
+    Optional validacionEspecifica As Func(Of DataRow, CatalogosDto, ExcelValidationError) = Nothing) As Task(Of List(Of ExcelValidationError))
         'DataRow, lo que mandamos, string lo que regresamos
         Dim dt As DataTable = _excelService.CrearDataTable(mapeoColumnas)
         Using stream = File.Open(
@@ -168,6 +168,8 @@ Public Class ExcelReader
                 Dim listaError As New List(Of ExcelValidationError)
                 Dim mensajeError As String = String.Empty
                 Dim conteoFilas As Integer = filaEncabezado
+                Dim erroresCantidad As Integer = 0
+                Dim claveError As String = String.Empty
 
                 nombreHoja = MoverAHoja(reader, nombreHoja)
 
@@ -219,6 +221,8 @@ Public Class ExcelReader
                 reader.Read()
 
                 Dim batchSize As Integer = 50000
+                Dim erroresAgrupables As New Dictionary(Of String, Integer)()
+                Dim erroresAgrupablesRuta As New Dictionary(Of String, Integer)()
 
                 Do
                     conteoFilas += 1
@@ -266,58 +270,112 @@ Public Class ExcelReader
 
                             If Not _excelService.EsTipoValido(valor, tipoReal) Then
                                 filaValida = False
-                                Dim descripcion = _excelService.ObtenerDescripcionTipo(tipoEsperado)
+                                erroresCantidad += 1
 
-                                mensajeError = $"La columna '{mapeo.Value.ColumnName}' requiere {descripcion}."
+                                claveError = "Tipo de dato no válido"
+                                If erroresAgrupables.ContainsKey(claveError) Then
+                                    erroresAgrupables(claveError) += 1
+                                Else
+                                    erroresAgrupables.Add(claveError, 1)
+                                End If
 
-                                listaError.Add(
-                                    New ExcelValidationError With {
+                                If erroresCantidad <= 200 Then
+                                    Dim descripcion = _excelService.ObtenerDescripcionTipo(tipoEsperado)
+                                    mensajeError = $"La columna '{mapeo.Value.ColumnName}' requiere {descripcion}."
+
+                                    listaError.Add(New ExcelValidationError With {
                                         .Problema = mensajeError,
                                         .Detalle = $"Valor:'{valor}'. Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
                                     })
+                                End If
+
                             Else
                                 fila(mapeo.Key.Name) = valor
 
                             End If
 
-
-
                         ElseIf mapeo.Value.Requerido Then
 
                             filaValida = False
-                            mensajeError = $"La columna '{mapeo.Value.ColumnName}' no admite valores vacíos."
-                            listaError.Add(
-                            New ExcelValidationError With {
-                                .Problema = mensajeError,
+                            erroresCantidad += 1
+
+                            claveError = "No se admiten valores vacío"
+                            If erroresAgrupables.ContainsKey(claveError) Then
+                                erroresAgrupables(claveError) += 1
+                            Else
+                                erroresAgrupables.Add(claveError, 1)
+                            End If
+
+                            If erroresCantidad <= 200 Then
+                                mensajeError = $"La columna '{mapeo.Value.ColumnName}' no admite valores vacíos."
+
+                                listaError.Add(New ExcelValidationError With {
+                                    .Problema = mensajeError,
                                 .Detalle = $"Columna sin información en la fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
-                            })
+                                })
+                            End If
+                        Else
+                            fila(mapeo.Key.Name) = DBNull.Value
+                        End If
+                    Next
+
+                    If regionSelector IsNot Nothing Then
+
+                        Dim regionFila As String = fila.Field(Of String)("Region") 'Nombre de la fila en el datatable, mapeado desde la clase...
+
+                        If Not String.Equals(regionSelector, "Todas", StringComparison.OrdinalIgnoreCase) Then
+
+                            If Not String.Equals(regionFila, regionSelector, StringComparison.OrdinalIgnoreCase) Then
+                                claveError = $"El registro no corresponde a la región seleccionada: {regionSelector}."
+                                filaValida = False
+                                If erroresAgrupablesRuta.ContainsKey(claveError) Then
+                                    erroresAgrupablesRuta(claveError) += 1
+                                Else
+                                    erroresAgrupablesRuta.Add(claveError, 1)
+                                End If
+
+
+                            End If
 
                         Else
+                            If Not catalogos.Regiones.Contains(regionFila) Then
+                                filaValida = False
+                                erroresCantidad += 1
+                                claveError = $"Filas con regiones que no pertenecen al catálogo de regiones válido."
+                                If erroresAgrupables.ContainsKey(claveError) Then
+                                    erroresAgrupables(claveError) += 1
+                                Else
+                                    erroresAgrupables.Add(claveError, 1)
+                                End If
 
-                            fila(mapeo.Key.Name) = DBNull.Value
-
-                        End If
-
-
-                    Next
-                    If filaValida AndAlso validacionEspecifica IsNot Nothing Then
-
-                        mensajeError = validacionEspecifica(fila, regionSelector, catalogos)
-
-                        If Not String.IsNullOrWhiteSpace(mensajeError) Then
-
-                            filaValida = False
-
-                            listaError.Add(
-                                New ExcelValidationError With {
-                                    .Problema = mensajeError,
-                                    .Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
-                                }
-                            )
+                                If erroresCantidad <= 200 Then
+                                    listaError.Add(New ExcelValidationError With {
+                                    .Problema = $"La región {regionFila} no pertenece al catálogo de regiones válido.",
+                                .Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
+                                })
+                                End If
+                            End If
 
                         End If
 
                     End If
+
+                    If validacionEspecifica IsNot Nothing AndAlso filaValida Then
+
+                        Dim resultadoValidacion = validacionEspecifica(fila, catalogos)
+
+                        If resultadoValidacion IsNot Nothing Then
+                            With resultadoValidacion
+                                .Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
+                                .Advertencia = True
+                            End With
+
+                            listaError.Add(resultadoValidacion)
+
+                        End If
+
+                    End If
+
                     If filaValida Then
                         dt.Rows.Add(fila)
                     End If
@@ -333,6 +391,25 @@ Public Class ExcelReader
                     Await _repository.InsertarBatch(tablaStaging, dt)
                     dt.Clear()
                 End If
+
+                If erroresCantidad > 200 Then
+                    listaError.Clear()
+
+                    For Each errorAgrupado In erroresAgrupables
+                        listaError.Add(New ExcelValidationError With {
+                        .Problema = errorAgrupado.Key,
+                        .Detalle = $"{errorAgrupado.Value} registros presentan este problema en total."
+                    })
+                    Next
+                End If
+
+                For Each errorAgrupado In erroresAgrupablesRuta
+                    listaError.Add(New ExcelValidationError With {
+                    .Problema = errorAgrupado.Key,
+                    .Detalle = $"{errorAgrupado.Value} registros presentan este problema en total."
+                })
+                Next
+
 
                 Return listaError
 
@@ -396,5 +473,6 @@ Public Class ExcelReader
         Return nombreHoja
 
     End Function
+
 
 End Class

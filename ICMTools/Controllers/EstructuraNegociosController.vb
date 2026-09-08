@@ -49,20 +49,49 @@ Public Class EstructuraNegociosController
 
             If cargaResponse.Errores.Any() Then
 
-                logger.Warning(
-                    "Se encontraron {CantidadErrores} errores de validación.",
-                    cargaResponse.Errores.Count
-                )
+                Dim erroresBloqueantes = cargaResponse.Errores.Where(Function(x) Not x.Advertencia).ToList()
+                Dim avisos = cargaResponse.Errores.Where(Function(x) x.Advertencia).ToList()
 
-                For Each errores In cargaResponse.Errores
-                    errorsList += $"<tr><td>{errores.Problema}</td><td>" & String.Join(", ", errores.Detalle) & "</td></tr>"
-                Next
+                If erroresBloqueantes.Any() Then
 
-                Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
+                    logger.Warning(
+            "Se encontraron {CantidadErrores} errores de validación.",
+            erroresBloqueantes.Count
+        )
+
+                    For Each errorValidacion In erroresBloqueantes
+                        errorsList +=
+                $"<tr><td>{errorValidacion.Problema}</td>" &
+                $"<td>{errorValidacion.Detalle}</td></tr>"
+                    Next
+
+                    Return Ok(New With {
+            .d = sc.TableBuilder(errorsList, 1)
+        })
+
+
+                ElseIf avisos.Any() Then
+
+                    logger.Information(
+            "La carga se realizó correctamente con {CantidadAvisos} avisos.",
+            avisos.Count
+        )
+                    For Each aviso In avisos
+                        errorsList +=
+                $"<tr><td>{aviso.Problema}</td>" &
+                $"<td>{aviso.Detalle}</td></tr>"
+                    Next
+
+
+                    Return Ok(New With {.d = sc.TableBuilder(errorsList, 1), .id = cargaResponse.IdCarga, .warning = True})
+
+
+
+                End If
 
             End If
 
-            Return Ok(New With {.d = cargaResponse.Exitoso, .id = cargaResponse.IdCarga})
+            Return Ok(New With {.d = cargaResponse.Exitoso, .id = cargaResponse.IdCarga, .waning = False})
         Catch ex As Exception
             logger.Error(
             ex,

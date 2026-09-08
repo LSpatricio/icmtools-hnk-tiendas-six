@@ -36,13 +36,14 @@ Public Class EstructuraNegociosService
                 tablaStaging,
                 tablaDestino))
 
-        If errores.Any() Then
+        If errores.Any(Function(x) Not x.Advertencia) Then
 
             Return New CargaResponse With {
-            .Exitoso = False,
-            .IdCarga = idCarga,
-            .Errores = errores
-        }
+        .Exitoso = False,
+        .IdCarga = idCarga,
+        .Errores = errores
+    }
+
         End If
 
 
@@ -59,7 +60,7 @@ Public Class EstructuraNegociosService
         Return New CargaResponse With {
         .Exitoso = True,
         .IdCarga = idCarga,
-        .Errores = New List(Of ExcelValidationError)()
+        .Errores = errores
     }
 
     End Function
@@ -83,7 +84,6 @@ Public Class EstructuraNegociosService
 
         Dim catalogos = Await ObtenerCatalogos(mUser.Model)
 
-        ' Dim regionesValidas As New HashSet(Of String)((Await _catalogoService.ObtenerRegiones(mUser.Model)).Select(Function(r) r.Description), StringComparer.OrdinalIgnoreCase)
 
         For i As Integer = 0 To cantidadHojas - 1
 
@@ -172,27 +172,17 @@ Public Class EstructuraNegociosService
 
     End Function
 
-    Public Function ValidarFiltroEstructuraNegociosAsync(fila As DataRow, Optional regionSelector As String = Nothing, Optional catalogos As CatalogosDto = Nothing) As String
+    Public Function ValidarFiltroEstructuraNegociosAsync(fila As DataRow, Optional catalogos As CatalogosDto = Nothing) As ExcelValidationError
 
-        If regionSelector IsNot Nothing Then
+        Dim gzSixFila As String = fila.Field(Of String)("GZ")
+        Dim estatusTiendaFila As String = fila.Field(Of String)("EstatusTienda")
 
-            If Not String.Equals(regionSelector, "Todas", StringComparison.OrdinalIgnoreCase) Then
+        If Not catalogos.GZSix.Contains(gzSixFila) Then
+            Return New ExcelValidationError With {.Problema = $"El valor {gzSixFila} para 'GZSIX' no se encuentra en el catálogo de ICM CatGZSix.", .Advertencia = True}
+        End If
 
-                Dim regionFila As String = fila.Field(Of String)("Region")
-
-                If Not String.Equals(regionFila, regionSelector, StringComparison.OrdinalIgnoreCase) Then
-                    Return $"El registro no corresponde a la región seleccionada: {regionSelector}."
-                End If
-
-            Else
-                Dim regionFila As String = fila.Field(Of String)("Region")
-
-                If Not catalogos.Regiones.Contains(regionFila) Then
-                    Return $"La región {regionFila} no pertenece al catálogo de regiones válido."
-                End If
-
-
-            End If
+        If Not catalogos.EstatusTienda.Contains(estatusTiendaFila) Then
+            Return New ExcelValidationError With {.Problema = $"El valor {estatusTiendaFila} para 'EstatusTienda' no se encuentra en el catálogo de ICM CatStoreStatusSix.", .Advertencia = True}
         End If
 
         Return Nothing
