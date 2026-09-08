@@ -23,12 +23,27 @@ Public Class RenegociacionesController
         Try
             Thread.Sleep(1000)
             Dim response = Await _service.ProcesarRenegociaciones(request, idCarga, logger)
-            If response.Errores.Any() Then
+            Dim erroresBloqueantes = response.Errores.Where(Function(x) Not x.Advertencia).ToList()
+            Dim avisos = response.Errores.Where(Function(x) x.Advertencia).ToList()
+
+            If erroresBloqueantes.Any() Then
                 Dim errorsList As String = Nothing
-                For Each errorItem In response.Errores
-                    errorsList += $"<tr><td>{errorItem.Problema}</td><td>" & String.Join(", ", errorItem.Detalle) & "</td></tr>"
+                For Each errorItem In erroresBloqueantes
+                    errorsList += $"<tr><td>{errorItem.Problema}</td><td>{errorItem.Detalle}</td></tr>"
                 Next
                 Return Ok(New With {.d = _sharedController.TableBuilder(errorsList, 1)})
+            End If
+
+            If avisos.Any() Then
+                Dim warningsList As String = Nothing
+                For Each aviso In avisos
+                    warningsList += $"<tr><td>{aviso.Problema}</td><td>{aviso.Detalle}</td></tr>"
+                Next
+                Return Ok(New With {
+                    .d = _sharedController.TableBuilder(warningsList, 1),
+                    .id = response.IdCarga,
+                    .warning = True
+                })
             End If
             Return Ok(New With {.d = response.Exitoso, .id = response.IdCarga})
         Catch ex As Exception

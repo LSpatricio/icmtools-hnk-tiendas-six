@@ -41,19 +41,29 @@ Public Class ArqueosController
 
             logger.Information("Fin proceso de validaciones y carga de informacion para Arqueos")
 
-            If cargaResponse.Errores.Any() Then
+            Dim erroresBloqueantes = cargaResponse.Errores.Where(Function(x) Not x.Advertencia).ToList()
+            Dim avisos = cargaResponse.Errores.Where(Function(x) x.Advertencia).ToList()
 
-                logger.Warning(
-                    "Se encontraron {CantidadErrores} errores de validacion.",
-                    cargaResponse.Errores.Count
-                )
+            If erroresBloqueantes.Any() Then
+                logger.Warning("Se encontraron {CantidadErrores} errores de validacion.", erroresBloqueantes.Count)
 
-                For Each errores In cargaResponse.Errores
-                    errorsList += $"<tr><td>{errores.Problema}</td><td>" & String.Join(", ", errores.Detalle) & "</td></tr>"
+                For Each errorItem In erroresBloqueantes
+                    errorsList += $"<tr><td>{errorItem.Problema}</td><td>{errorItem.Detalle}</td></tr>"
                 Next
 
                 Return Ok(New With {.d = sc.TableBuilder(errorsList, 1)})
+            End If
 
+            If avisos.Any() Then
+                For Each aviso In avisos
+                    errorsList += $"<tr><td>{aviso.Problema}</td><td>{aviso.Detalle}</td></tr>"
+                Next
+
+                Return Ok(New With {
+                    .d = sc.TableBuilder(errorsList, 1),
+                    .id = cargaResponse.IdCarga,
+                    .warning = True
+                })
             End If
 
             Return Ok(New With {.d = cargaResponse.Exitoso, .id = cargaResponse.IdCarga})

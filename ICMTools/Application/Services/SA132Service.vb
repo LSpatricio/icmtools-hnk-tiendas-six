@@ -39,7 +39,7 @@ Public Class SA132Service
             tablaDestino,
             logger))
 
-        If errores.Any() Then
+        If errores.Any(Function(x) Not x.Advertencia) Then
             Return New CargaResponse With {
                 .Exitoso = False,
                 .IdCarga = idCarga,
@@ -55,7 +55,7 @@ Public Class SA132Service
         Return New CargaResponse With {
             .Exitoso = True,
             .IdCarga = idCarga,
-            .Errores = New List(Of ExcelValidationError)()
+            .Errores = errores
         }
     End Function
 
@@ -79,8 +79,8 @@ Public Class SA132Service
                     mapeoColumnas,
                     tableName,
                     Nothing,
-                    Nothing))
-            'AddressOf ValidarFilaSA132))
+                    Nothing,
+                    AddressOf ValidarFilaSA132))
         Next
 
         Return valoresErrores
@@ -88,8 +88,7 @@ Public Class SA132Service
 
     Private Function ValidarFilaSA132(
         fila As DataRow,
-        Optional regionSelector As String = Nothing,
-        Optional catalogos As CatalogosDto = Nothing) As String
+        catalogos As CatalogosDto) As ExcelValidationError
 
         Dim errores As New List(Of String)()
 
@@ -120,7 +119,11 @@ Public Class SA132Service
         End If
 
         If errores.Count = 0 Then Return Nothing
-        Return String.Join("<br/>", errores)
+
+        Return New ExcelValidationError With {
+            .Problema = "Validación de SA132",
+            .Detalle = String.Join("<br/>", errores)
+        }
     End Function
 
     Private Sub NormalizarTextoOpcionalParaStaging(fila As DataRow, columna As String)

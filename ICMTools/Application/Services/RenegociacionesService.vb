@@ -29,14 +29,14 @@ Public Class RenegociacionesService
         Dim errores = Await ValidacionesRenegociaciones(request)
         errores.AddRange(Await _repository.ValidarDuplicadosAsync("STG_RENEGOCIACIONES", "BDIRENEGOCIACIONES"))
 
-        If errores.Any() Then
+        If errores.Any(Function(x) Not x.Advertencia) Then
             Return New CargaResponse With {.Exitoso = False, .IdCarga = idCarga, .Errores = errores}
         End If
 
         Await _repository.EjecutarSPAsync("dbo.SP_VALIDATE_RENEGOCIACIONES", idCarga)
         logger.Information("Procedimiento almacenado de renegociaciones ejecutado correctamente")
 
-        Return New CargaResponse With {.Exitoso = True, .IdCarga = idCarga, .Errores = New List(Of ExcelValidationError)()}
+        Return New CargaResponse With {.Exitoso = True, .IdCarga = idCarga, .Errores = errores}
     End Function
 
     Public Async Function ValidacionesRenegociaciones(request As ValidateFileRequest) As Task(Of List(Of ExcelValidationError))
