@@ -163,6 +163,12 @@ Public Class MasterPage
         .IDScreen = 6,
         .ScreenName = "SA132",
         .URL = "SA132.aspx"
+    },
+    New AppScreen With {
+        .IDModel = 1,
+        .IDScreen = 7,
+        .ScreenName = "Renegociaciones - CptRe-Negocia",
+        .URL = "RenegociacionesCptReNegocia.aspx"
     }
 }
             If menu IsNot Nothing Then
