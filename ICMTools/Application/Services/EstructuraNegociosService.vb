@@ -172,39 +172,17 @@ Public Class EstructuraNegociosService
 
     End Function
 
-    Public Function ValidarFiltroEstructuraNegociosAsync(fila As DataRow, Optional regionSelector As String = Nothing, Optional catalogos As CatalogosDto = Nothing) As ExcelValidationError
+    Public Function ValidarFiltroEstructuraNegociosAsync(fila As DataRow, Optional catalogos As CatalogosDto = Nothing) As ExcelValidationError
 
-        If regionSelector IsNot Nothing Then
+        Dim gzSixFila As String = fila.Field(Of String)("GZ")
+        Dim estatusTiendaFila As String = fila.Field(Of String)("EstatusTienda")
 
-            If Not String.Equals(regionSelector, "Todas", StringComparison.OrdinalIgnoreCase) Then
+        If Not catalogos.GZSix.Contains(gzSixFila) Then
+            Return New ExcelValidationError With {.Problema = $"El valor {gzSixFila} para 'GZSIX' no se encuentra en el catálogo de ICM CatGZSix.", .Advertencia = True}
+        End If
 
-                Dim regionFila As String = fila.Field(Of String)("Region")
-
-                If Not String.Equals(regionFila, regionSelector, StringComparison.OrdinalIgnoreCase) Then
-
-                    Return New ExcelValidationError With {
-        .Problema = $"El registro no corresponde a la región seleccionada: {regionSelector}.", .Agrupado = True}
-
-                End If
-
-            Else
-                Dim regionFila As String = fila.Field(Of String)("Region")
-                Dim gzSixFila As String = fila.Field(Of String)("GZ")
-                Dim estatusTiendaFila As String = fila.Field(Of String)("EstatusTienda")
-
-                If Not catalogos.Regiones.Contains(regionFila) Then
-                    Return New ExcelValidationError With {.Problema = $"La región {regionFila} no pertenece al catálogo de regiones válido."}
-                End If
-
-                If Not catalogos.GZSix.Contains(gzSixFila) Then
-                    Return New ExcelValidationError With {.Problema = $"El valor {gzSixFila} para 'GZSIX' no se encuentra en el catálogo de ICM CatGZSix.", .Advertencia = True}
-                End If
-
-                If Not catalogos.EstatusTienda.Contains(estatusTiendaFila) Then
-                    Return New ExcelValidationError With {.Problema = $"El valor {estatusTiendaFila} para 'EstatusTienda' no se encuentra en el catálogo de ICM CatStoreStatusSix.", .Advertencia = True}
-                End If
-
-            End If
+        If Not catalogos.EstatusTienda.Contains(estatusTiendaFila) Then
+            Return New ExcelValidationError With {.Problema = $"El valor {estatusTiendaFila} para 'EstatusTienda' no se encuentra en el catálogo de ICM CatStoreStatusSix.", .Advertencia = True}
         End If
 
         Return Nothing

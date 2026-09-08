@@ -3,5 +3,4 @@
     Public Property Problema As String
     Public Property Detalle As String
     Public Property Advertencia As Boolean = False
-    Public Property Agrupado As Boolean = False
 End Class
