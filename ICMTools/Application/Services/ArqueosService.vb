@@ -84,8 +84,8 @@ Public Class ArqueosService
                     mapeoColumnas,
                     tableName,
                     Nothing,
-                    Nothing,
-                    AddressOf ValidarFilaArqueos))
+                    Nothing)) ',
+            'AddressOf ValidarFilaArqueos))
         Next
 
         Return valoresErrores
