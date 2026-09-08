@@ -3,7 +3,7 @@ name: CI icmtools
 on:
     pull_request: 
         branches: 
-            -main
+            - main
 
 jobs:
     build:
