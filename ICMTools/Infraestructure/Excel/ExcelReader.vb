@@ -360,24 +360,17 @@ Public Class ExcelReader
 
                     End If
 
-
                     If validacionEspecifica IsNot Nothing AndAlso filaValida Then
 
                         Dim resultadoValidacion = validacionEspecifica(fila, catalogos)
 
                         If resultadoValidacion IsNot Nothing Then
+                            With resultadoValidacion
+                                .Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
+                                .Advertencia = True
+                            End With
 
-                            If filaValida AndAlso resultadoValidacion.Advertencia Then
-                                resultadoValidacion.Detalle = $"Fila {conteoFilas}. Hoja <strong>{nombreHoja}</strong>."
-                                listaError.Add(resultadoValidacion)
-                            Else
-                                filaValida = False
-                                If erroresAgrupables.ContainsKey(resultadoValidacion.Problema) Then
-                                    erroresAgrupables(resultadoValidacion.Problema) += 1
-                                Else
-                                    erroresAgrupables.Add(resultadoValidacion.Problema, 1)
-                                End If
-                            End If
+                            listaError.Add(resultadoValidacion)
 
                         End If
 
@@ -400,7 +393,7 @@ Public Class ExcelReader
                 End If
 
                 If erroresCantidad > 200 Then
-                    listaError.Clear() ' <--- Aquí destruyes el detalle individual
+                    listaError.Clear()
 
                     For Each errorAgrupado In erroresAgrupables
                         listaError.Add(New ExcelValidationError With {
