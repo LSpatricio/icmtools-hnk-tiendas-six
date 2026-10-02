@@ -315,8 +315,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\DTOs\ArqueosExcelDto.vb" />
+<<<<<<< HEAD
     <Compile Include="Application\DTOs\SA132ExcelDto.vb" />
+=======
     <Compile Include="Application\DTOs\Catalogos\CalculatioSixDto.vb" />
+>>>>>>> origin/main
     <Compile Include="Application\DTOs\Catalogos\CatalogosDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\CategoriaSixDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\CeBeSIxDto.vb" />

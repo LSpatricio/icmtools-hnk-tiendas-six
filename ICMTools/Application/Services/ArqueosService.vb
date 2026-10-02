@@ -39,7 +39,7 @@ Public Class ArqueosService
             tablaDestino,
             logger))
 
-        If errores.Any() Then
+        If errores.Any(Function(x) Not x.Advertencia) Then
             Return New CargaResponse With {
                 .Exitoso = False,
                 .IdCarga = idCarga,
@@ -54,7 +54,7 @@ Public Class ArqueosService
         Return New CargaResponse With {
             .Exitoso = True,
             .IdCarga = idCarga,
-            .Errores = New List(Of ExcelValidationError)()
+            .Errores = errores
         }
     End Function
 
@@ -84,8 +84,8 @@ Public Class ArqueosService
                     mapeoColumnas,
                     tableName,
                     Nothing,
-                    Nothing)) ',
-            'AddressOf ValidarFilaArqueos))
+                    Nothing,
+                    AddressOf ValidarFilaArqueos))
         Next
 
         Return valoresErrores
@@ -94,8 +94,7 @@ Public Class ArqueosService
 
     Private Function ValidarFilaArqueos(
         fila As DataRow,
-        Optional regionSelector As String = Nothing,
-        Optional catalogos As CatalogosDto = Nothing) As String
+        catalogos As CatalogosDto) As ExcelValidationError
 
         Dim errores As New List(Of String)()
 
@@ -180,7 +179,11 @@ Public Class ArqueosService
         End If
 
         If errores.Count = 0 Then Return Nothing
-        Return String.Join("<br/>", errores)
+
+        Return New ExcelValidationError With {
+            .Problema = "Validación de Arqueos",
+            .Detalle = String.Join("<br/>", errores)
+        }
     End Function
 
     Private Sub NormalizarTextoOpcionalParaStaging(fila As DataRow, columna As String)

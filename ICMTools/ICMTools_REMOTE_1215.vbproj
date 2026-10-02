@@ -315,7 +315,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\DTOs\ArqueosExcelDto.vb" />
-    <Compile Include="Application\DTOs\SA132ExcelDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\CalculatioSixDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\CatalogosDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\CategoriaSixDto.vb" />
@@ -342,13 +341,11 @@
     <Compile Include="Application\DTOs\PeriodsDto.vb" />
     <Compile Include="Application\DTOs\Catalogos\RegionDto.vb" />
     <Compile Include="Application\DTOs\TiendasDesincorporadasExcelDto.vb" />
-    <Compile Include="Application\DTOs\RenegociacionesExcelDto.vb" />
     <Compile Include="Application\File\CheckFileRequest.vb" />
     <Compile Include="Application\File\ExcelService.vb" />
     <Compile Include="Application\File\SendInfoRequest.vb" />
     <Compile Include="Application\File\ValidateFileRequest.vb" />
     <Compile Include="Application\Services\ArqueosService.vb" />
-    <Compile Include="Application\Services\SA132Service.vb" />
     <Compile Include="Application\Services\CatalogoService.vb" />
     <Compile Include="Application\Services\EficienciaService.vb" />
     <Compile Include="Application\Services\EstructuraNegociosService.vb" />
@@ -358,9 +355,7 @@
     <Compile Include="Application\Services\EstructuraJOSServices .vb" />
     <Compile Include="Application\Services\RegistrosADCService.vb" />
     <Compile Include="Application\Services\TiendasDesincorporadasService.vb" />
-    <Compile Include="Application\Services\RenegociacionesService.vb" />
     <Compile Include="Controllers\ArqueosController.vb" />
-    <Compile Include="Controllers\SA132Controller.vb" />
     <Compile Include="Controllers\EstructuraJOSController.vb" />
     <Compile Include="Controllers\EficienciaController.vb" />
     <Compile Include="Controllers\ReporteTiendasDesincorporadasController.vb" />
@@ -368,7 +363,6 @@
     <Compile Include="Controllers\EficienciaEfectividadController.vb" />
     <Compile Include="Controllers\FileController.vb" />
     <Compile Include="Controllers\SharedController.vb" />
-    <Compile Include="Controllers\RenegociacionesController.vb" />
     <Compile Include="Infraestructure\API\IcmQueryMapper.vb" />
     <Compile Include="Infraestructure\Configurations\LoggerConfig.vb" />
     <Compile Include="Infraestructure\Excel\ExcelColumnAttribute.vb" />
@@ -411,20 +405,6 @@
     </Compile>
     <Compile Include="Pages\Eficiencia.aspx.vb">
       <DependentUpon>Eficiencia.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\SA132.aspx.designer.vb">
-      <DependentUpon>SA132.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\SA132.aspx.vb">
-      <DependentUpon>SA132.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Pages\RenegociacionesCptReNegocia.aspx.designer.vb">
-      <DependentUpon>RenegociacionesCptReNegocia.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\RenegociacionesCptReNegocia.aspx.vb">
-      <DependentUpon>RenegociacionesCptReNegocia.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Pages\Arqueos.aspx.designer.vb">
@@ -591,7 +571,6 @@
     <Content Include="js\onfly.js" />
     <Content Include="js\shared.js" />
     <Content Include="js\sharedMejorado.js" />
-    <Content Include="js\RenegociacionesCptReNegocia.js" />
     <Content Include="Pages\404.html" />
     <Content Include="Pages\Arqueos.aspx" />
     <Content Include="Pages\Eficiencia.aspx" />
@@ -603,7 +582,6 @@
     <Content Include="Pages\ErrorGeneral.html" />
     <Content Include="Pages\EficienciaEfectividad.aspx" />
     <Content Include="Pages\MontoDistribuibleCategoriaDocumentacion.aspx" />
-    <Content Include="Pages\RenegociacionesCptReNegocia.aspx" />
     <Content Include="Pages\Home.aspx" />
     <Content Include="Pages\login.aspx" />
     <Content Include="Pages\logout.aspx" />

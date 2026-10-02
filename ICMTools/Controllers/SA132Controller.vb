@@ -4,23 +4,22 @@ Imports System.Web.Http
 Imports System.Linq
 Imports Serilog
 
-Public Class ArqueosController
+Public Class SA132Controller
     Inherits ApiController
 
     Private mUser As User
-    Private ReadOnly _arqueosService As ArqueosService
+    Private ReadOnly _sa132Service As SA132Service
 
     Public Sub New()
         Me.mUser = CType(HttpContext.Current.Session.Item("User"), User)
-        _arqueosService = New ArqueosService()
+        _sa132Service = New SA132Service()
     End Sub
 
     ReadOnly sc As New SharedController
 
     <HttpPost>
-    <Route("api/arqueos/cargarinfo")>
+    <Route("api/sa132/cargarinfo")>
     Public Async Function CargarInfoAsync(<FromBody> request As ValidateFileRequest) As Task(Of IHttpActionResult)
-
         Dim idCarga As Guid = Guid.NewGuid()
 
         Dim logger = Log _
@@ -35,11 +34,11 @@ Public Class ArqueosController
 
             Dim errorsList As String = Nothing
 
-            logger.Information("Iniciando proceso de validaciones y carga de informacion para Arqueos")
+            logger.Information("Iniciando proceso de validaciones y carga de informacion para SA132")
 
-            Dim cargaResponse = Await _arqueosService.ProcesarArqueos(request, idCarga, logger)
+            Dim cargaResponse = Await _sa132Service.ProcesarSA132(request, idCarga, logger)
 
-            logger.Information("Fin proceso de validaciones y carga de informacion para Arqueos")
+            logger.Information("Fin proceso de validaciones y carga de informacion para SA132")
 
             Dim erroresBloqueantes = cargaResponse.Errores.Where(Function(x) Not x.Advertencia).ToList()
             Dim avisos = cargaResponse.Errores.Where(Function(x) x.Advertencia).ToList()
@@ -71,15 +70,15 @@ Public Class ArqueosController
         Catch ex As Exception
             logger.Error(
                 ex,
-                "Error al validar/cargar informacion del archivo de Arqueos."
+                "Error al validar/cargar informacion del archivo de SA132."
             )
             Return InternalServerError(ex)
         End Try
     End Function
 
     <HttpPost>
-    <Route("api/arqueos/enviarinformacion")>
-    Public Async Function EnvioArqueos(<FromBody> request As SendInfoRequest) As Task(Of IHttpActionResult)
+    <Route("api/sa132/enviarinformacion")>
+    Public Async Function EnvioSA132(<FromBody> request As SendInfoRequest) As Task(Of IHttpActionResult)
 
         Dim logger = Log _
                 .ForContext("Pantalla", request.Screen) _
@@ -91,18 +90,18 @@ Public Class ArqueosController
         Try
             Thread.Sleep(1000)
 
-            logger.Information("Inicio proceso envio de informacion de Arqueos")
+            logger.Information("Inicio proceso envio de informacion de SA132")
 
-            Await _arqueosService.EnvioArqueos(request, logger)
+            Await _sa132Service.EnvioSA132(request, logger)
 
-            logger.Information("Fin proceso envio de informacion de Arqueos")
+            logger.Information("Fin proceso envio de informacion de SA132")
 
             Return Ok(New With {.d = True})
 
         Catch ex As Exception
             logger.Error(
                 ex,
-                "Error al enviar informacion de Arqueos."
+                "Error al enviar informacion de SA132."
             )
             Return InternalServerError(ex)
         End Try

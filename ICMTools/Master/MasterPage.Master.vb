@@ -151,6 +151,24 @@ Public Class MasterPage
         .IDScreen = 4,
         .ScreenName = "Estructura JOS",
         .URL = "EstructuraJOS.aspx"
+    },
+    New AppScreen With {
+        .IDModel = 1,
+        .IDScreen = 5,
+        .ScreenName = "Arqueos",
+        .URL = "Arqueos.aspx"
+    },
+    New AppScreen With {
+        .IDModel = 1,
+        .IDScreen = 6,
+        .ScreenName = "SA132",
+        .URL = "SA132.aspx"
+    },
+    New AppScreen With {
+        .IDModel = 1,
+        .IDScreen = 7,
+        .ScreenName = "Renegociaciones - CptRe-Negocia",
+        .URL = "RenegociacionesCptReNegocia.aspx"
     }
 }
             If menu IsNot Nothing Then
